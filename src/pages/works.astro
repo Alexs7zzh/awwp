@@ -1,0 +1,22 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const works = await getCollection("work");
+---
+
+<BaseLayout>
+  <h1>Works</h1>
+  <ol>
+    {
+      works.map((work) => (
+        <li>
+          <a href={`/${work.id}`}>
+            <div>{work.data.title}</div>
+            <div>{work.data.year}</div>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</BaseLayout>
