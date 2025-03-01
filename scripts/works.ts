@@ -4410,10 +4410,20 @@ works.forEach((work) => {
       pushPropertyIfExists("background_img");
       pushPropertyIfExists("videos");
       pushPropertyIfExists("imgs");
+      pushPropertyIfExists("intro");
+
+      if (work.concept_title || work.concept_content) {
+        frontmatter.concept = {};
+        if (work.concept_title) {
+          frontmatter.concept.title = work.concept_title;
+        }
+        if (work.concept_content) {
+          frontmatter.concept.content = work.concept_content;
+        }
+      }
 
       content += dump(frontmatter);
       content += `---\n\n`;
-      content += work.intro;
 
       let markdown = tempo();
       work.options.forEach((item) => {
