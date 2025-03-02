@@ -1,54 +1,18 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-import { Debug } from 'astro:components';
-import { Picture } from 'astro:assets';
+import WorkCollection from "@components/WorkCollection.astro";
 
-const works = await getCollection("work");
-let featured: typeof works = [];
-
-[
-  'stream',
-  'us',
-  '2020',
-  'holiness',
-  'dragonrain',
-  'postoperative',
-  'dismantle',
-  'river',
-  'momentmat',
-  'triplet',
-].forEach(id => {
-  const work = works.find(work => work.id === id);
-  if (work) {
-    featured.push(work);
-  }
-});
+const categories: Record<string, string[]> = {
+  "Opening Section - Visual Impact": ["2020", "dragonrain", "overbillions"],
+  "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
+  "Philosophical Depth - Contemplation": ["hollow", "jomon_vortex", "dismantle", "oppenheimer"],
+  "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
+  "Collaborative Spirit - Artistic Fusion": ["keith_all", "mutek", "vie", "cosmetics"]
+};
 ---
 
 <BaseLayout>
-  {works.map(work => (
-    <div>
-      <h2>{work.data.title}</h2>
-      <p>{work.data.intro}</p>
-      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
-      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
-      {work.data.imgs.map(image => (
-        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
-      ))}
-    </div>
+  {Object.entries(categories).map(([category, workIds]) => (
+    <WorkCollection title={category} workIds={workIds} />
   ))}
 </BaseLayout>
-
-<style>
-  picture {
-    max-width: 300px;
-    display: inline-block;
-    margin: 1rem;
-  }
-  
-  picture img {
-    width: 100%;
-    height: auto;
-  }
-</style>

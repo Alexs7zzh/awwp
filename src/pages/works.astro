@@ -1,40 +1,35 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import WorkCollection from "@components/WorkCollection.astro";
 import { getCollection } from "astro:content";
-import { Picture } from 'astro:assets';
 
-const works = await getCollection("work");
+const categories: Record<string, string[]> = {
+  "Fluid Dynamics & Air Flow": ["furnish", "ff2", "ff3", "ff4", "flora", "nonlinear", "voac", "scalar8k"],
+  "Earth & Climate": ["overbillions", "geo", "climatic", "arsdas"],
+  "Water & Flow": ["river", "ryoanji", "stream"],
+  "AI & Future Society": ["proposal", "proposaljr", "2020"],
+  "Digital Existence": ["hollow", "overdisplay", "overdisplay_2", "infotube"],
+  "Human-Machine Interface": ["fina", "fabcell", "unda"],
+  "Sacred & Transcendent": ["holiness", "holiness2", "relief", "dismantle"],
+  "Zen & Eastern Philosophy": ["dragonrain", "jomon_vortex"],
+  "Biological Systems": ["blob", "keith_embryo", "keith_equation", "keith_diversity", "keith_param"],
+  "Insect & Collective Behavior": ["insect"],
+  "Moment & Time": ["count", "momentmat", "clair"],
+  "Urban Space": ["ct", "async"],
+  "Music & Performance": ["amp", "mutek", "xhiasma", "vie"],
+  "Art & Science Fusion": ["keith_all", "keith_dancers", "concept", "cosmetics", "oppenheimer"],
+  "Personal & Introspective": ["postoperative", "us"],
+  "Industrial Design": ["homeelectronics"],
+  "Immersive Environments": ["octagon"],
+  "Technology History": ["darkside"],
+  "Future Visions": ["scenery"],
+  "Information Visualization": ["alive", "triplet"],
+  "Uncategorized": ["gem", "religion", "raydrawing", "sfos", "science", "cognition", "moment", "crosssection", "jomonverse", "activator", "newsyn", "hidden"]
+};
 ---
 
 <BaseLayout>
-  {works.map(work => (
-    <div>
-      <h2>{work.data.title} <span class="work-id">{work.id}</span></h2>
-      <p>{work.data.intro}</p>
-      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
-      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
-      {work.data.imgs.map(image => (
-        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
-      ))}
-    </div>
+  {Object.entries(categories).map(([category, workIds]) => (
+    <WorkCollection title={category} workIds={workIds} />
   ))}
 </BaseLayout>
-
-<style>
-  picture {
-    max-width: 300px;
-    display: inline-block;
-    margin: 1rem;
-  }
-  
-  picture img {
-    width: 100%;
-    height: auto;
-  }
-
-  .work-id {
-    font-size: 0.8em;
-    color: #666;
-  }
-  
-</style>

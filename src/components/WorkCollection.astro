@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  workIds: string[];
+}
+
+import { getCollection } from "astro:content";
+import { Picture } from 'astro:assets';
+
+const { title, workIds } = Astro.props;
+const works = await getCollection("work");
+
+const filteredWorks = workIds.map(id => {
+  const work = works.find(work => work.id === id);
+  if (!work) {
+    console.log(`Work with id "${id}" not found in collection`);
+  }
+  return work;
+}).filter((work): work is typeof works[0] => work !== undefined);
+---
+
+<div class="work-collection">
+  <h2>{title}</h2>
+  {filteredWorks.map(work => (
+    <div class="work-item">
+      <h3>{work.data.title}</h3>
+      <p>{work.data.intro}</p>
+      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
+      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
+      {work.data.imgs.map(image => (
+        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  .work-collection {
+    margin: 2rem 0;
+  }
+
+  .work-item {
+    margin-bottom: 2rem;
+  }
+
+  picture {
+    max-width: 300px;
+    display: inline-block;
+    margin: 1rem;
+  }
+  
+  picture img {
+    width: 100%;
+    height: auto;
+  }
+</style>
