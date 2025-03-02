@@ -1,14 +1,23 @@
 <header>
-  <ul>
-    <li><a href="/works">Works</a></li>
-    <!-- <li><a href="/news">News</a></li> -->
-    <li><a href="/about">About</a></li>
-  </ul>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/debug">Home(Debug)</a></li>
+      <li><a href="/works">Works</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </nav>
 </header>
 
 <style>
   header {
     padding: 1rem 0;
+  }
+
+  nav {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 2rem;
   }
 
   nav ul {
