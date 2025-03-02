@@ -23,13 +23,17 @@ const filteredWorks = workIds.map(id => {
   <h2>{title}</h2>
   {filteredWorks.map(work => (
     <div class="work-item">
-      <h3>{work.data.title}</h3>
-      <p>{work.data.intro}</p>
-      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
-      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
-      {work.data.imgs.map(image => (
-        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
-      ))}
+      <div class="work-header">
+        <h3>{work.data.title}</h3>
+        <p>{work.data.intro}</p>
+      </div>
+      <div class="image-grid">
+        <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
+        <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
+        {work.data.imgs.map(image => (
+          <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
+        ))}
+      </div>
     </div>
   ))}
 </div>
@@ -39,18 +43,62 @@ const filteredWorks = workIds.map(id => {
     margin: 2rem 0;
   }
 
+  h2 {
+    padding: 0 2rem;
+  }
+
+  .work-item > * {
+    padding: 0 2rem;
+  }
+
   .work-item {
-    margin-bottom: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .work-item:last-child {
+    border-bottom: none;
+  }
+
+  .work-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .work-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-weight: normal;
+  }
+
+  .work-header p {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: calc(100% + 4rem);
+    padding: 0 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .image-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
   }
 
   picture {
-    max-width: 300px;
-    display: inline-block;
-    margin: 1rem;
+    width: 100%;
+    margin: 0;
+    display: block;
   }
   
   picture img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 16/9;
   }
 </style>
