@@ -4322,7 +4322,7 @@ works.forEach((item, key) => {
   });
   tryGetField(data, link.array(), "link", "urls_jp").onExists((value) => {
     item.links = value.map((i) => ({
-      label: i.label,
+      label: i.label.startsWith("- ") ? i.label.slice(2) : i.label,
       url: i.href,
     }));
   });

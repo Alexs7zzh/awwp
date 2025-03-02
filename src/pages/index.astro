@@ -1,7 +1,54 @@
 ---
-import BaseLayout from "@layout/BaseLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { Debug } from 'astro:components';
+import { Picture } from 'astro:assets';
+
+const works = await getCollection("work");
+let featured: typeof works = [];
+
+[
+  'stream',
+  'us',
+  '2020',
+  'holiness',
+  'dragonrain',
+  'postoperative',
+  'dismantle',
+  'river',
+  'momentmat',
+  'triplet',
+].forEach(id => {
+  const work = works.find(work => work.id === id);
+  if (work) {
+    featured.push(work);
+  }
+});
 ---
 
 <BaseLayout>
-  <h1>hello world</h1>
+  {works.map(work => (
+    <div>
+      <h2>{work.data.title}</h2>
+      <p>{work.data.intro}</p>
+      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
+      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
+      {work.data.imgs.map(image => (
+        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
+      ))}
+    </div>
+  ))}
 </BaseLayout>
+
+<style>
+  picture {
+    max-width: 300px;
+    display: inline-block;
+    margin: 1rem;
+  }
+  
+  picture img {
+    width: 100%;
+    height: auto;
+  }
+</style>

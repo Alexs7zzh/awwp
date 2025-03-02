@@ -107,4 +107,6 @@
 
 ## コンタクト
 
-作品やインタビューのご依頼は下記にご連絡をお願いいたします。a(dot)wakita(at)gmail(dot)com
+作品やインタビューのご依頼は下記にご連絡をお願いいたします。
+
+a(dot)wakita(at)gmail(dot)com

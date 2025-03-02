@@ -1,22 +1,40 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import { Picture } from 'astro:assets';
 
 const works = await getCollection("work");
 ---
 
 <BaseLayout>
-  <h1>Works</h1>
-  <ol>
-    {
-      works.map((work) => (
-        <li>
-          <a href={`/${work.id}`}>
-            <div>{work.data.title}</div>
-            <div>{work.data.year}</div>
-          </a>
-        </li>
-      ))
-    }
-  </ol>
+  {works.map(work => (
+    <div>
+      <h2>{work.data.title} <span class="work-id">{work.id}</span></h2>
+      <p>{work.data.intro}</p>
+      <Picture src={work.data.thumbnail} formats={['avif', 'webp']} alt={work.data.title} />
+      <Picture src={work.data.background_img.url} formats={['avif', 'webp']} alt={work.data.title} />
+      {work.data.imgs.map(image => (
+        <Picture src={image.url} formats={['avif', 'webp']} alt={work.data.title} />
+      ))}
+    </div>
+  ))}
 </BaseLayout>
+
+<style>
+  picture {
+    max-width: 300px;
+    display: inline-block;
+    margin: 1rem;
+  }
+  
+  picture img {
+    width: 100%;
+    height: auto;
+  }
+
+  .work-id {
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+</style>
