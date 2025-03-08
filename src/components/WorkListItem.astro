@@ -1,0 +1,75 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  work: CollectionEntry<'work'>;
+}
+
+const { work } = Astro.props;
+---
+
+<li>
+  <a href={`/${work.id}`}>
+    <div class="work-info">
+      <h3>{work.data.title}</h3>
+      <div class="metadata">
+        <span class="keywords">{work.data.keywords.join(', ')}</span>
+        <span class="year">{work.data.year}</span>
+      </div>
+    </div>
+  </a>
+</li>
+
+<style>
+  li {
+    list-style: none;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 1.5rem 2rem;
+    transition: background-color 0.2s;
+  }
+
+  a:hover {
+    background-color: #f9f9f9;
+  }
+
+  .work-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .metadata {
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 0.9em;
+    color: #666;
+  }
+
+  .keywords {
+    margin-right: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .work-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .metadata {
+      text-align: left;
+    }
+  }
+</style>

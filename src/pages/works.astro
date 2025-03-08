@@ -1,35 +1,39 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import WorkCollection from "@components/WorkCollection.astro";
+import WorkListItem from "@components/WorkListItem.astro";
 import { getCollection } from "astro:content";
 
-const categories: Record<string, string[]> = {
-  "Fluid Dynamics & Air Flow": ["furnish", "ff2", "ff3", "ff4", "flora", "nonlinear", "voac", "scalar8k"],
-  "Earth & Climate": ["overbillions", "geo", "climatic", "arsdas"],
-  "Water & Flow": ["river", "ryoanji", "stream"],
-  "AI & Future Society": ["proposal", "proposaljr", "2020"],
-  "Digital Existence": ["hollow", "overdisplay", "overdisplay_2", "infotube"],
-  "Human-Machine Interface": ["fina", "fabcell", "unda"],
-  "Sacred & Transcendent": ["holiness", "holiness2", "relief", "dismantle"],
-  "Zen & Eastern Philosophy": ["dragonrain", "jomon_vortex"],
-  "Biological Systems": ["blob", "keith_embryo", "keith_equation", "keith_diversity", "keith_param"],
-  "Insect & Collective Behavior": ["insect"],
-  "Moment & Time": ["count", "momentmat", "clair"],
-  "Urban Space": ["ct", "async"],
-  "Music & Performance": ["amp", "mutek", "xhiasma", "vie"],
-  "Art & Science Fusion": ["keith_all", "keith_dancers", "concept", "cosmetics", "oppenheimer"],
-  "Personal & Introspective": ["postoperative", "us"],
-  "Industrial Design": ["homeelectronics"],
-  "Immersive Environments": ["octagon"],
-  "Technology History": ["darkside"],
-  "Future Visions": ["scenery"],
-  "Information Visualization": ["alive", "triplet"],
-  "Uncategorized": ["gem", "religion", "raydrawing", "sfos", "science", "cognition", "moment", "crosssection", "jomonverse", "activator", "newsyn", "hidden"]
-};
+const works = await getCollection("work", (entry) => {
+  return entry.data.year;
+}).then(entries => entries.sort((a, b) => b.data.year - a.data.year));
 ---
 
 <BaseLayout>
-  {Object.entries(categories).map(([category, workIds]) => (
-    <WorkCollection title={category} workIds={workIds} />
-  ))}
+  <div class="works-container">
+    <h1>Works</h1>
+    <ul>
+      {works.map(work => (
+        <WorkListItem work={work} />
+      ))}
+    </ul>
+  </div>
 </BaseLayout>
+
+<style>
+  .works-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  h1 {
+    padding: 0 2rem;
+    margin: 0 0 2rem 0;
+    font-weight: normal;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+</style>
