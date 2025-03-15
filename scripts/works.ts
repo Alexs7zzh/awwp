@@ -4177,6 +4177,12 @@ function extractYears(str: string): { start: number; end: number } | null {
   return null;
 }
 
+try {
+  await rm("./works", { recursive: true });
+} catch (err) {
+  // nothing
+}
+
 topContents.forEach(async (item) => {
   if (!item.href.startsWith("#works/") || !item.src.startsWith("./img")) {
     console.warn(
@@ -4210,6 +4216,12 @@ topContents.forEach(async (item) => {
     links: [],
   });
 });
+
+if (works.size != Object.keys(worksContents).length) {
+  console.warn(
+    `Sizes of top and workContents do not match. works: ${works.size} content: ${Object.keys(worksContents).length}`,
+  );
+}
 
 function getNestedValue(
   obj: unknown,
@@ -4255,7 +4267,8 @@ function tryGetField<T>(
   };
 }
 
-works.forEach((item, key) => {
+const writes: Promise<void>[] = [];
+works.forEach((work, key) => {
   // @ts-ignore
   if (!worksContents[key]) {
     console.warn(`Cannot find work ${key} in workContents`);
@@ -4265,37 +4278,37 @@ works.forEach((item, key) => {
   // @ts-ignore
   const data: unknown = worksContents[key];
   tryGetField(data, z.string(), "title", "title").onExists((value) => {
-    item.title = value;
+    work.title = value;
   });
   tryGetField(data, z.string().array(), "title", "keys").onExists((value) => {
-    item.keywords = value;
+    work.keywords = value;
   });
   tryGetField(data, z.string(), "title", "span").onExists((value) => {
-    if (!item.year) {
-      item.year = parseInt(value, 10);
+    if (!work.year) {
+      work.year = parseInt(value, 10);
     }
-    if (item.year != parseInt(value, 10)) {
-      console.warn(`Span does not match: ${item.title}: ${item.year} ${value}`);
+    if (work.year != parseInt(value, 10)) {
+      console.warn(`Span does not match: ${work.title}: ${work.year} ${value}`);
     }
   });
   tryGetField(data, z.string(), "title", "bg_src").onExists((value) => {
     if (value.startsWith("./img")) {
-      item.background_img = { url: value.slice(5), label: "" };
+      work.background_img = { url: value.slice(5), label: "" };
     } else {
       console.warn(`'bg_src' link not valid. key: ${key} link: ${value}`);
     }
   });
   tryGetField(data, z.string().array(), "intro_jp").onExists((value) => {
-    item.intro = value.join(`\n\n`);
+    work.intro = value.join(`\n\n`);
   });
   tryGetField(data, z.string().array(), "videos").onExists((value) => {
-    item.videos = value;
+    work.videos = value;
   });
   tryGetField(data, z.string(), "conceptTitle").onExists((value) => {
-    item.concept_title = value;
+    work.concept_title = value;
   });
   tryGetField(data, z.string().array(), "concept_ps_jp").onExists((value) => {
-    item.concept_content = value.join(`\n\n`);
+    work.concept_content = value.join(`\n\n`);
   });
 
   const image = z.object({
@@ -4303,7 +4316,7 @@ works.forEach((item, key) => {
     caption: z.string().optional(),
   });
   tryGetField(data, image.array(), "imgs").onExists((value) => {
-    item.imgs = value.map((i) => {
+    work.imgs = value.map((i) => {
       if (i.src.startsWith("./img")) {
         i.src = i.src.slice(5);
       } else {
@@ -4321,7 +4334,7 @@ works.forEach((item, key) => {
     href: z.string(),
   });
   tryGetField(data, link.array(), "link", "urls_jp").onExists((value) => {
-    item.links = value.map((i) => ({
+    work.links = value.map((i) => ({
       label: i.label.startsWith("- ") ? i.label.slice(2) : i.label,
       url: i.href,
     }));
@@ -4332,27 +4345,12 @@ works.forEach((item, key) => {
     ps_jp: z.string().array(),
   });
   tryGetField(data, option.array(), "options").onExists((value) => {
-    item.options = value.map((i) => ({
+    work.options = value.map((i) => ({
       title: i.title_jp,
       content: i.ps_jp,
     }));
   });
-});
 
-if (works.size != Object.keys(worksContents).length) {
-  console.warn(
-    `Sizes of top and workContents do not match. works: ${works.size} content: ${Object.keys(worksContents).length}`,
-  );
-}
-
-try {
-  await rm("./works", { recursive: true });
-} catch (err) {
-  // nothing
-}
-
-const writes: Promise<void>[] = [];
-works.forEach((work) => {
   writes.push(
     (async () => {
       await mkdir(`./works/${work.id}`, { recursive: true });
@@ -4453,3 +4451,5 @@ works.forEach((work) => {
     })(),
   );
 });
+
+await Promise.all(writes);
