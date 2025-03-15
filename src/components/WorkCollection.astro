@@ -22,7 +22,7 @@ const works =
         <p>{work.data.intro}</p>
       </div>
       <div class="image-grid">
-        <Picture src={work.data.thumbnail} alt={work.data.title} formats={['avif', 'webp']}  />
+        <Picture src={work.data.thumbnail} alt={work.data.thumbnail.src} formats={['avif', 'webp']}  />
         <Picture src={work.data.background_img.url} alt={work.data.background_img.label} formats={['avif', 'webp']}  />
         {work.data.imgs.map(image => (
           <Picture src={image.url} alt={image.label} formats={['avif', 'webp']}  />

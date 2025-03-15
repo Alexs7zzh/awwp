@@ -1,6 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import WorkCollection from "@components/WorkCollection.astro";
+import FullScreenPicture from "@components/FullScreenPicture.astro";
+import ParallaxText from "@components/ParallaxText.astro";
+
+import { getEntry } from "astro:content";
 
 const categories: Record<string, string[]> = {
   "Opening Section - Visual Impact": ["2020", "dragonrain", "overbillions", "holiness", "holiness2"],
@@ -10,10 +14,64 @@ const categories: Record<string, string[]> = {
   "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
   "Collaborative Spirit - Artistic Fusion": ["keith_all", "mutek", "vie", "cosmetics"]
 }
+
+const w2020 = await getEntry('work', '2020')!;
+const dragonrain = await getEntry('work', 'dragonrain')!;
+const overbillions = await getEntry('work', 'overbillions')!;
+const holiness = await getEntry('work', 'holiness')!;
+const holiness2 = await getEntry('work', 'holiness2')!;
+const relief = await getEntry('work', 'relief')!;
+const count = await getEntry('work', 'count')!;
+const momentmat = await getEntry('work', 'momentmat')!;
+const furnish = await getEntry('work', 'furnish')!;
+const flora = await getEntry('work', 'flora')!;
+const ryoanji = await getEntry('work', 'ryoanji')!;
+const scalar8k = await getEntry('work', 'scalar8k')!;
+const hollow = await getEntry('work', 'hollow')!;
+const jomon_vortex = await getEntry('work', 'jomon_vortex')!;
+const dismantle = await getEntry('work', 'dismantle')!;
+const oppenheimer = await getEntry('work', 'oppenheimer')!;
+const proposal = await getEntry('work', 'proposal')!;
+const fina = await getEntry('work', 'fina')!;
+const unda = await getEntry('work', 'unda')!;
+const fabcell = await getEntry('work', 'fabcell')!;
+const keith_all = await getEntry('work', 'keith_all')!;
+const mutek = await getEntry('work', 'mutek')!;
+const vie = await getEntry('work', 'vie')!;
+const cosmetics = await getEntry('work', 'cosmetics')!;
+
 ---
 
-<BaseLayout>
+<BaseLayout background="black">
+  <section>
+    <FullScreenPicture 
+      src={w2020.data.thumbnail} 
+      alt={w2020.data.title} 
+    />
+    <h2>2020</h2>
+  </section>
+  <section>
+    <FullScreenPicture 
+      src={dragonrain.data.thumbnail} 
+      alt={dragonrain.data.title} 
+    />
+    <h2>龍雨図</h2>
+  </section>
+  <section>
+    <FullScreenPicture 
+      src={overbillions.data.thumbnail} 
+      alt={overbillions.data.title} 
+    />
+    <h2>Over Billions of Years</h2>
+  </section>
+
   {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))}
 </BaseLayout>
+
+<style>
+  .pic-section {
+    position: relative;
+  }
+</style>

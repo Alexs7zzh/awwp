@@ -1,11 +1,11 @@
 ---
 title: 龍雨図 - Dragon Rain
-thumbnail: ryuuzu_thumb.jpg
+thumbnail: dragonrain_3.jpg
 year: 2024
 keywords:
   - Audio Visual Installation
 background_img:
-  url: dragonrain_2.jpg
+  url: dragonrain_3.jpg
   label: ''
 imgs:
   - label: Photo by Chise Toshiro
@@ -16,6 +16,8 @@ imgs:
     url: dragonrain_3.jpg
   - label: Photo by @anya_photographer
     url: dragonrain_4.jpg
+  - label: ''
+    url: ryuuzu_thumb.jpg
 intro: >-
   禅宗寺院において、龍は守護神であり、僧に仏法の雨を降らせる存在とされています。本作では、非線形物理システム、デジタル映像技術、そして脳科学に基づくサウンドを駆使することで、現代ならではの「仏法の雨を降らせる龍」を描くことに挑戦します。建仁寺の法堂の天井に描かれた小泉淳作の『双龍図』と対をなす形で本作『龍雨図』は設置されます。
 
