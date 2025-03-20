@@ -1,6 +1,6 @@
 ---
 title: Holiness
-thumbnail: holiness_thumb.jpg
+thumbnail: holiness_back.jpg
 year: 2020
 keywords:
   - Installation

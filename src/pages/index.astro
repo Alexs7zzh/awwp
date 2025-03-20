@@ -2,16 +2,13 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import WorkCollection from "@components/WorkCollection.astro";
 import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
-
+import AlternatingLayoutGallery from "@components/AlternatingLayoutGallery.astro";
 import { getEntry } from "astro:content";
 
 const categories: Record<string, string[]> = {
-  "Opening Section - Visual Impact": ["2020", "dragonrain", "overbillions", "holiness", "holiness2"],
-  "Sacred & Temporal - Light and Moment": ["relief", "count", "momentmat"],
   "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
   "Philosophical Depth - Contemplation": ["hollow", "jomon_vortex", "dismantle", "oppenheimer"],
   "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
-  "Collaborative Spirit - Artistic Fusion": ["keith_all", "mutek", "vie", "cosmetics"]
 }
 
 const w2020 = await getEntry('work', '2020')!;
@@ -51,7 +48,53 @@ const cosmetics = await getEntry('work', 'cosmetics')!;
     ]}
   />
 
+  <div class="gallery-section">
+    <AlternatingLayoutGallery works={[
+      { 
+        title: holiness.data.title, 
+        image: holiness.data.thumbnail, 
+        alt: holiness.data.title,
+        description: holiness.data.intro,
+        year: holiness.data.year.toString()
+      },
+      { 
+        title: holiness2.data.title, 
+        image: holiness2.data.thumbnail, 
+        alt: holiness2.data.title,
+        description: holiness2.data.intro,
+        year: holiness2.data.year.toString()
+      },
+      { 
+        title: relief.data.title, 
+        image: relief.data.thumbnail, 
+        alt: relief.data.title,
+        description: relief.data.intro,
+        year: relief.data.year.toString()
+      },
+      { 
+        title: count.data.title, 
+        image: count.data.thumbnail, 
+        alt: count.data.title,
+        description: count.data.intro,
+        year: count.data.year.toString()
+      },
+      { 
+        title: momentmat.data.title, 
+        image: momentmat.data.thumbnail, 
+        alt: momentmat.data.title,
+        description: momentmat.data.intro,
+        year: momentmat.data.year.toString()
+      }
+    ]} />
+  </div>
+
   {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))}
 </BaseLayout>
+
+<style>
+  .gallery-section {
+    margin-top: 10rem;
+  }
+</style>

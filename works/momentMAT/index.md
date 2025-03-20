@@ -1,6 +1,6 @@
 ---
 title: Moment - horizontal version
-thumbnail: momentMAT_thumb.jpg
+thumbnail: momentMAT_back.jpg
 year: 2020
 keywords:
   - Installation
