@@ -1,0 +1,154 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+type Props = {
+  images: {
+    src: ImageMetadata;
+    alt: string;
+  }[];
+};
+
+const { images } = Astro.props;
+---
+<div class="scroll-gallery-wrapper">
+  <div class="scroll-gallery">
+    <div class="gallery-container">
+      {images.map((image, index) => (
+        <div class="image-slide" data-index={index}>
+          <div class="image-wrapper">
+            <Picture 
+              src={image.src} 
+              alt={image.alt} 
+              formats={['avif', 'webp']} 
+              widths={[1024, 1920, 2048]}
+              sizes="100vw"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+  <!-- Spacer div to prevent content from showing through -->
+  <div class="content-spacer"></div>
+</div>
+
+<style>
+  .scroll-gallery-wrapper {
+    position: relative;
+    height: calc(100vh * var(--total-slides, 1));
+    width: 100vw;
+    background: var(--background-color, black);
+  }
+
+  .scroll-gallery {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .gallery-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: var(--background-color, black);
+    z-index: 2;
+  }
+
+  .content-spacer {
+    position: absolute;
+    top: 100vh;
+    left: 0;
+    right: 0;
+    height: calc(100% - 100vh);
+    background: var(--background-color, black);
+    z-index: 1;
+  }
+
+  .image-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    background: var(--background-color, black);
+  }
+
+  .image-wrapper {
+    width: 100%;
+    height: 100%;
+    background: var(--background-color, black);
+  }
+
+  .image-wrapper :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+</style>
+
+<script>
+  const slides = document.querySelectorAll('.image-slide') as NodeListOf<HTMLElement>;
+  const totalSlides = slides.length;
+  const galleryWrapper = document.querySelector('.scroll-gallery-wrapper') as HTMLElement;
+  const container = document.querySelector('.gallery-container') as HTMLElement;
+  
+  // Set CSS variable for total slides
+  galleryWrapper.style.setProperty('--total-slides', String(totalSlides));
+  
+  // Get background color from parent or default to black
+  const computedStyle = getComputedStyle(document.documentElement);
+  const backgroundColor = computedStyle.getPropertyValue('--background-color') || 'black';
+  galleryWrapper.style.setProperty('--background-color', backgroundColor);
+  
+  // Set initial slide
+  if (slides.length > 0) {
+    slides[0].style.opacity = '1';
+  }
+
+  function updateGalleryPosition() {
+    if (!galleryWrapper || !container) return;
+    
+    const rect = galleryWrapper.getBoundingClientRect();
+    const galleryHeight = window.innerHeight;
+    const scrollInGallery = -rect.top;
+    
+    // Calculate which images should be visible based on scroll position
+    const scrollProgress = Math.max(0, Math.min(1, scrollInGallery / (1.4 * (galleryHeight * (totalSlides - 1)))));
+    const currentIndex = Math.floor(scrollProgress * (totalSlides - 1));
+    const nextIndex = Math.min(currentIndex + 1, totalSlides - 1);
+    const progress = (scrollProgress * (totalSlides - 1)) % 1;
+
+    // Reset all slides
+    slides.forEach((slide) => {
+      slide.style.opacity = '0';
+    });
+
+    // Set opacity for current and next slide based on scroll progress
+    if (slides[currentIndex]) {
+      slides[currentIndex].style.opacity = String(1 - progress);
+    }
+    if (slides[nextIndex]) {
+      slides[nextIndex].style.opacity = String(progress);
+    }
+
+    // Update container position if we've reached the end
+    if (scrollInGallery >= galleryHeight * (totalSlides - 1)) {
+      container.style.position = 'absolute';
+      container.style.top = `${galleryHeight * (totalSlides - 1)}px`;
+    } else {
+      container.style.position = 'fixed';
+      container.style.top = '0';
+    }
+  }
+
+  window.addEventListener('scroll', updateGalleryPosition);
+  window.addEventListener('resize', updateGalleryPosition);
+  updateGalleryPosition(); // Initial position
+</script> 

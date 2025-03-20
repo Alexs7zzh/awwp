@@ -9,12 +9,12 @@
     "format": "pnpm exec prettier . --write \"!**/*.{jpg,jpeg,png}\""
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.2.1",
+    "@astrojs/sitemap": "^3.3.0",
     "@astrojs/ts-plugin": "^1.10.4",
-    "astro": "^5.5.2",
+    "astro": "^5.5.3",
     "sharp": "^0.33.5"
   },
-  "packageManager": "pnpm@10.6.3",
+  "packageManager": "pnpm@10.6.5",
   "devDependencies": {
     "@joggr/tempo": "^0.13.0",
     "@types/bun": "^1.2.5",

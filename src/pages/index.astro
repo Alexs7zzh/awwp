@@ -1,8 +1,8 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import WorkCollection from "@components/WorkCollection.astro";
-import FullScreenPicture from "@components/FullScreenPicture.astro";
-import ParallaxText from "@components/ParallaxText.astro";
+import ScrollTransitionGallery from "@components/ScrollTransitionGallery.astro";
+import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
 
 import { getEntry } from "astro:content";
 
@@ -30,6 +30,7 @@ const scalar8k = await getEntry('work', 'scalar8k')!;
 const hollow = await getEntry('work', 'hollow')!;
 const jomon_vortex = await getEntry('work', 'jomon_vortex')!;
 const dismantle = await getEntry('work', 'dismantle')!;
+
 const oppenheimer = await getEntry('work', 'oppenheimer')!;
 const proposal = await getEntry('work', 'proposal')!;
 const fina = await getEntry('work', 'fina')!;
@@ -43,35 +44,15 @@ const cosmetics = await getEntry('work', 'cosmetics')!;
 ---
 
 <BaseLayout background="black">
-  <section>
-    <FullScreenPicture 
-      src={w2020.data.thumbnail} 
-      alt={w2020.data.title} 
-    />
-    <h2>2020</h2>
-  </section>
-  <section>
-    <FullScreenPicture 
-      src={dragonrain.data.thumbnail} 
-      alt={dragonrain.data.title} 
-    />
-    <h2>龍雨図</h2>
-  </section>
-  <section>
-    <FullScreenPicture 
-      src={overbillions.data.thumbnail} 
-      alt={overbillions.data.title} 
-    />
-    <h2>Over Billions of Years</h2>
-  </section>
+  <FullScreenScrollTransition
+    images={[
+      { src: w2020.data.thumbnail, alt: w2020.data.title },
+      { src: dragonrain.data.thumbnail, alt: dragonrain.data.title },
+      { src: overbillions.data.thumbnail, alt: overbillions.data.title }
+    ]}
+  />
 
   {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))}
 </BaseLayout>
-
-<style>
-  .pic-section {
-    position: relative;
-  }
-</style>
