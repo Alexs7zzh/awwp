@@ -47,6 +47,13 @@ const works = workEntries.filter(entry => entry !== undefined);
 </div>
 
 <style>
+  /* Add CSS variables for consistent spacing */
+  :root {
+    --spacing-base: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+  }
+
   .alternating-gallery {
     width: 100%;
     color: white;
@@ -89,15 +96,17 @@ const works = workEntries.filter(entry => entry !== undefined);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    background-color: rgba(0, 0, 0, 0.7);
+    /* Remove container padding */
     box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.7);
   }
 
   .content-wrapper {
     max-width: 480px;
-    padding: 2rem;
+    /* Single point of padding control */
+    padding: var(--spacing-lg);
     box-sizing: border-box;
+    width: 100%;
   }
 
   .artwork-title {
@@ -122,7 +131,7 @@ const works = workEntries.filter(entry => entry !== undefined);
   }
 
   .action-button {
-    margin-top: 2rem;
+    margin-top: var(--spacing-lg);
   }
 
   .more-link {
@@ -147,7 +156,7 @@ const works = workEntries.filter(entry => entry !== undefined);
     }
     
     .content-wrapper {
-      padding: 1.5rem;
+      padding: var(--spacing-base);
     }
   }
 
@@ -164,12 +173,6 @@ const works = workEntries.filter(entry => entry !== undefined);
 
     .content-container {
       width: 100%;
-      padding: 3rem 1.5rem;
-    }
-    
-    .content-wrapper {
-      padding: 1.5rem;
-      width: 100%;
     }
   }
 
@@ -183,7 +186,7 @@ const works = workEntries.filter(entry => entry !== undefined);
     }
     
     .content-wrapper {
-      padding: 1rem;
+      padding: var(--spacing-base);
     }
   }
 </style> 

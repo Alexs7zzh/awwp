@@ -63,6 +63,14 @@ const last = works.length > 0 ? works[works.length - 1] : null;
 </div>
 
 <style>
+  /* Add CSS variables for consistent spacing */
+  :root {
+    --spacing-base: 1rem;
+    --spacing-lg: 2rem;
+    --title-spacing-horizontal: 10%;
+    --title-spacing-bottom: 15%;
+  }
+
   .scroll-container {
     position: relative;
     width: 100%;
@@ -108,13 +116,13 @@ const last = works.length > 0 ? works[works.length - 1] : null;
 
   .title-container {
     position: absolute;
-    bottom: 15%;
+    bottom: var(--title-spacing-bottom);
     left: 0;
     width: 100%;
-    padding: 0 10%;
+    padding: 0 var(--title-spacing-horizontal);
     z-index: 5;
     pointer-events: none;
-    box-sizing: border-box; /* Include padding in width calculation */
+    box-sizing: border-box;
   }
 
   .title {
@@ -138,12 +146,23 @@ const last = works.length > 0 ? works[works.length - 1] : null;
   }
 
   @media (max-width: 768px) {
+    :root {
+      --title-spacing-horizontal: 5%;
+      --title-spacing-bottom: 10%;
+    }
+    
     .title {
       font-size: 2rem;
     }
+  }
+
+  @media (max-width: 480px) {
+    :root {
+      --title-spacing-horizontal: 1.5rem;
+    }
     
-    .title-container {
-      padding: 0 5%; /* Reduce padding on mobile */
+    .title {
+      font-size: 1.75rem;
     }
   }
 
