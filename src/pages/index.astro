@@ -44,10 +44,10 @@ const cosmetics = await getEntry('work', 'cosmetics')!;
 
 <BaseLayout background="black">
   <FullScreenScrollTransition
-    images={[
-      { src: w2020.data.thumbnail, alt: w2020.data.title },
-      { src: dragonrain.data.thumbnail, alt: dragonrain.data.title },
-      { src: overbillions.data.thumbnail, alt: overbillions.data.title }
+    works={[
+      { title: w2020.data.title, image: w2020.data.thumbnail, alt: w2020.data.title },
+      { title: dragonrain.data.title, image: dragonrain.data.thumbnail, alt: dragonrain.data.title },
+      { title: overbillions.data.title, image: overbillions.data.thumbnail, alt: overbillions.data.title }
     ]}
   />
 
