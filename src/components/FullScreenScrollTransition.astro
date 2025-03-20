@@ -17,9 +17,9 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
 ---
 
 <div class="scroll-container">
-  {/* Fixed transition container for all images except the last one */}
+  {/* Fixed transition container for all images */}
   <div class="transition-container">
-    {transitionImages.map((image, index) => (
+    {images.map((image, index) => (
       <div class="image-layer" data-index={index}>
         <Picture 
           src={image.src} 
@@ -104,6 +104,10 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
   const transitionContainer = document.querySelector('.transition-container') as HTMLElement;
   const transitionImages = document.querySelectorAll('.image-layer') as NodeListOf<HTMLElement>;
   const totalTransitionImages = transitionImages.length;
+  const lastNormalImage = document.querySelector('.last-image') as HTMLElement;
+  
+  // Index of the last image in the transition container
+  const lastImageIndex = totalTransitionImages - 1;
   
   // Constants for controlling the scroll behavior
   const STATIC_PHASE = 0.7; // 70% of scroll distance is static (opacity = 1)
@@ -112,10 +116,11 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
   // Calculate section heights
   const sectionHeight = window.innerHeight; // Each image section is full viewport height
   
-  // Set the total height for scrolling
+  // Set the total height for scrolling - we need one less viewport height
+  // since the last image is both in the transition and normal flow
   const spacer = document.querySelector('.transition-spacer') as HTMLElement;
   if (spacer) {
-    spacer.style.setProperty('--transition-sections', String(totalTransitionImages));
+    spacer.style.setProperty('--transition-sections', String(totalTransitionImages - 1));
   }
   
   function updateScroll() {
@@ -138,19 +143,44 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
       ? (sectionProgress - STATIC_PHASE) / TRANSITION_PHASE 
       : 0;
     
-    // Calculate when we've passed all transition images
-    const pastAllTransitionsPoint = sectionHeight * totalTransitionImages;
+    // Calculate when the transition to the last image is complete
+    const secondToLastImageIndex = totalTransitionImages - 2;
+    const lastImageTransitionStart = sectionHeight * secondToLastImageIndex + (STATIC_PHASE * sectionHeight);
+    const lastImageTransitionEnd = lastImageTransitionStart + (TRANSITION_PHASE * sectionHeight);
     
-    // Handle fixed container visibility
-    if (scrollTop >= pastAllTransitionsPoint) {
-      // Hide the transition container when we reach the normal flow last image
+    // Check if we're showing the last image and it's fully visible
+    const isLastImageFullyVisible = currentSection === lastImageIndex && !inTransitionPhase;
+    
+    // Check if we've passed the point where the last image is fully transitioned in
+    const pastLastImageTransition = scrollTop >= lastImageTransitionEnd;
+    
+    // Handle transition container visibility
+    if (pastLastImageTransition) {
+      // Once the last image is fully visible, hide the transition container
+      // This should be unnoticeable as the normal flow image is now visible
       transitionContainer.style.opacity = '0';
       transitionContainer.style.visibility = 'hidden';
       transitionContainer.style.pointerEvents = 'none';
+      
+      // Make sure normal flow image is fully visible
+      if (lastNormalImage) {
+        lastNormalImage.style.opacity = '1';
+      }
     } else {
+      // Normal transition behavior
       transitionContainer.style.opacity = '1';
       transitionContainer.style.visibility = 'visible';
       transitionContainer.style.pointerEvents = 'auto';
+      
+      // Show the normal flow last image during the last transition
+      if (lastNormalImage) {
+        if (currentSection === secondToLastImageIndex && inTransitionPhase) {
+          // Fade in the normal image as we transition to the last image
+          lastNormalImage.style.opacity = String(transitionProgress);
+        } else {
+          lastNormalImage.style.opacity = '0';
+        }
+      }
     }
     
     // Update image opacities in the transition container
@@ -175,10 +205,7 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
 
   // Set up event listeners
   window.addEventListener('scroll', updateScroll);
-  window.addEventListener('resize', () => {
-    // Recalculate dimensions on resize
-    updateScroll();
-  });
+  window.addEventListener('resize', updateScroll);
   
   // Initial update
   updateScroll();
