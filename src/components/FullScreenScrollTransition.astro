@@ -10,17 +10,20 @@ type Props = {
 };
 
 const { images } = Astro.props;
-
-// Separate the last image from the transition images
-const transitionImages = images.slice(0, -1);
 const lastImage = images.length > 0 ? images[images.length - 1] : null;
 ---
 
-<div class="scroll-container">
+<div class="scroll-container" aria-roledescription="carousel" aria-label="Image gallery">
   {/* Fixed transition container for all images */}
   <div class="transition-container">
     {images.map((image, index) => (
-      <div class="image-layer" data-index={index}>
+      <div 
+        class="image-layer" 
+        data-index={index} 
+        aria-hidden={index !== 0 ? "true" : "false"}
+        role="img" 
+        aria-label={image.alt}
+      >
         <Picture 
           src={image.src} 
           alt={image.alt} 
@@ -38,7 +41,7 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
   
   {/* Last image as a normal document flow element */}
   {lastImage && (
-    <div class="last-image">
+    <div class="last-image" aria-hidden="true">
       <Picture 
         src={lastImage.src} 
         alt={lastImage.alt} 
@@ -56,6 +59,7 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
     position: relative;
     width: 100%;
     background: black;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 
   .transition-container {
@@ -65,6 +69,7 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
     width: 100%;
     height: 100vh;
     z-index: 10;
+    will-change: opacity; /* Performance optimization for opacity animations */
   }
 
   .image-layer {
@@ -75,6 +80,8 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
     height: 100%;
     opacity: 0;
     transition: opacity 0.2s ease-out;
+    backface-visibility: hidden; /* Prevents flickering on some browsers */
+    transform: translateZ(0); /* Force GPU acceleration */
   }
 
   .image-layer:first-child {
@@ -86,6 +93,14 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Mobile optimization - shorter height on small devices */
+  @media (max-height: 500px) {
+    .transition-container,
+    .last-image {
+      height: 100%;
+    }
   }
 
   .transition-spacer {
@@ -100,112 +115,227 @@ const lastImage = images.length > 0 ? images[images.length - 1] : null;
 </style>
 
 <script>
-  const container = document.querySelector('.scroll-container') as HTMLElement;
-  const transitionContainer = document.querySelector('.transition-container') as HTMLElement;
+  // Feature detection
+  const supportsPassiveEvents = (() => {
+    let passiveSupported = false;
+    try {
+      const options = {
+        get passive() {
+          passiveSupported = true;
+          return false;
+        }
+      };
+      // @ts-ignore - Test passive event listeners
+      window.addEventListener("test", null, options);
+      // @ts-ignore - Remove test listener
+      window.removeEventListener("test", null, options);
+    } catch (err) {
+      passiveSupported = false;
+    }
+    return passiveSupported;
+  })();
+
+  // Get DOM elements with error handling
+  function getElementSafely<T extends HTMLElement>(selector: string): T | null {
+    try {
+      return document.querySelector(selector) as T | null;
+    } catch (error) {
+      console.error(`Error selecting ${selector}:`, error);
+      return null;
+    }
+  }
+
+  const container = getElementSafely<HTMLElement>('.scroll-container');
+  const transitionContainer = getElementSafely<HTMLElement>('.transition-container');
   const transitionImages = document.querySelectorAll('.image-layer') as NodeListOf<HTMLElement>;
+  const lastNormalImage = getElementSafely<HTMLElement>('.last-image');
   const totalTransitionImages = transitionImages.length;
-  const lastNormalImage = document.querySelector('.last-image') as HTMLElement;
   
-  // Index of the last image in the transition container
-  const lastImageIndex = totalTransitionImages - 1;
+  // Exit early if there are no images to transition
+  if (totalTransitionImages === 0) {
+    if (container) {
+      container.style.height = '100vh';
+    }
+    if (transitionContainer) {
+      transitionContainer.style.display = 'none';
+    }
+  }
   
   // Constants for controlling the scroll behavior
   const STATIC_PHASE = 0.7; // 70% of scroll distance is static (opacity = 1)
   const TRANSITION_PHASE = 0.3; // 30% is transition phase
   
   // Calculate section heights
-  const sectionHeight = window.innerHeight; // Each image section is full viewport height
+  let sectionHeight = window.innerHeight; // Each image section is full viewport height
   
-  // Set the total height for scrolling - we need one less viewport height
-  // since the last image is both in the transition and normal flow
-  const spacer = document.querySelector('.transition-spacer') as HTMLElement;
+  // Set the total height for scrolling - we need one less viewport height if we have a separate last image
+  const hasSeparateLastImage = lastNormalImage !== null && totalTransitionImages > 1;
+  const effectiveTransitionSections = hasSeparateLastImage 
+    ? totalTransitionImages - 1 
+    : totalTransitionImages;
+  
+  const spacer = getElementSafely<HTMLElement>('.transition-spacer');
   if (spacer) {
-    spacer.style.setProperty('--transition-sections', String(totalTransitionImages - 1));
+    spacer.style.setProperty('--transition-sections', String(effectiveTransitionSections));
   }
+  
+  // Use requestAnimationFrame for smoother scrolling
+  let ticking = false;
+  let isDestroyed = false; // Track if component is destroyed
   
   function updateScroll() {
-    if (!container || !transitionContainer || totalTransitionImages === 0) return;
+    if (isDestroyed || !container || !transitionContainer || totalTransitionImages === 0) return;
     
-    // Guard against negative scroll values (overscroll up)
-    const scrollTop = Math.max(0, window.scrollY);
-    
-    // Calculate which section we're in
-    const currentSection = Math.min(Math.floor(scrollTop / sectionHeight), totalTransitionImages - 1);
-    
-    // Calculate how far we are through the current section (0 to 1)
-    const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
-    
-    // Determine if we should transition to the next image
-    const inTransitionPhase = sectionProgress > STATIC_PHASE;
-    
-    // Calculate the transition progress (0 to 1) if in transition phase
-    const transitionProgress = inTransitionPhase 
-      ? (sectionProgress - STATIC_PHASE) / TRANSITION_PHASE 
-      : 0;
-    
-    // Calculate when the transition to the last image is complete
-    const secondToLastImageIndex = totalTransitionImages - 2;
-    const lastImageTransitionStart = sectionHeight * secondToLastImageIndex + (STATIC_PHASE * sectionHeight);
-    const lastImageTransitionEnd = lastImageTransitionStart + (TRANSITION_PHASE * sectionHeight);
-    
-    // Check if we're showing the last image and it's fully visible
-    const isLastImageFullyVisible = currentSection === lastImageIndex && !inTransitionPhase;
-    
-    // Check if we've passed the point where the last image is fully transitioned in
-    const pastLastImageTransition = scrollTop >= lastImageTransitionEnd;
-    
-    // Handle transition container visibility
-    if (pastLastImageTransition) {
-      // Once the last image is fully visible, hide the transition container
-      // This should be unnoticeable as the normal flow image is now visible
-      transitionContainer.style.opacity = '0';
-      transitionContainer.style.visibility = 'hidden';
-      transitionContainer.style.pointerEvents = 'none';
+    try {
+      // Guard against negative scroll values (overscroll up)
+      const scrollTop = Math.max(0, window.scrollY);
       
-      // Make sure normal flow image is fully visible
-      if (lastNormalImage) {
-        lastNormalImage.style.opacity = '1';
-      }
-    } else {
-      // Normal transition behavior
-      transitionContainer.style.opacity = '1';
-      transitionContainer.style.visibility = 'visible';
-      transitionContainer.style.pointerEvents = 'auto';
+      // Calculate which section we're in
+      const currentSection = Math.min(Math.floor(scrollTop / sectionHeight), totalTransitionImages - 1);
       
-      // Show the normal flow last image during the last transition
-      if (lastNormalImage) {
-        if (currentSection === secondToLastImageIndex && inTransitionPhase) {
-          // Fade in the normal image as we transition to the last image
-          lastNormalImage.style.opacity = String(transitionProgress);
-        } else {
-          lastNormalImage.style.opacity = '0';
+      // Calculate how far we are through the current section (0 to 1)
+      const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
+      
+      // Determine if we should transition to the next image
+      const inTransitionPhase = sectionProgress > STATIC_PHASE;
+      
+      // Calculate the transition progress (0 to 1) if in transition phase
+      const transitionProgress = inTransitionPhase 
+        ? (sectionProgress - STATIC_PHASE) / TRANSITION_PHASE 
+        : 0;
+      
+      // Only calculate these values if we have multiple images
+      let pastLastImageTransition = false;
+      if (totalTransitionImages > 1) {
+        // Calculate when the transition to the last image is complete
+        const secondToLastImageIndex = totalTransitionImages - 2;
+        const lastImageTransitionStart = sectionHeight * secondToLastImageIndex + (STATIC_PHASE * sectionHeight);
+        const lastImageTransitionEnd = lastImageTransitionStart + (TRANSITION_PHASE * sectionHeight);
+        
+        // Check if we've passed the point where the last image is fully transitioned in
+        pastLastImageTransition = scrollTop >= lastImageTransitionEnd;
+        
+        // Handle last image transition if we have a separate normal flow image
+        if (hasSeparateLastImage && lastNormalImage) {
+          if (pastLastImageTransition) {
+            // Once the last image is fully visible, hide the transition container
+            transitionContainer.style.opacity = '0';
+            transitionContainer.style.visibility = 'hidden';
+            transitionContainer.style.pointerEvents = 'none';
+            
+            // Make sure normal flow image is fully visible
+            lastNormalImage.style.opacity = '1';
+          } else {
+            // Normal transition behavior
+            transitionContainer.style.opacity = '1';
+            transitionContainer.style.visibility = 'visible';
+            transitionContainer.style.pointerEvents = 'auto';
+            
+            // Show the normal flow last image during the last transition
+            if (currentSection === secondToLastImageIndex && inTransitionPhase) {
+              // Fade in the normal image as we transition to the last image
+              lastNormalImage.style.opacity = String(transitionProgress);
+            } else {
+              lastNormalImage.style.opacity = '0';
+            }
+          }
         }
+        
+        // Update accessibility attributes for screen readers
+        transitionImages.forEach((img, i) => {
+          img.setAttribute('aria-hidden', i === currentSection ? 'false' : 'true');
+        });
       }
+      
+      // Update image opacities in the transition container
+      // Only update the images that need changing to improve performance
+      transitionImages.forEach((img, i) => {
+        let newOpacity = '0';
+        
+        if (i === currentSection) {
+          // Current image - fade out if in transition phase
+          newOpacity = inTransitionPhase 
+            ? String(1 - transitionProgress) 
+            : '1';
+        } else if (i === currentSection + 1 && inTransitionPhase) {
+          // Next image - fade in if in transition phase
+          newOpacity = String(transitionProgress);
+        }
+        
+        // Only update the DOM if the opacity needs to change
+        if (img.style.opacity !== newOpacity) {
+          img.style.opacity = newOpacity;
+        }
+      });
+    } catch (error) {
+      console.error('Error in scroll transition update:', error);
     }
     
-    // Update image opacities in the transition container
-    transitionImages.forEach((img, i) => {
-      if (i < currentSection) {
-        // Images we've scrolled past
-        img.style.opacity = '0';
-      } else if (i === currentSection) {
-        // Current image - fade out if in transition phase
-        img.style.opacity = inTransitionPhase 
-          ? String(1 - transitionProgress) 
-          : '1';
-      } else if (i === currentSection + 1 && inTransitionPhase) {
-        // Next image - fade in if in transition phase
-        img.style.opacity = String(transitionProgress);
-      } else {
-        // Future images
-        img.style.opacity = '0';
-      }
-    });
+    ticking = false;
   }
 
-  // Set up event listeners
-  window.addEventListener('scroll', updateScroll);
-  window.addEventListener('resize', updateScroll);
+  // Throttle scroll events with requestAnimationFrame
+  function onScroll() {
+    if (!ticking && !isDestroyed) {
+      requestAnimationFrame(updateScroll);
+      ticking = true;
+    }
+  }
+
+  // Debounce function for resize
+  function debounce(func: Function, wait: number) {
+    let timeout: number | null = null;
+    return function(...args: any[]) {
+      const later = () => {
+        timeout = null;
+        func(...args);
+      };
+      if (timeout !== null) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(later, wait) as unknown as number;
+    };
+  }
+
+  // Handle resize properly - recalculate dimensions
+  function onResize() {
+    if (isDestroyed) return;
+    
+    // Update section height
+    sectionHeight = window.innerHeight;
+    // Force recalculation
+    ticking = false;
+    updateScroll();
+  }
+  
+  const debouncedResize = debounce(onResize, 150);
+  
+  // Add touch event listeners for better mobile experience
+  let touchStartY = 0;
+  function onTouchStart(e: TouchEvent) {
+    touchStartY = e.touches[0].clientY;
+  }
+
+  // Set up event listeners with passive option where supported
+  const passiveOption = supportsPassiveEvents ? { passive: true } : false;
+  window.addEventListener('scroll', onScroll, passiveOption);
+  window.addEventListener('resize', debouncedResize);
+  window.addEventListener('touchstart', onTouchStart, passiveOption);
+  
+  // Clean up function to remove event listeners
+  function cleanup() {
+    isDestroyed = true;
+    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', debouncedResize);
+    window.removeEventListener('touchstart', onTouchStart);
+  }
+  
+  // Set up cleanup when page changes - works with most SPA frameworks
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      cleanup();
+    }
+  });
   
   // Initial update
   updateScroll();
