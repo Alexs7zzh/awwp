@@ -3,89 +3,27 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import WorkCollection from "@components/WorkCollection.astro";
 import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
 import AlternatingLayoutGallery from "@components/AlternatingLayoutGallery.astro";
-import { getEntry } from "astro:content";
 
 const categories: Record<string, string[]> = {
   "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
   "Philosophical Depth - Contemplation": ["hollow", "jomon_vortex", "dismantle", "oppenheimer"],
   "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
+  "Opening Section - Visual Impact": ["holiness", "holiness2"],
+  "Sacred & Temporal - Light and Moment": ["relief", "count", "momentmat"],
 }
 
-const w2020 = await getEntry('work', '2020')!;
-const dragonrain = await getEntry('work', 'dragonrain')!;
-const overbillions = await getEntry('work', 'overbillions')!;
-const holiness = await getEntry('work', 'holiness')!;
-const holiness2 = await getEntry('work', 'holiness2')!;
-const relief = await getEntry('work', 'relief')!;
-const count = await getEntry('work', 'count')!;
-const momentmat = await getEntry('work', 'momentmat')!;
-const furnish = await getEntry('work', 'furnish')!;
-const flora = await getEntry('work', 'flora')!;
-const ryoanji = await getEntry('work', 'ryoanji')!;
-const scalar8k = await getEntry('work', 'scalar8k')!;
-const hollow = await getEntry('work', 'hollow')!;
-const jomon_vortex = await getEntry('work', 'jomon_vortex')!;
-const dismantle = await getEntry('work', 'dismantle')!;
-
-const oppenheimer = await getEntry('work', 'oppenheimer')!;
-const proposal = await getEntry('work', 'proposal')!;
-const fina = await getEntry('work', 'fina')!;
-const unda = await getEntry('work', 'unda')!;
-const fabcell = await getEntry('work', 'fabcell')!;
-const keith_all = await getEntry('work', 'keith_all')!;
-const mutek = await getEntry('work', 'mutek')!;
-const vie = await getEntry('work', 'vie')!;
-const cosmetics = await getEntry('work', 'cosmetics')!;
-
+// No need to fetch individual works anymore - they will be fetched in the components
 ---
 
 <BaseLayout background="black">
   <FullScreenScrollTransition
-    works={[
-      { title: w2020.data.title, image: w2020.data.thumbnail, alt: w2020.data.title },
-      { title: dragonrain.data.title, image: dragonrain.data.thumbnail, alt: dragonrain.data.title },
-      { title: overbillions.data.title, image: overbillions.data.thumbnail, alt: overbillions.data.title }
-    ]}
+    workIds={["2020", "dragonrain", "overbillions"]}
   />
 
   <div class="gallery-section">
-    <AlternatingLayoutGallery works={[
-      { 
-        title: holiness.data.title, 
-        image: holiness.data.thumbnail, 
-        alt: holiness.data.title,
-        description: holiness.data.intro,
-        year: holiness.data.year.toString()
-      },
-      { 
-        title: holiness2.data.title, 
-        image: holiness2.data.thumbnail, 
-        alt: holiness2.data.title,
-        description: holiness2.data.intro,
-        year: holiness2.data.year.toString()
-      },
-      { 
-        title: relief.data.title, 
-        image: relief.data.thumbnail, 
-        alt: relief.data.title,
-        description: relief.data.intro,
-        year: relief.data.year.toString()
-      },
-      { 
-        title: count.data.title, 
-        image: count.data.thumbnail, 
-        alt: count.data.title,
-        description: count.data.intro,
-        year: count.data.year.toString()
-      },
-      { 
-        title: momentmat.data.title, 
-        image: momentmat.data.thumbnail, 
-        alt: momentmat.data.title,
-        description: momentmat.data.intro,
-        year: momentmat.data.year.toString()
-      }
-    ]} />
+    <AlternatingLayoutGallery 
+      workIds={["holiness", "holiness2", "relief", "count", "momentmat"]}
+    />
   </div>
 
   {Object.entries(categories).map(([category, workIds]) => (

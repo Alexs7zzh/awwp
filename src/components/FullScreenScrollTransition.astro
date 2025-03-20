@@ -1,16 +1,20 @@
 ---
 import { Picture } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import { getEntry } from 'astro:content';
 
 type Props = {
-  works: {
-    title: string;
-    image: ImageMetadata;
-    alt: string;
-  }[];
+  workIds: string[];
 };
 
-const { works } = Astro.props;
+const { workIds } = Astro.props;
+
+// Batch fetch all works
+const workEntries = await Promise.all(
+  workIds.map(id => getEntry('work', id))
+);
+
+// Filter out any undefined entries
+const works = workEntries.filter(entry => entry !== undefined);
 const last = works.length > 0 ? works[works.length - 1] : null;
 ---
 
@@ -22,18 +26,18 @@ const last = works.length > 0 ? works[works.length - 1] : null;
         data-index={index} 
         aria-hidden={index !== 0 ? "true" : "false"}
         role="img" 
-        aria-label={work.alt}
+        aria-label={work.data.title}
       >
         <Picture 
-          src={work.image} 
-          alt={work.alt} 
+          src={work.data.thumbnail} 
+          alt={work.data.title} 
           formats={['avif', 'webp']} 
           widths={[360, 480, 720, 1024, 1920, 2048]} 
           sizes="100vw"
           loading={index === 0 ? "eager" : "lazy"}
         />
         <div class="title-container">
-          <h2 class="title">{work.title}</h2>
+          <h2 class="title">{work.data.title}</h2>
         </div>
       </div>
     ))}
@@ -44,15 +48,15 @@ const last = works.length > 0 ? works[works.length - 1] : null;
   {last && (
     <div class="last-image" aria-hidden="true">
       <Picture 
-        src={last.image} 
-        alt={last.alt} 
+        src={last.data.thumbnail} 
+        alt={last.data.title} 
         formats={['avif', 'webp']} 
         widths={[360, 480, 720, 1024, 1920, 2048]} 
         sizes="100vw"
         loading="lazy"
       />
       <div class="title-container">
-        <h2 class="title">{last.title}</h2>
+        <h2 class="title">{last.data.title}</h2>
       </div>
     </div>
   )}
