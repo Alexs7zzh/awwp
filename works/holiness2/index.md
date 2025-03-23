@@ -1,6 +1,6 @@
 ---
 title: Holiness (AV version)
-thumbnail: holiness2_thumb.jpg
+thumbnail: holiness_2_1.jpg
 year: 2021
 keywords:
   - 3ch Audio Visual Installation

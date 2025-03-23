@@ -2,6 +2,7 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
 import AlternatingLayoutGallery from "@components/AlternatingLayoutGallery.astro";
+import FullScreenImage from "@components/FullScreenImage.astro";
 
 const categories: Record<string, string[]> = {
   "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
@@ -15,18 +16,19 @@ const categories: Record<string, string[]> = {
 ---
 
 <BaseLayout background="black">
-  <FullScreenScrollTransition
-    workIds={["2020", "dragonrain", "overbillions"]}
-  />
+    <FullScreenImage workId="keith_dancers" />
 
-  <div class="gallery-section">
     <AlternatingLayoutGallery workId="holiness" layout="right" />
     <AlternatingLayoutGallery workId="holiness2" layout="left" />
+    
+    <FullScreenImage workId="dragonrain" />
+
     <AlternatingLayoutGallery workId="relief" layout="right" />
     <AlternatingLayoutGallery workId="count" layout="left" />
-    <AlternatingLayoutGallery workId="momentmat" layout="right" />
-  </div>
+    
+    <FullScreenImage workId="scenery" />
 
+    <AlternatingLayoutGallery workId="momentmat" layout="right" />
   <!-- {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))} -->

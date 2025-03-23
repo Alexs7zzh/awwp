@@ -18,7 +18,7 @@ const { title, background } = Astro.props;
     <title>{title ?? "Default Title"}</title>
     <slot name="head" />
   </head>
-  <body style=`background-color:${background ?? 'white'}`>
+  <body>
     <Header />
     <slot />
   </body>
@@ -44,5 +44,15 @@ const { title, background } = Astro.props;
     --font-sans: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
     --font-serif: "Iowan Old Style", 游明朝, YuMincho, "Hiragino Mincho ProN", Meiryo, serif;
     font-family: var(--font-serif);
+  }
+
+  a {
+    color: inherit; /* Inherit color from parent */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth transition for color changes */
+  }
+
+  a:hover {
+    text-decoration: underline; /* Underline on hover for better visibility */
   }
 </style>

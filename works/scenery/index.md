@@ -1,6 +1,6 @@
 ---
 title: scenery
-thumbnail: scenery_thumb.jpg
+thumbnail: scenery_kiyoharu_03.jpg
 year: 2018
 keywords:
   - Installation

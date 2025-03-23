@@ -1,6 +1,6 @@
 ---
 title: Dancers (For Alan and Keith)
-thumbnail: keith_dancers.jpg
+thumbnail: dancers_1.jpg
 year: 2021
 keywords:
   - 5ch Realtime Software

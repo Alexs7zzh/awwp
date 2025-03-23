@@ -1,0 +1,97 @@
+---
+import { Picture } from 'astro:assets';
+import { getEntry } from 'astro:content';
+
+type Props = {
+  workId: string;
+};
+
+const { workId } = Astro.props;
+
+const work = await getEntry('work', workId);
+if (!work) {
+  throw new Error(`Work with ID ${workId} not found`);
+}
+---
+
+<div class="image-container">
+  <Picture 
+    src={work.data.thumbnail} 
+    alt={work.data.title} 
+    formats={['avif', 'webp']} 
+    widths={[360, 480, 720, 1024, 1920, 2048]} 
+    sizes="100vw"
+    loading="lazy"
+  />
+  <div class="title-container">
+    <h2 class="title">{work.data.title}</h2>
+  </div>
+</div>
+
+
+<style>
+  :root {
+    --title-spacing-horizontal: 10%;
+    --title-spacing-bottom: 15%;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-size: 0; /* Removes whitespace between inline elements */
+    line-height: 0;
+    vertical-align: bottom;
+  }
+
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Removes the default inline spacing */
+  }
+
+  .title-container {
+    position: absolute;
+    bottom: var(--title-spacing-bottom);
+    left: 0;
+    width: 100%;
+    padding: 0 var(--title-spacing-horizontal);
+    z-index: 5;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+
+  .title {
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --title-spacing-horizontal: 5%;
+      --title-spacing-bottom: 10%;
+    }
+    
+    .title {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    :root {
+      --title-spacing-horizontal: 1.5rem;
+    }
+    
+    .title {
+      font-size: 1.75rem;
+    }
+  }
+</style>
