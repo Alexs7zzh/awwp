@@ -100,6 +100,8 @@ if (!work) {
     padding: var(--spacing-lg);
     box-sizing: border-box;
     width: 100%;
+    position: relative;
+    z-index: 1;
   }
 
   .artwork-title {
@@ -122,11 +124,13 @@ if (!work) {
 
   .action-button {
     margin-top: var(--spacing-lg);
+    position: relative;
+    z-index: 2;
   }
 
   .more-link {
     display: inline-block;
-    border: 1px solid black;
+    border: 1px solid currentColor;
     padding: 0.8rem 1.5rem;
     text-decoration: none;
     font-weight: 500;

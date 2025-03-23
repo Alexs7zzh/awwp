@@ -36,9 +36,11 @@
   nav a {
     text-decoration: none;
     color: white;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    mix-blend-mode: difference;
     transition: opacity 0.2s;
     font-family: var(--font-sans);
+    position: relative;
+    z-index: 2;
   }
 
   nav a:hover {
