@@ -4,9 +4,10 @@ import { getEntry } from 'astro:content';
 
 type Props = {
   workId: string;
+  priorityLoad?: boolean;
 };
 
-const { workId } = Astro.props;
+const { workId, priorityLoad = false } = Astro.props;
 
 const work = await getEntry('work', workId);
 if (!work) {
@@ -14,17 +15,18 @@ if (!work) {
 }
 ---
 
-<div class="image-container">
+<div class="image-container" aria-labelledby={`title-${workId}`}>
   <Picture 
     src={work.data.thumbnail} 
     alt={work.data.title} 
     formats={['avif', 'webp']} 
     widths={[360, 480, 720, 1024, 1920, 2048]} 
     sizes="100vw"
-    loading="lazy"
+    loading={priorityLoad ? "eager" : "lazy"}
+    fetchpriority={priorityLoad ? "high" : "auto"}
   />
   <div class="title-container">
-    <h2 class="title">{work.data.title}</h2>
+    <h2 id={`title-${workId}`} class="title">{work.data.title}</h2>
   </div>
 </div>
 
@@ -33,14 +35,16 @@ if (!work) {
   :root {
     --title-spacing-horizontal: 10%;
     --title-spacing-bottom: 15%;
+    --image-height: 100vh;
+    --image-margin-bottom: 4rem;
   }
 
   .image-container {
     width: 100%;
-    height: 100vh;
+    height: var(--image-height);
     position: relative;
     display: block;
-    margin-bottom: 4rem;
+    margin-bottom: var(--image-margin-bottom);
     padding: 0;
     font-size: 0; /* Removes whitespace between inline elements */
     line-height: 0;
@@ -79,6 +83,7 @@ if (!work) {
     :root {
       --title-spacing-horizontal: 5%;
       --title-spacing-bottom: 10%;
+      --image-height: 80vh;
     }
     
     .title {
@@ -89,6 +94,7 @@ if (!work) {
   @media (max-width: 480px) {
     :root {
       --title-spacing-horizontal: 1.5rem;
+      --image-height: 60vh;
     }
     
     .title {
