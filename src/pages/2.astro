@@ -1,34 +1,23 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
-import AlternatingLayoutGallery from "@components/AlternatingLayoutGallery.astro";
+import ImageWithText from "@components/ImageWithText.astro";
 import FullScreenImage from "@components/FullScreenImage.astro";
-
-const categories: Record<string, string[]> = {
-  "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
-  "Philosophical Depth - Contemplation": ["hollow", "jomon_vortex", "dismantle", "oppenheimer"],
-  "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
-  "Opening Section - Visual Impact": ["holiness", "holiness2"],
-  "Sacred & Temporal - Light and Moment": ["relief", "count", "momentmat"],
-}
-
-// No need to fetch individual works anymore - they will be fetched in the components
 ---
 
 <BaseLayout background="black">
     <FullScreenImage workId="keith_dancers" />
 
-    <AlternatingLayoutGallery workId="holiness" layout="right" />
-    <AlternatingLayoutGallery workId="holiness2" layout="left" />
+    <ImageWithText workId="holiness" layout="right" />
+    <ImageWithText workId="holiness2" layout="left" />
     
     <FullScreenImage workId="dragonrain" />
 
-    <AlternatingLayoutGallery workId="relief" layout="right" />
-    <AlternatingLayoutGallery workId="count" layout="left" />
-    
+    <ImageWithText workId="relief" layout="right" />
+    <ImageWithText workId="count" layout="left" />
+
     <FullScreenImage workId="scenery" />
 
-    <AlternatingLayoutGallery workId="momentmat" layout="right" />
+    <ImageWithText workId="momentmat" layout="right" />
   <!-- {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))} -->
