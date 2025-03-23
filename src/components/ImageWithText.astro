@@ -16,31 +16,29 @@ if (!work) {
 }
 ---
 
-<div class="alternating-gallery">
-  <section class={`gallery-item image-${layout}`}>
-    <div class="image-container">
-      <Picture 
-        src={work.data.thumbnail} 
-        alt={work.data.title}
-        formats={['avif', 'webp']} 
-        widths={[480, 800, 1200, 1600]} 
-        sizes="(max-width: 768px) 100vw, 50vw"
-        class="artwork-image"
-        loading="eager"
-      />
-    </div>
-    <div class="content-container">
-      <div class="content-wrapper">
-        <h2 class="artwork-title">{work.data.title}</h2>
-        {work.data.year && <p class="artwork-year">{work.data.year.toString()}</p>}
-        {work.data.intro && <div class="artwork-description">{work.data.intro}</div>}
-        <div class="action-button">
-          <a href={`/works/${work.id}`} class="more-link">詳細情報</a>
-        </div>
+<section class={`gallery-item image-${layout}`}>
+  <div class="image-container">
+    <Picture 
+      src={work.data.thumbnail} 
+      alt={work.data.title}
+      formats={['avif', 'webp']} 
+      widths={[480, 800, 1200, 1600]} 
+      sizes="(max-width: 768px) 100vw, 50vw"
+      class="artwork-image"
+      loading="eager"
+    />
+  </div>
+  <div class="content-container">
+    <div class="content-wrapper">
+      <h2 class="artwork-title">{work.data.title}</h2>
+      {work.data.year && <p class="artwork-year">{work.data.year.toString()}</p>}
+      {work.data.intro && <div class="artwork-description">{work.data.intro}</div>}
+      <div class="action-button">
+        <a href={`/works/${work.id}`} class="more-link">詳細情報</a>
       </div>
     </div>
-  </section>
-</div>
+  </div>
+</section>
 
 <style>
   /* Add CSS variables for consistent spacing */
@@ -50,19 +48,16 @@ if (!work) {
     --spacing-xl: 3rem;
   }
 
-  .alternating-gallery {
-    width: 100%;
-    max-width: 100vw;
-    overflow-x: hidden;
-    overflow-y: visible;
-  }
-
   .gallery-item {
     display: flex;
     min-height: 80vh;
     position: relative;
     flex-direction: row;
     box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .image-right {
@@ -152,11 +147,13 @@ if (!work) {
     .gallery-item, .image-right {
       flex-direction: column;
       min-height: auto;
+      margin-top: 4rem;
+      margin-bottom: 4rem;
     }
 
     .image-container {
       width: 100%;
-      height: 60vh;
+      height: 100%;
     }
 
     .content-container {
@@ -167,10 +164,6 @@ if (!work) {
   @media (max-width: 480px) {
     .artwork-title {
       font-size: 1.8rem;
-    }
-    
-    .image-container {
-      height: 50vh;
     }
     
     .content-wrapper {
