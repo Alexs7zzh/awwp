@@ -9,22 +9,20 @@ const works = await getCollection("work", (entry) => {
 ---
 
 <BaseLayout>
-  <div class="works-container">
-    <h1>Works</h1>
-    <ul>
-      {works.map(work => (
-        <WorkListItem work={work} />
-      ))}
-    </ul>
-  </div>
+  <h1>Works</h1>
+  <ul>
+    {works.map(work => (
+      <WorkListItem work={work} />
+    ))}
+  </ul>
 </BaseLayout>
 
 <style>
-  .works-container {
+  /* .works-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 0;
-  }
+  } */
 
   h1 {
     padding: 0 2rem;
