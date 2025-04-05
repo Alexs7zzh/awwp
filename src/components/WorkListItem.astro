@@ -58,7 +58,7 @@ const titleId = `work-title-${work.id}`;
   li {
     list-style: none;
     width: 100%;
-    border-bottom: 1px solid #a1a1a1;
+    
   }
 
   li:last-child {
@@ -153,6 +153,10 @@ const titleId = `work-title-${work.id}`;
 
   /* Medium screens (>= 701px) - Two-column layout */
   @media (min-width: 701px) {
+    li {
+      border-bottom: 1px solid #a1a1a1;
+    }
+    
     a {
       padding: var(--item-padding-y-desktop) var(--item-padding-x-desktop);
     }
