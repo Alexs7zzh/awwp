@@ -4,16 +4,18 @@ import { Picture } from 'astro:assets';
 
 interface Props {
   work: CollectionEntry<'work'>;
+  priorityLoad?: boolean;
 }
 
-const { work } = Astro.props;
+const { work, priorityLoad = false } = Astro.props;
+const titleId = `work-title-${work.id}`;
 ---
 
 <li>
-  <a href={`/${work.id}`}>
+  <a href={`/${work.id}`} aria-labelledby={titleId}>
     <div class="work-info">
       <div class="title-year-column">
-        <h3>{work.data.title}</h3>
+        <h3 id={titleId}>{work.data.title}</h3>
         <p class="year">{work.data.year}</p>
       </div>
       <div class="intro-keywords-column">
@@ -22,13 +24,15 @@ const { work } = Astro.props;
       </div>
       <div class="image-list-column">
         <div class="image-list-container">
-          {work.data.imgs.map(image => (
+          {work.data.imgs.map((image, index) => (
             <Picture 
               src={image.url} 
-              alt={image.label} 
+              alt={image.label ?? `Image ${index + 1} for ${work.data.title}`}
               formats={['avif', 'webp']}
-              widths={[360, 480, 720]}
+              widths={[200, 400]} 
               class="list-image"
+              loading={priorityLoad ? "eager" : "lazy"}
+              fetchpriority={priorityLoad ? "high" : "auto"}
             />
           ))}
         </div>
@@ -38,6 +42,19 @@ const { work } = Astro.props;
 </li>
 
 <style>
+  :root {
+    --item-padding-y-mobile: 3rem;
+    --item-padding-x-mobile: 1rem;
+    --item-padding-y-desktop: 3rem;
+    --item-padding-x-desktop: 2rem;
+    --grid-gap-mobile: 1rem;
+    --grid-gap-medium: 1.5rem;
+    --grid-gap-large: 3rem;
+    --image-max-height-mobile: 200px;
+    --image-max-height-desktop: 100px;
+    --image-gap: 0.5rem;
+  }
+
   li {
     list-style: none;
     width: 100%;
@@ -52,30 +69,28 @@ const { work } = Astro.props;
     text-decoration: none;
     color: inherit;
     display: block;
+    padding: var(--item-padding-y-mobile) var(--item-padding-x-mobile);
     transition: background-color 0.2s;
-    padding: 3rem 1rem;
   }
   
   /* Base styles (Mobile-first: smallest screens < 701px) */
   .work-info {
     display: grid;
-    grid-template-columns: 1fr; /* Single column */
+    grid-template-columns: 1fr;
     align-items: start;
-    gap: 1rem;
+    gap: var(--grid-gap-mobile);
     width: 100%;
   }
 
   /* Reorder columns visually for mobile */
   .image-list-column {
-    order: 1;
+    order: 1; 
     min-width: 0; /* Prevent content from expanding the column */
-    padding-bottom: 2rem;
+    padding-bottom: 2rem; /* Spacing below images on mobile */
   }
-
   .title-year-column {
     order: 2;
   }
-
   .intro-keywords-column {
     order: 3;
   }
@@ -106,17 +121,17 @@ const { work } = Astro.props;
 
   .image-list-container {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--image-gap);
     overflow-x: auto;
     white-space: nowrap;
-    scrollbar-width: none;
-    width: 100vw; /* Span full viewport width */
-    position: relative; /* Needed for correct positioning with calc */
-    left: 50%; /* Center the start of the container */
-    transform: translateX(-50%); /* Align center to screen center */
-    /* padding-left: 2rem; /* Match parent link padding */
-    /* padding-right: 2rem; /* Match parent link padding */
-    box-sizing: border-box; /* Include padding in width */
+    scrollbar-width: none; /* Firefox */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box; 
+    padding-left: var(--item-padding-x-mobile); /* Match link padding */
+    padding-right: var(--item-padding-x-mobile); /* Match link padding */
   }
 
   .image-list-container::-webkit-scrollbar {
@@ -124,66 +139,69 @@ const { work } = Astro.props;
   }
 
   .list-image {
-    /* display: block; Changed to inline-block */
-    display: inline-block; /* Allow horizontal alignment */
-    max-height: 200px;
+    display: inline-block;
+    max-height: var(--image-max-height-mobile);
     width: auto;
     flex: 0 0 auto;
-    vertical-align: middle; /* Align images nicely */
+    vertical-align: middle;
   }
 
   /* Medium screens (>= 701px) - Two-column layout */
   @media (min-width: 701px) {
     a {
-      padding: 3rem 2rem;
+      padding: var(--item-padding-y-desktop) var(--item-padding-x-desktop);
     }
 
     .work-info {
       grid-template-columns: auto 50%;
       grid-template-rows: auto 1fr;
-      gap: 1.5rem;
+      gap: var(--grid-gap-medium);
     }
 
-    /* Reset order for larger screens */
-    .title-year-column {
-      grid-column: 1 / 2;
-      grid-row: 1 / 2;
+    /* Reset order and mobile spacing */
+    .image-list-column {
       order: initial; 
+      min-width: initial;
+      padding-bottom: 0;
     }
-
+    .title-year-column {
+      order: initial;
+    }
     .intro-keywords-column {
-      grid-column: 1 / 2;
-      grid-row: 2 / 3;
       order: initial;
     }
 
+    /* Set grid placements */
+    .title-year-column {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+    }
+    .intro-keywords-column {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+    }
     .image-list-column {
       grid-column: 2 / 3;
       grid-row: 1 / 3;
       align-self: start;
-      order: initial;
-      min-width: initial; /* Reset min-width */
-      padding-bottom: 0;
     }
     
     .image-list-container {
-      /* Reset full-width styles */
+      /* Reset full-width styles & scrolling */
       width: auto;
       position: static;
       left: auto;
       transform: none;
       padding-left: 0;
       padding-right: 0;
-      
-      /* Restore non-mobile styles */
       overflow-x: visible;
       white-space: normal;
       flex-wrap: wrap;
     }
     
     .list-image {
-      display: block; /* Revert to block display */
-      max-height: 100px;
+      display: block;
+      max-height: var(--image-max-height-desktop);
     }
   }
 
@@ -192,7 +210,7 @@ const { work } = Astro.props;
     .work-info {
       grid-template-columns: 20% 30% auto;
       grid-template-rows: auto;
-      gap: 3rem;
+      gap: var(--grid-gap-large);
     }
     
     /* Reset grid placements for 3 columns */
