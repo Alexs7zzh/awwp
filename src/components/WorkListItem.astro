@@ -23,7 +23,7 @@ const titleId = `work-title-${work.id}`;
         <p class="keywords">{work.data.keywords.join(', ')}</p>
       </div>
       <div class="image-list-column">
-        <div class="image-list-container">
+        <div class=`image-list-container ${work.data.imgs.length == 1 ? 'single' : ''}`>
           {work.data.imgs.map((image, index) => (
             <Picture 
               src={image.url} 
@@ -129,9 +129,7 @@ const titleId = `work-title-${work.id}`;
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    box-sizing: border-box; 
-    padding-left: var(--item-padding-x-mobile); /* Match link padding */
-    padding-right: var(--item-padding-x-mobile); /* Match link padding */
+    box-sizing: border-box;
   }
 
   .image-list-container::-webkit-scrollbar {
@@ -144,6 +142,12 @@ const titleId = `work-title-${work.id}`;
     width: auto;
     flex: 0 0 auto;
     vertical-align: middle;
+  }
+
+  .single .list-image {
+    width: 100vw;
+    height: auto;
+    max-height: unset;
   }
 
   /* Medium screens (>= 701px) - Two-column layout */
