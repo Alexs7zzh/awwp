@@ -1,12 +1,5 @@
 ---
 import Header from "@components/Header.astro";
-
-interface Props {
-  title?: string;
-  background?: 'black' | 'white';
-}
-
-const { title, background } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,11 +11,10 @@ const { title, background } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
     <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
-    <title>{title ?? "Default Title"}</title>
+    <title>Akira Wakita</title>
     <slot name="head" />
   </head>
   <body>
-    <Header />
     <slot />
   </body>
 </html>

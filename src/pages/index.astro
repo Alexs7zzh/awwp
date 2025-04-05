@@ -1,30 +1,25 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import FullScreenScrollTransition from "@components/FullScreenScrollTransition.astro";
 import ImageWithText from "@components/ImageWithText.astro";
-
-const categories: Record<string, string[]> = {
-  "Scientific Beauty - Hidden Patterns": ["furnish", "flora", "ryoanji", "scalar8k"],
-  "Philosophical Depth - Contemplation": ["hollow", "jomon_vortex", "dismantle", "oppenheimer"],
-  "Human-Technology Interface - Interaction": ["proposal", "fina", "unda", "fabcell"],
-  "Opening Section - Visual Impact": ["holiness", "holiness2"],
-  "Sacred & Temporal - Light and Moment": ["relief", "count", "momentmat"],
-}
+import FullScreenImage from "@components/FullScreenImage.astro";
+import Header from "@components/Header.astro";
 ---
 
 <BaseLayout background="black">
-  <FullScreenScrollTransition
-    workIds={["2020", "dragonrain", "overbillions"]}
-  />
+  <Header color="black" />
+  <FullScreenImage workId="keith_dancers" priorityLoad />
 
-  <div class="gallery-section">
-    <ImageWithText workId="holiness" layout="right" />
+    <ImageWithText workId="holiness" layout="right" priorityLoad />
     <ImageWithText workId="holiness2" layout="left" />
+    
+    <FullScreenImage workId="dragonrain" />
+
     <ImageWithText workId="relief" layout="right" />
     <ImageWithText workId="count" layout="left" />
-    <ImageWithText workId="momentmat" layout="right" />
-  </div>
 
+    <FullScreenImage workId="scenery" />
+
+    <ImageWithText workId="momentmat" layout="right" />
   <!-- {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))} -->
