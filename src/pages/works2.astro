@@ -60,7 +60,7 @@ const works = await getCollection("work", (entry) => {
   .work-grid {
     margin: 0 auto;
     margin-bottom: 10rem;
-    padding: 0 2rem;
+    padding: 0 1rem;
     max-width: 1600px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -111,5 +111,11 @@ const works = await getCollection("work", (entry) => {
     font-size: 0.85rem;
     color: #666;
     margin: 0;
+  }
+
+  @media (min-width: 767px) {
+    .work-grid {
+      padding: 0 2rem;
+    }
   }
 </style>
