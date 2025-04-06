@@ -47,7 +47,7 @@ const titleId = `work-title-${work.id}`;
     --item-padding-x-mobile: 1rem;
     --item-padding-y-desktop: 3rem;
     --item-padding-x-desktop: 2rem;
-    --grid-gap-mobile: 1rem;
+    --grid-gap-mobile: .5rem;
     --grid-gap-medium: 1.5rem;
     --grid-gap-large: 3rem;
     --image-max-height-mobile: 200px;
@@ -85,18 +85,20 @@ const titleId = `work-title-${work.id}`;
   .image-list-column {
     order: 1; 
     min-width: 0; /* Prevent content from expanding the column */
-    padding-bottom: 1rem; /* Spacing below images on mobile */
+    padding-bottom: 0rem; /* Spacing below images on mobile */
   }
   .title-year-column {
     order: 2;
   }
   .intro-keywords-column {
+    margin-top: 1rem;
     order: 3;
   }
 
   h3 {
     margin: 0 0 0.25rem 0;
-    font-weight: bold;
+    font-weight: normal;
+    font-size: 1rem;
     color: #000;
   }
 
@@ -177,6 +179,7 @@ const titleId = `work-title-${work.id}`;
       order: initial;
     }
     .intro-keywords-column {
+      margin-top: 0;
       order: initial;
     }
 
@@ -196,7 +199,6 @@ const titleId = `work-title-${work.id}`;
     }
     
     .image-list-container {
-      /* Reset full-width styles & scrolling */
       width: auto;
       position: static;
       left: auto;
@@ -222,7 +224,6 @@ const titleId = `work-title-${work.id}`;
       gap: var(--grid-gap-large);
     }
     
-    /* Reset grid placements for 3 columns */
     .title-year-column {
         grid-column: 1 / 2;
         grid-row: 1 / 2;
