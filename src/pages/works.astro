@@ -10,15 +10,12 @@ const works = await getCollection("work", (entry) => {
 ---
 
 <BaseLayout>
-  <div class="header">
-    <h1>Akira Wakita</h1>
-    <Header color="black" />
-  </div>
+  <Header color="black" />
 
   <ul class="work-grid">
     {works.map((work, index) => (
       <li class="grid-item">
-        <a href={`/${work.id}`} aria-labelledby={`work-title-${work.id}`}>
+        <a href={`/works/${work.id}`} aria-labelledby={`work-title-${work.id}`}>
           <div class="image-wrapper">
             <Picture
               src={work.data.thumbnail}
@@ -58,8 +55,7 @@ const works = await getCollection("work", (entry) => {
   }
 
   .work-grid {
-    margin: 0 auto;
-    margin-bottom: 10rem;
+    margin: 10rem auto;
     padding: 0 1rem;
     max-width: 1600px;
     display: grid;

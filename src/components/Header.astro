@@ -1,50 +1,116 @@
 ---
-interface Props {
-  color?: 'black' | 'white';
+import { getEntry } from "astro:content";
+
+// No props needed anymore
+// interface Props {
+//   color?: 'black' | 'white';
+// }
+// const { color = 'black' } = Astro.props;
+
+const pathname = Astro.url.pathname;
+let activeSection = 'home'; // Default to home
+let workTitle = '';
+
+const worksRegex = /^\/works\/?$/;
+const aboutRegex = /^\/about\/?$/;
+const workDetailRegex = /^\/works\/([^\/]+)\/?$/;
+
+if (worksRegex.test(pathname)) {
+  activeSection = 'works';
+} else if (aboutRegex.test(pathname)) {
+  activeSection = 'about';
+} else {
+  const match = pathname.match(workDetailRegex);
+  if (match && match[1]) {
+    const workId = match[1];
+    try {
+      const work = await getEntry('work', workId);
+      // Assuming the work entry has a 'title' in its data
+      if (work && work.data.title) {
+        workTitle = work.data.title;
+        activeSection = 'workDetail';
+      } else {
+        // Handle case where work entry or title is not found,
+        // default to 'home' or another appropriate state
+        console.warn(`Work entry or title not found for ID: ${workId}`);
+        activeSection = 'home'; // Or perhaps 'works'? Decide fallback behavior.
+      }
+    } catch (error) {
+      console.error(`Error fetching work entry for ID: ${workId}`, error);
+      // Fallback if getEntry fails
+      activeSection = 'home'; // Or perhaps 'works'?
+    }
+  } else {
+    // Default to home if root path or other unmatched paths
+    activeSection = 'home';
+  }
 }
 
-const { color = 'black' } = Astro.props;
+const isActive = (section: string) => section === activeSection;
 ---
 
 <header>
   <nav>
-    <ul class={color === 'white' ? 'white' : ''}>
-      <li><a href="/">Akita Wakira</a></li>
-      <!-- <li><a href="/debug">Home(Debug)</a></li> -->
-      <li><a href="/works">Works</a></li>
-      <li><a href="/about">About</a></li>
-    </ul>
+    <a href="/" class:list={[ "link", { active: isActive('home'), inactive: !isActive('home') } ]}>Akita Wakira</a>
+    <span class="separator slash">/</span>
+    <a href="/works" class:list={[ "link", { active: isActive('works'), inactive: !isActive('works') } ]}>Works</a>
+    <span class="separator dot">・</span>
+    <a href="/about" class:list={[ "link", { active: isActive('about'), inactive: !isActive('about') } ]}>About</a>
+    {activeSection === 'workDetail' && workTitle && (
+      <>
+        <span class="separator slash">/</span>
+        <span class:list={[ "link", { active: true, inactive: false } ]}>{workTitle}</span>
+      </>
+    )}
   </nav>
 </header>
 
 <style>
   nav {
     display: flex;
-    justify-content: flex-end;
-    padding: 0 2rem;
+    justify-content: flex-start;
+    align-items: center; /* Align items vertically */
+    padding: 1rem 2rem; /* Adjusted padding */
+    font-size: 1.4rem; /* Base font size */
   }
 
-  nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 2rem;
-  }
-
-  nav a {
-    font-size: 1.4rem;
+  .link {
     text-decoration: none;
-    color: black;
     transition: opacity 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
-  .white nav a {
-    color: white;
-  }
-
-  nav a:hover {
+  .link:hover {
     opacity: 0.7;
+  }
+
+  .active {
+    color: black;
+    /* font-weight: bold; Make active link bold */
+  }
+
+  .inactive {
+    color: grey;
+  }
+
+  /* Style for the work title span when it's active */
+  span.active {
+     color: black;
+     font-weight: bold;
+  }
+
+  .separator {
+    color: grey;
+  }
+
+  .slash {
+    margin: 0 1.2rem;
+    font-weight: 800;
+  }
+
+  .dot {
+    margin: 0 0.4rem;
   }
 </style>
 

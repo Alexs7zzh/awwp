@@ -22,7 +22,8 @@ if (!work) {
   return null;
 }
 
-const desktopStyles = `--offset-x-desktop: ${offsetXDesktop}%;`;
+const clampedOffsetX = Math.min(Math.max(offsetXDesktop, -45), 45);
+const desktopStyles = `--offset-x-desktop: ${clampedOffsetX}%;`;
 ---
 
 {work && (
@@ -51,7 +52,7 @@ const desktopStyles = `--offset-x-desktop: ${offsetXDesktop}%;`;
     margin-left: auto;
     margin-right: auto;
     transform: translateX(0);
-    margin-bottom: 12rem;
+    margin-bottom: 6rem;
     padding: 0 1rem;
     box-sizing: border-box;
   }
@@ -89,6 +90,7 @@ const desktopStyles = `--offset-x-desktop: ${offsetXDesktop}%;`;
       width: 50%;
       transform: translateX(var(--offset-x-desktop));
       padding: 0;
+      margin-bottom: 12rem;
     }
   }
 </style>
