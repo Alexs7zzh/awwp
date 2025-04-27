@@ -51,16 +51,18 @@ const isActive = (section: string) => section === activeSection;
 
 <header>
   <nav>
-    <a href="/" class:list={[ "link", { active: isActive('home'), inactive: !isActive('home') } ]}>Akita Wakira</a>
-    <span class="separator slash">/</span>
-    <a href="/works" class:list={[ "link", { active: isActive('works'), inactive: !isActive('works') } ]}>Works</a>
-    <span class="separator dot">・</span>
-    <a href="/about" class:list={[ "link", { active: isActive('about'), inactive: !isActive('about') } ]}>About</a>
+    <a href="/" class:list={[ "link", "margin-right", { active: isActive('home'), inactive: !isActive('home') } ]}>Akita Wakira</a>
+    <span class="group works-about margin-right">
+      <span class="separator slash">/</span>
+      <a href="/works" class:list={[ "link", { active: isActive('works'), inactive: !isActive('works') } ]}>Works</a>
+      <span class="separator dot">・</span>
+      <a href="/about" class:list={[ "link", { active: isActive('about'), inactive: !isActive('about') } ]}>About</a>
+    </span>
     {activeSection === 'workDetail' && workTitle && (
-      <>
+      <span class="group work-title">
         <span class="separator slash">/</span>
         <span class:list={[ "link", { active: true, inactive: false } ]}>{workTitle}</span>
-      </>
+      </span>
     )}
   </nav>
 </header>
@@ -68,10 +70,11 @@ const isActive = (section: string) => section === activeSection;
 <style>
   nav {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
     justify-content: flex-start;
-    align-items: center; /* Align items vertically */
-    padding: 1rem 2rem; /* Adjusted padding */
-    font-size: 1.4rem; /* Base font size */
+    align-items: center;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
   }
 
   .link {
@@ -87,17 +90,19 @@ const isActive = (section: string) => section === activeSection;
 
   .active {
     color: black;
-    /* font-weight: bold; Make active link bold */
   }
 
   .inactive {
     color: grey;
   }
 
-  /* Style for the work title span when it's active */
   span.active {
      color: black;
      font-weight: bold;
+  }
+
+  .margin-right {
+    margin-right: 1.2rem;
   }
 
   .separator {
@@ -105,12 +110,23 @@ const isActive = (section: string) => section === activeSection;
   }
 
   .slash {
-    margin: 0 1.2rem;
+    margin-right: 1.2rem;
     font-weight: 800;
   }
 
   .dot {
     margin: 0 0.4rem;
+  }
+
+  .group {
+    display: inline-flex; /* Keep group items together */
+    align-items: center;
+  }
+
+  @media (min-width: 600px) { /* Styles for larger screens */
+    nav {
+      font-size: 1.4rem;
+    }
   }
 </style>
 
