@@ -1,0 +1,83 @@
+---
+import { getEntry, type CollectionEntry } from "astro:content";
+import { Picture } from 'astro:assets';
+import FloatingContainer from '@components/FloatingContainer.astro';
+
+interface Props {
+  id: CollectionEntry<'work'>['id'];
+  offsetXDesktop: number;
+  priorityLoad?: boolean;
+  // blockWidthPercentDesktop prop removed as it seemed unused and layout is handled by container
+}
+
+const {
+  id,
+  offsetXDesktop,
+  priorityLoad = false,
+} = Astro.props;
+
+const work = await getEntry('work', id);
+
+// Handle case where entry is not found early
+if (!work) {
+  console.warn(`[Artwork] Work with ID "${id}" not found.`);
+  return null; // Render nothing if artwork doesn't exist
+}
+
+const { title, thumbnail, intro, year } = work.data;
+---
+
+<FloatingContainer {offsetXDesktop}>
+  <article class="artwork-content">
+    <Picture 
+      src={thumbnail} 
+      alt={title}
+      formats={['avif', 'webp']} 
+      widths={[480, 800, 1200, 1600]} 
+      sizes="(max-width: 768px) 100vw, 50vw" // Matched example 50% width of container
+      class="artwork-image"
+      loading={priorityLoad ? "eager" : "lazy"}
+      decoding={priorityLoad ? "sync" : "auto"}
+      fetchpriority={priorityLoad ? "high" : "auto"}
+    />
+    <h2 class="title">{title}</h2>
+    <p class="description">{intro}</p>
+    <p class="year">{year}</p>
+  </article>
+</FloatingContainer>
+
+<style>
+  /* Styles are now scoped to the content *within* the FloatingContainer */
+  .artwork-content {
+    /* Add styles if needed to arrange items inside the article */
+  }
+
+  .artwork-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: .8rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .description {
+    font-family: sans-serif;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .year {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #333;
+    font-family: monospace;
+  }
+  /* Base/layout styles like width, transform, margin-bottom are handled by FloatingContainer */
+</style> 

@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Picture } from 'astro:assets';
-import Header from "@components/Header.astro";
 import { getCollection } from "astro:content";
 
 const works = await getCollection("work", (entry) => {
@@ -10,8 +9,6 @@ const works = await getCollection("work", (entry) => {
 ---
 
 <BaseLayout>
-  <Header color="black" />
-
   <ul class="work-grid">
     {works.map((work, index) => (
       <li class="grid-item">
@@ -39,14 +36,6 @@ const works = await getCollection("work", (entry) => {
 </BaseLayout>
 
 <style>
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem 2rem 2rem;
-    margin-bottom: 10rem;
-  }
-
   h1 {
     padding: 0;
     margin: 0;

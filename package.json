@@ -9,6 +9,7 @@
     "format": "pnpm exec prettier . --write \"!**/*.{jpg,jpeg,png}\""
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.2.5",
     "@astrojs/sitemap": "^3.3.1",
     "@astrojs/ts-plugin": "^1.10.4",
     "astro": "^5.7.5",

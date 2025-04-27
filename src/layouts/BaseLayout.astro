@@ -15,7 +15,11 @@ import Header from "@components/Header.astro";
     <slot name="head" />
   </head>
   <body>
-    <slot />
+    <Header />
+
+    <div style="margin-top: 10rem;">
+      <slot />
+    </div>
   </body>
 </html>
 
