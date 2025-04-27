@@ -1,3 +1,8 @@
+---
+layout: ../layouts/BaseLayout.astro
+title: About
+---
+
 ## 脇田玲 プロフィール
 
 目の前にありながらも知覚できない力を可視化/可聴化/物質化することで、世界の見方を更新する作品をつくっている。主な展示に「龍雨図」(建仁寺 / Zen Night Walk Kyoto, 2024)、「Over Billions of Years」(モエレ沼公園 / 札幌国際芸術祭, 2024)、「アランとキースのために」(中村キース・ヘリング美術館 / Hokuto Art Program ed.1, 2022)、「脇田玲 - Photons」(清春芸術村 光の美術館, 2018)、音楽家小室哲哉との8K映像音響インスタレーション(Ars Electronica Festival, 2016)およびライブ・パフォーマンス(MUTEK/RedBull Music Festival, 2017)、「高橋コレクション『顔と抽象』-清春白樺美術館コレクションとともに」(2018)などがある。慶應義塾大学環境情報学部教授。博士（政策・メディア）。

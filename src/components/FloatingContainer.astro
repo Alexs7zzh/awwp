@@ -1,16 +1,15 @@
 ---
 interface Props {
-  offsetXDesktop: number;
-  // Could add other common layout props here if needed later
+  offset: number;
 }
 
-const { offsetXDesktop } = Astro.props;
+const { offset } = Astro.props;
 
-const clampedOffsetX = Math.min(Math.max(offsetXDesktop, -45), 45);
-const desktopStyles = `--offset-x-desktop: ${clampedOffsetX}%;`;
+const clampedOffsetX = Math.min(Math.max(offset, -45), 45);
+const styles = `--offset-x: ${clampedOffsetX}%;`;
 ---
-<div class="floating-container" style={desktopStyles}>
-  <slot /> {/* Where the specific content (Artwork, Text, Video) goes */}
+<div class="floating-container" style={styles}>
+  <slot />
 </div>
 
 <style>
@@ -20,18 +19,17 @@ const desktopStyles = `--offset-x-desktop: ${clampedOffsetX}%;`;
     margin-left: auto;
     margin-right: auto;
     transform: translateX(0);
-    margin-bottom: 10rem; /* Adjust as needed */
+    margin-bottom: 10rem;
     padding: 0 1rem;
     box-sizing: border-box;
   }
 
   @media (min-width: 769px) {
     .floating-container {
-      /* Consider if different content types need different widths */
       width: 50%; 
-      transform: translateX(var(--offset-x-desktop));
+      transform: translateX(var(--offset-x));
       padding: 0;
-      margin-bottom: 12rem; /* Adjust as needed */
+      margin-bottom: 12rem;
     }
   }
 </style> 

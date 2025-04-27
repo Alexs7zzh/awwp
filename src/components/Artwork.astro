@@ -5,14 +5,14 @@ import FloatingContainer from '@components/FloatingContainer.astro';
 
 interface Props {
   id: CollectionEntry<'work'>['id'];
-  offsetXDesktop: number;
+  offset: number;
   priorityLoad?: boolean;
   // blockWidthPercentDesktop prop removed as it seemed unused and layout is handled by container
 }
 
 const {
   id,
-  offsetXDesktop,
+  offset,
   priorityLoad = false,
 } = Astro.props;
 
@@ -27,7 +27,7 @@ if (!work) {
 const { title, thumbnail, intro, year } = work.data;
 ---
 
-<FloatingContainer {offsetXDesktop}>
+<FloatingContainer {offset}>
   <article class="artwork-content">
     <Picture 
       src={thumbnail} 
