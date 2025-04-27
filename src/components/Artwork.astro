@@ -7,7 +7,6 @@ interface Props {
   id: CollectionEntry<'work'>['id'];
   offset: number;
   priorityLoad?: boolean;
-  // blockWidthPercentDesktop prop removed as it seemed unused and layout is handled by container
 }
 
 const {
@@ -18,10 +17,9 @@ const {
 
 const work = await getEntry('work', id);
 
-// Handle case where entry is not found early
 if (!work) {
   console.warn(`[Artwork] Work with ID "${id}" not found.`);
-  return null; // Render nothing if artwork doesn't exist
+  return null;
 }
 
 const { title, thumbnail, intro, year } = work.data;
@@ -34,7 +32,7 @@ const { title, thumbnail, intro, year } = work.data;
       alt={title}
       formats={['avif', 'webp']} 
       widths={[480, 800, 1200, 1600]} 
-      sizes="(max-width: 768px) 100vw, 50vw" // Matched example 50% width of container
+      sizes="(max-width: 768px) 100vw, 50vw"
       class="artwork-image"
       loading={priorityLoad ? "eager" : "lazy"}
       decoding={priorityLoad ? "sync" : "auto"}
@@ -79,5 +77,4 @@ const { title, thumbnail, intro, year } = work.data;
     color: #333;
     font-family: monospace;
   }
-  /* Base/layout styles like width, transform, margin-bottom are handled by FloatingContainer */
 </style> 
