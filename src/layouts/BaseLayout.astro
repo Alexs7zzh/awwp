@@ -24,6 +24,7 @@ import Header from "@components/Header.astro";
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    min-width: 0;
   }
   
   html {
@@ -33,6 +34,7 @@ import Header from "@components/Header.astro";
 
   body {
     width: 100%;
+    min-height: 100dvh;
     overflow-x: hidden;
     cursor: auto;
     -webkit-overflow-scrolling: touch;
@@ -48,6 +50,27 @@ import Header from "@components/Header.astro";
     font-style: normal;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+  }
+
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+
   a {
     color: inherit; /* Inherit color from parent */
     text-decoration: none; /* Remove underline */
@@ -56,5 +79,11 @@ import Header from "@components/Header.astro";
 
   a:hover {
     text-decoration: underline; /* Underline on hover for better visibility */
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      interpolate-size: allow-keywords;
+    }
   }
 </style>

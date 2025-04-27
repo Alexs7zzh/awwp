@@ -1,25 +1,19 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import ImageWithText from "@components/ImageWithText.astro";
-import FullScreenImage from "@components/FullScreenImage.astro";
+import FloatingBlock from "@components/FloatingBlock.astro";
 import Header from "@components/Header.astro";
 ---
 
 <BaseLayout background="black">
   <Header color="black" />
-  <FullScreenImage workId="keith_dancers" priorityLoad />
-
-    <ImageWithText workId="holiness" layout="right" priorityLoad />
-    <ImageWithText workId="holiness2" layout="left" />
-    
-    <FullScreenImage workId="dragonrain" />
-
-    <ImageWithText workId="relief" layout="right" />
-    <ImageWithText workId="count" layout="left" />
-
-    <FullScreenImage workId="scenery" />
-
-    <ImageWithText workId="momentmat" layout="right" />
+  <FloatingBlock id="keith_dancers" offsetXDesktop={-10} priorityLoad />
+  <FloatingBlock id="holiness" offsetXDesktop={20} />
+  <FloatingBlock id="holiness2" offsetXDesktop={-5} />
+  <FloatingBlock id="dragonrain" offsetXDesktop={15} />
+  <FloatingBlock id="relief" offsetXDesktop={-15} />
+  <FloatingBlock id="count" offsetXDesktop={5} />
+  <FloatingBlock id="scenery" offsetXDesktop={25} />
+  <FloatingBlock id="momentmat" offsetXDesktop={-20} />
   <!-- {Object.entries(categories).map(([category, workIds]) => (
     <WorkCollection title={category} workIds={workIds} />
   ))} -->

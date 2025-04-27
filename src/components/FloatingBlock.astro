@@ -1,0 +1,94 @@
+---
+import { getEntry } from "astro:content";
+import { Picture } from 'astro:assets';
+
+interface Props {
+  id: string;
+  offsetXDesktop: number;
+  priorityLoad?: boolean;
+  blockWidthPercentDesktop?: number;
+}
+
+const {
+  id,
+  offsetXDesktop,
+  priorityLoad = false,
+} = Astro.props;
+
+const work = await getEntry('work', id);
+
+if (!work) {
+  console.warn(`Work with ID "${id}" not found.`);
+  return null;
+}
+
+const desktopStyles = `--offset-x-desktop: ${offsetXDesktop}%;`;
+---
+
+{work && (
+  <article style={desktopStyles}>
+    <Picture 
+      src={work.data.thumbnail} 
+      alt={work.data.title}
+      formats={['avif', 'webp']} 
+      widths={[480, 800, 1200, 1600]} 
+      sizes="(max-width: 768px) 100vw, 60vw"
+      class="list-image"
+      loading={priorityLoad ? "eager" : "lazy"}
+      decoding={priorityLoad ? "sync" : "auto"}
+      fetchpriority={priorityLoad ? "high" : "auto"}
+    />
+    <h2 class="title">{work.data.title}</h2>
+    <p class="description">{work.data.intro}</p>
+    <p class="year">{work.data.year}</p>
+  </article>
+)}
+
+<style>
+  article {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    transform: translateX(0);
+    margin-bottom: 12rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: .8rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .description {
+    font-family: sans-serif;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .year {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #333;
+    font-family: monospace;
+
+  }
+
+  @media (min-width: 769px) {
+    article {
+      width: 50%;
+      transform: translateX(var(--offset-x-desktop));
+      padding: 0;
+    }
+  }
+</style>
