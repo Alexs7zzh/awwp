@@ -38,8 +38,10 @@ const { title, thumbnail, intro, year } = work.data;
       decoding={priorityLoad ? "sync" : "auto"}
       fetchpriority={priorityLoad ? "high" : "auto"}
     />
-    <h2 class="title">{title}</h2>
-    <p class="description">{intro}</p>
+    <a href={`/works/${id}/`} class="artwork-link">
+      <h2 class="title">{title}</h2>
+      <p class="description">{intro}</p>
+    </a>
     <p class="year">{year}</p>
   </article>
 </FloatingContainer>
@@ -48,6 +50,12 @@ const { title, thumbnail, intro, year } = work.data;
   /* Styles are now scoped to the content *within* the FloatingContainer */
   .artwork-content {
     /* Add styles if needed to arrange items inside the article */
+  }
+
+  .artwork-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Or inline-block, depending on desired layout */
   }
 
   .artwork-image {
@@ -61,6 +69,25 @@ const { title, thumbnail, intro, year } = work.data;
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.3rem;
+    display: inline-block; /* Allows text-decoration to have padding */
+    position: relative; /* For pseudo-element */
+    padding-bottom: 2px; /* Space for the underline */
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
+  }
+
+  .artwork-link:hover .title::after {
+    width: 100%;
+  }
+
+  .title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px; /* Underline thickness */
+    background-color: currentColor; /* Use text color for underline */
+    transition: width 0.3s ease-in-out; /* Underline animation */
   }
 
   .description {
