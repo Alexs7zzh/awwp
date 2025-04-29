@@ -1,7 +1,5 @@
 ---
 import { getCollection, render } from "astro:content";
-import BaseLayout from "@layouts/BaseLayout.astro";
-import Header from "@components/Header.astro";
 
 export async function getStaticPaths() {
   const works = await getCollection("work");
@@ -15,9 +13,5 @@ const work = Astro.props;
 const { Content } = await render(work);
 ---
 
-<BaseLayout title={work.data.title}>
-  <Header />
-  
-  <h1>{work.data.title}</h1>
-  <Content />
-</BaseLayout>
+<h1>{work.data.title}</h1>
+<Content />
