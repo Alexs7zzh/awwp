@@ -1,6 +1,7 @@
 ---
 title: XHIASMA
 thumbnail: xhiasma_thumb.jpg
+has_video: true
 year: 2018
 keywords:
   - Dance Performance

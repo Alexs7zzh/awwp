@@ -1,6 +1,7 @@
 ---
 title: Furnished Fluid (2014 - 2016)
 thumbnail: furnish_2.png
+has_video: true
 year: 2014
 keywords:
   - Realtime Visual Installation

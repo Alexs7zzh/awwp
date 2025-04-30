@@ -1,6 +1,7 @@
 ---
 title: Visualization of Air Conditioner
 thumbnail: voac_thumb.png
+has_video: true
 year: 2017
 keywords:
   - Custom Fluid Dynamics Software

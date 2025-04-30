@@ -1,6 +1,7 @@
 ---
 title: Neuro Music - Dive Into Your Brain
 thumbnail: vie_thumb.jpg
+has_video: true
 year: 2023
 keywords:
   - Live Performance

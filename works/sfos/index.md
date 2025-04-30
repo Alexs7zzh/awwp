@@ -1,6 +1,7 @@
 ---
 title: Scalar Field of Shoes
 thumbnail: sfos_thum.png
+has_video: true
 year: 2015
 keywords:
   - 4K Video Installation

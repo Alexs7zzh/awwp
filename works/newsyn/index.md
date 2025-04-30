@@ -1,6 +1,7 @@
 ---
 title: NEW SYNERGETICS - NISSAN LEAF X AKIRA WAKITA
 thumbnail: newsyn_thumb.jpg
+has_video: true
 year: 2017
 keywords:
   - Realtime Visual Audio Installation

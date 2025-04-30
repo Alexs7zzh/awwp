@@ -1,6 +1,7 @@
 ---
 title: Scalar Field of Cosmetics
 thumbnail: cosmetics_thumb.png
+has_video: true
 year: 2018
 keywords:
   - Mixed Media
