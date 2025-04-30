@@ -13,6 +13,7 @@ const work = defineCollection({
     return z.object({
       title: z.string(),
       thumbnail: image(),
+      has_video: z.boolean().optional(),
       year: z.number(),
       keywords: z.array(z.string()),
       background_img: ImageData,
