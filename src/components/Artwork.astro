@@ -7,14 +7,12 @@ import VideoPlayer from '@components/VideoPlayer.astro';
 interface Props {
   id: CollectionEntry<'work'>['id'];
   offset: number;
-  scale?: number;
   priorityLoad?: boolean;
 }
 
 const {
   id,
   offset,
-  scale = 1,
   priorityLoad = false,
 } = Astro.props;
 
@@ -27,20 +25,16 @@ if (!work) {
 
 const { title, thumbnail, intro, year, has_video = false } = work.data;
 const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.mp4`;
-
-const styles = `--artwork-scale: ${scale};`;
 ---
 
 <FloatingContainer {offset}>
-  <article class="artwork-content" style={styles}>
+  <article class="artwork-content">
     {has_video ? (
-      <div class="artwork-video">
-        <VideoPlayer 
-          sources={{ mp4: videoSrcMp4 }}
-          thumbnail={thumbnail}
-          alt={`${title} video`}
-        />
-      </div>
+      <VideoPlayer 
+        sources={{ mp4: videoSrcMp4 }}
+        thumbnail={thumbnail}
+        alt={`${title} video`}
+      />
     ) : (
       <Picture 
         src={thumbnail} 
@@ -54,70 +48,41 @@ const styles = `--artwork-scale: ${scale};`;
         fetchpriority={priorityLoad ? "high" : "auto"}
       />
     )}
-    <div class="text-content">
-      <a href={`/works/${id}/`} class="artwork-link">
-        <h2 class="title">{title}</h2>
-        <p class="description">{intro}</p>
-      </a>
-      <p class="year">{year}</p>
-    </div>
+    <a href={`/works/${id}/`} class="artwork-link">
+      <h2 class="title">{title}</h2>
+      <p class="description">{intro}</p>
+    </a>
+    <p class="year">{year}</p>
   </article>
 </FloatingContainer>
 
 <style>
+  /* Styles are now scoped to the content *within* the FloatingContainer */
   .artwork-content {
-    position: relative;
+    /* Add styles if needed to arrange items inside the article */
   }
 
   .artwork-link {
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: block; /* Or inline-block, depending on desired layout */
   }
 
-  .artwork-image,
-  .artwork-video {
+  .artwork-image {
     display: block;
-    width: 100%; /* Default width for mobile */
+    width: 100%;
     height: auto;
     margin-bottom: .8rem;
-    position: relative;
-    left: 0; /* Default left position for mobile */
-    /* max-width: none; removed as default, let it inherit or be 100% */
-  }
-
-  @media (min-width: 769px) {
-    .artwork-image,
-    .artwork-video {
-      width: calc(100% * var(--artwork-scale, 1));
-      left: calc(50% * (1 - var(--artwork-scale, 1)));
-      max-width: none; /* Apply max-width: none only on desktop */
-    }
-  }
-
-  .artwork-video :global(.video-js) {
-    width: 100%;
-    height: auto;
-  }
-  .artwork-video > :first-child {
-    width: 100%;
-    height: auto;
-  }
-
-  .text-content {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
   }
 
   .title {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.3rem;
-    display: inline-block;
-    position: relative;
-    padding-bottom: 2px;
-    transition: color 0.2s ease-in-out;
+    display: inline-block; /* Allows text-decoration to have padding */
+    position: relative; /* For pseudo-element */
+    padding-bottom: 2px; /* Space for the underline */
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
   }
 
   .artwork-link:hover .title::after {
@@ -130,9 +95,9 @@ const styles = `--artwork-scale: ${scale};`;
     left: 0;
     bottom: 0;
     width: 0;
-    height: 1px;
-    background-color: currentColor;
-    transition: width 0.3s ease-in-out;
+    height: 1px; /* Underline thickness */
+    background-color: currentColor; /* Use text color for underline */
+    transition: width 0.3s ease-in-out; /* Underline animation */
   }
 
   .description {
@@ -140,11 +105,6 @@ const styles = `--artwork-scale: ${scale};`;
     line-height: 1.7;
     color: #333;
     margin-bottom: 0.5rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
   }
 
   .year {
