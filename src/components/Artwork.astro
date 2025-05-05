@@ -71,8 +71,20 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
   .artwork-image {
     display: block;
     width: 100%;
-    height: auto;
+    /* Default mobile styles */
+    height: 75vh; /* 75% of viewport height */
+    object-fit: cover; /* Scale to cover, clip excess */
+    object-position: center; /* Center the content */
     margin-bottom: .8rem;
+    background-color: #f0f0f0; /* Added background for consistency */
+  }
+
+  /* Desktop overrides */
+  @media (min-width: 768px) {
+    .artwork-image {
+      height: auto; /* Revert height */
+      object-fit: contain; /* Show entire image/video */
+    }
   }
 
   .title {

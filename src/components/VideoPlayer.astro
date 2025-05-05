@@ -91,12 +91,34 @@ const videoId = `video-${crypto.randomUUID()}`;
   /* Style the wrapper if needed, otherwise it's just for script targeting */
   .video-wrapper {
     margin-bottom: 0.8rem; /* Move margin from video to wrapper */
+    width: 100%; /* Ensure wrapper takes full width */
+    height: 75vh; /* Match image height for mobile */
+    display: flex; /* Use flex to help center video */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Clip video if needed */
+    background-color: #f0f0f0; /* Consistent background */
   }
   .artwork-video {
     display: block;
     width: 100%;
-    height: auto;
-    /* margin-bottom removed, handled by wrapper */
-    background-color: #f0f0f0;
+    height: 100%; /* Fill the wrapper height */
+    object-fit: cover; /* Scale to cover, clip excess */
+    object-position: center; /* Center the video content */
+  }
+
+  /* Desktop overrides */
+  @media (min-width: 768px) {
+    .video-wrapper {
+      height: auto; /* Revert wrapper height */
+      /* Remove flex properties if they interfere with auto height */
+      display: block;
+      margin-bottom: 0.8rem; /* Restore original margin logic */
+    }
+    .artwork-video {
+      height: auto; /* Revert video height */
+      object-fit: contain; /* Show entire video */
+      /* Background handled by wrapper or video itself as needed */
+    }
   }
 </style> 
