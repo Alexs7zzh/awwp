@@ -105,6 +105,12 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
     line-height: 1.7;
     color: #333;
     margin-bottom: 0.5rem;
+    /* Add line clamping properties */
+    display: -webkit-box;
+    -webkit-line-clamp: 5; /* Limit to 5 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .year {
