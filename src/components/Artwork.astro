@@ -29,25 +29,27 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
 
 <FloatingContainer {offset}>
   <article class="artwork-content">
-    {has_video ? (
-      <VideoPlayer 
-        sources={{ mp4: videoSrcMp4 }}
-        thumbnail={thumbnail}
-        alt={`${title} video`}
-      />
-    ) : (
-      <Picture 
-        src={thumbnail} 
-        alt={title}
-        formats={['avif', 'webp']} 
-        widths={[480, 800, 1200, 1600]} 
-        sizes="(max-width: 768px) 100vw, 50vw"
-        class="artwork-image"
-        loading={priorityLoad ? "eager" : "lazy"}
-        decoding={priorityLoad ? "sync" : "auto"}
-        fetchpriority={priorityLoad ? "high" : "auto"}
-      />
-    )}
+    <div class="media-container">
+      {has_video ? (
+        <VideoPlayer 
+          sources={{ mp4: videoSrcMp4 }}
+          thumbnail={thumbnail}
+          alt={`${title} video`}
+        />
+      ) : (
+        <Picture 
+          src={thumbnail} 
+          alt={title}
+          formats={['avif', 'webp']} 
+          widths={[480, 800, 1200, 1600]} 
+          sizes="(max-width: 768px) 100vw, 50vw"
+          class="artwork-image"
+          loading={priorityLoad ? "eager" : "lazy"}
+          decoding={priorityLoad ? "sync" : "auto"}
+          fetchpriority={priorityLoad ? "high" : "auto"}
+        />
+      )}
+    </div>
     <a href={`/works/${id}/`} class="artwork-link">
       <h2 class="title">{title}</h2>
       <p class="description">{intro}</p>
@@ -131,5 +133,15 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
     font-weight: 400;
     color: #333;
     font-family: monospace;
+  }
+
+  /* Mobile overrides for media container */
+  @media (max-width: 767px) { /* Assuming 768px is the desktop breakpoint */
+    .media-container {
+      margin-left: -1rem;
+      margin-right: -1rem;
+      width: calc(100% + 2rem);
+      max-width: none; /* Ensure it can exceed parent width */
+    }
   }
 </style> 
