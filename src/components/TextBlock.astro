@@ -10,7 +10,7 @@ interface Props {
 const { offset, title, date } = Astro.props;
 ---
 
-<FloatingContainer {offset}>
+<FloatingContainer {offset} maxWidth={60}>
   <article class="text-content">
     {title && <h2 class="title">{title}</h2>}
     <div class="prose-content">

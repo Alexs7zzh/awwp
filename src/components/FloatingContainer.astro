@@ -1,12 +1,13 @@
 ---
 interface Props {
   offset: number;
+  maxWidth?: number;
 }
 
-const { offset } = Astro.props;
+const { offset, maxWidth = 80 } = Astro.props;
 
-const clampedOffsetX = Math.min(Math.max(offset, -45), 45);
-const styles = `--offset-x: ${clampedOffsetX}%;`;
+const clampedOffsetX = Math.min(Math.max(offset, -10), 10);
+const styles = `--offset-x: ${clampedOffsetX}%; --max-width: ${maxWidth}%`;
 ---
 <div class="floating-container" style={styles}>
   <slot />
@@ -26,7 +27,7 @@ const styles = `--offset-x: ${clampedOffsetX}%;`;
 
   @media (min-width: 769px) {
     .floating-container {
-      width: 50%; 
+      width: var(--max-width);
       transform: translateX(var(--offset-x));
       padding: 0;
       margin-bottom: 12rem;
