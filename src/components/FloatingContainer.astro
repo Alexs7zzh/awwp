@@ -4,7 +4,7 @@ interface Props {
   maxWidth?: number;
 }
 
-const { offset, maxWidth = 80 } = Astro.props;
+const { offset, maxWidth = 60 } = Astro.props;
 
 const clampedOffsetX = Math.min(Math.max(offset, -10), 10);
 const styles = `--offset-x: ${clampedOffsetX}%; --max-width: ${maxWidth}%`;
