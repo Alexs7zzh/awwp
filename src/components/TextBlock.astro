@@ -3,16 +3,14 @@ import FloatingContainer from '@components/FloatingContainer.astro';
 
 interface Props {
   offset: number;
-  title?: string;
   date?: string;
 }
 
-const { offset, title, date } = Astro.props;
+const { offset, date } = Astro.props;
 ---
 
 <FloatingContainer {offset} maxWidth={60}>
   <article class="text-content">
-    {title && <h2 class="title">{title}</h2>}
     <div class="prose-content">
       <slot />
     </div>
@@ -23,11 +21,6 @@ const { offset, title, date } = Astro.props;
 <style>
   .text-content {
     /* Optional: Add specific styles for text block container */
-  }
-  .title {
-    font-size: 1.1rem; /* Example style */
-    font-weight: 600;
-    margin-bottom: 0.3rem;
   }
   
   .date {
@@ -40,6 +33,7 @@ const { offset, title, date } = Astro.props;
   .prose-content {
     line-height: 1.7;
     color: #333;
+    font-size: 0.85rem;
   }
 
   .prose-content > :global(p) {
