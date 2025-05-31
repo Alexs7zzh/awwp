@@ -24,31 +24,43 @@ if (!work) {
   return null;
 }
 
-const { title, intro, year, has_video = false } = work.data;
+const { title, thumbnail, intro, year, has_video = false } = work.data;
 
 // Load image from ./top folder
 const images = import.meta.glob('/top/*.{png,jpg}');
 const imageEntry = Object.entries(images).find(
   ([path]) => path.endsWith(`/${id}.png`) || path.endsWith(`/${id}.jpg`)
 );
-if (!imageEntry) {
+let topImage;
+if (!has_video && !imageEntry) {
   throw new Error(`No image found for artwork ID "${id}" in ./top folder`);
 }
-const topImage = await imageEntry[1]() as { default: ImageMetadata };
+if (imageEntry) {
+  topImage = await imageEntry[1]() as { default: ImageMetadata };
+}
+
 const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.mp4`;
 ---
 
 <FloatingContainer {offset}>
   <article class="artwork-content">
     <div class="media-container">
-      <Image 
-        src={topImage.default} 
-        alt={title}
-        class="artwork-image"
-        loading={priorityLoad ? "eager" : "lazy"}
-        decoding={priorityLoad ? "sync" : "auto"}
-        fetchpriority={priorityLoad ? "high" : "auto"}
-      />
+      {has_video ? (
+        <VideoPlayer 
+          sources={{ mp4: videoSrcMp4 }}
+          thumbnail={topImage ? topImage.default : thumbnail}
+          alt={`${title} video`}
+        />
+      ) : (
+        <Image 
+          src={topImage!.default} 
+          alt={title}
+          class="artwork-image"
+          loading={priorityLoad ? "eager" : "lazy"}
+          decoding={priorityLoad ? "sync" : "auto"}
+          fetchpriority={priorityLoad ? "high" : "auto"}
+        />
+      )}
     </div>
     <a href={`/works/${id}/`} class="artwork-link">
       <h2 class="title">{title}</h2>
