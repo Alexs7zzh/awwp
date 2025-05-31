@@ -1,6 +1,7 @@
 ---
 import { getEntry, type CollectionEntry } from "astro:content";
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import FloatingContainer from '@components/FloatingContainer.astro';
 import VideoPlayer from '@components/VideoPlayer.astro';
 
@@ -23,32 +24,31 @@ if (!work) {
   return null;
 }
 
-const { title, thumbnail, intro, year, has_video = false } = work.data;
+const { title, intro, year, has_video = false } = work.data;
+
+// Load image from ./top folder
+const images = import.meta.glob('/top/*.{png,jpg}');
+const imageEntry = Object.entries(images).find(
+  ([path]) => path.endsWith(`/${id}.png`) || path.endsWith(`/${id}.jpg`)
+);
+if (!imageEntry) {
+  throw new Error(`No image found for artwork ID "${id}" in ./top folder`);
+}
+const topImage = await imageEntry[1]() as { default: ImageMetadata };
 const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.mp4`;
 ---
 
 <FloatingContainer {offset}>
   <article class="artwork-content">
     <div class="media-container">
-      {has_video ? (
-        <VideoPlayer 
-          sources={{ mp4: videoSrcMp4 }}
-          thumbnail={thumbnail}
-          alt={`${title} video`}
-        />
-      ) : (
-        <Picture 
-          src={thumbnail} 
-          alt={title}
-          formats={['avif', 'webp']} 
-          widths={[480, 800, 1200, 1600]} 
-          sizes="(max-width: 768px) 100vw, 50vw"
-          class="artwork-image"
-          loading={priorityLoad ? "eager" : "lazy"}
-          decoding={priorityLoad ? "sync" : "auto"}
-          fetchpriority={priorityLoad ? "high" : "auto"}
-        />
-      )}
+      <Image 
+        src={topImage.default} 
+        alt={title}
+        class="artwork-image"
+        loading={priorityLoad ? "eager" : "lazy"}
+        decoding={priorityLoad ? "sync" : "auto"}
+        fetchpriority={priorityLoad ? "high" : "auto"}
+      />
     </div>
     <a href={`/works/${id}/`} class="artwork-link">
       <h2 class="title">{title}</h2>
@@ -67,26 +67,18 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
   .artwork-link {
     text-decoration: none;
     color: inherit;
-    display: block; /* Or inline-block, depending on desired layout */
+    display: block;
+    margin-top: 2rem;
   }
 
   .artwork-image {
     display: block;
     width: 100%;
     /* Default mobile styles */
-    height: 75vh; /* 75% of viewport height */
-    object-fit: cover; /* Scale to cover, clip excess */
+    max-height: 70vh; /* Max 70% of viewport height */
+    object-fit: contain; /* Preserve aspect ratio */
     object-position: center; /* Center the content */
     margin-bottom: .8rem;
-    background-color: #f0f0f0; /* Added background for consistency */
-  }
-
-  /* Desktop overrides */
-  @media (min-width: 768px) {
-    .artwork-image {
-      height: auto; /* Revert height */
-      object-fit: contain; /* Show entire image/video */
-    }
   }
 
   .title {
@@ -134,15 +126,5 @@ const videoSrcMp4 = `https://pub-a62e56dba43847909d2a4aeee8b7c674.r2.dev/${id}.m
     font-weight: 400;
     color: #333;
     font-family: monospace;
-  }
-
-  /* Mobile overrides for media container */
-  @media (max-width: 767px) { /* Assuming 768px is the desktop breakpoint */
-    .media-container {
-      margin-left: -1rem;
-      margin-right: -1rem;
-      width: calc(100% + 2rem);
-      max-width: none; /* Ensure it can exceed parent width */
-    }
   }
 </style> 
