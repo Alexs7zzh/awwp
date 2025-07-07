@@ -1,43 +1,63 @@
 ---
-import BaseLayout from "@layouts/BaseLayout.astro";
-import { gsap, ScrollTrigger } from "@libs/gsap.ts";
+// Front-matter – unchanged apart from the comment
+import BaseLayout        from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
+import { Image }         from "astro:assets";
 import type { ImageMetadata } from "astro";
 
-// data.top is number | undefined. If number, it would be 1, 2, or 3 only
-// 1 means scroll vertically, 2 means scroll horizontally, 3 means reveal from center
-const tops = await getCollection("work", ({ data }) => data.top != undefined);
-console.log(tops);
+// 1 = vertical, 2 = horizontal, 3 = centre-clip
+const tops   = await getCollection("work", ({ data }) => data.top !== undefined);
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/top/*.{png,jpg}", { eager: true });
+
 const imageMetaMap: Record<string, ImageMetadata> = Object.fromEntries(
-  Object.entries(
-    import.meta.glob<{ default: ImageMetadata }>(
-      "/src/top/*.{png,jpg}", {
-        eager: true,
-    })
-  ).map(([path, mod]) => {
-    const filename = path.split("/").pop()!.split(".")[0];
-    return [filename, mod.default];
-  })
+  Object.entries(images).map(([path, mod]) => [path.split("/").pop()!.split(".")[0], mod.default]),
 );
 
 const topsWithImages = tops.map((work) => {
   const meta = imageMetaMap[work.id];
   if (!meta) {
-    throw new Error(
-      `No image called "${work.id}.png|jpg" found inside /top for the “${work.data.title}” artwork.`
-    );
+    throw new Error(`No image called "${work.id}.png|jpg" in /src/top for “${work.data.title}”.`);
   }
-  return {
-    ...work,
-    image: meta,
-  };
+  return { ...work, image: meta };
 });
 ---
 
+<style>
+  /* one full-screen panel per artwork, *without* manual bottom margin */
+  .artwork-content {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ———— intrinsic image sizing, depending on the reveal mode ———— */
+  /* vertical (1) & centre-clip (3) → full width               */
+  .artwork-content[data-top="1"] .artwork-image,
+  .artwork-content[data-top="3"] .artwork-image {
+    width: 100%;
+    height: auto;
+  }
+  /* horizontal (2) → full height                              */
+  .artwork-content[data-top="2"] .artwork-image {
+    height: 100vh;
+    width: auto;
+  }
+
+  .artwork-image {
+    display: block;
+    will-change: transform, clip-path; /* keeps the animation crisp */
+  }
+
+</style>
+
 <BaseLayout>
   {topsWithImages.map((work) => (
-    <article class="artwork-content" aria-labelledby={`work-${work.id}-title`}>
+    <article
+      class="artwork-content"
+      data-top={work.data.top}
+      aria-labelledby={`work-${work.id}-title`}
+    >
       <Image
         src={work.image}
         alt={work.data.title}
@@ -49,25 +69,100 @@ const topsWithImages = tops.map((work) => {
   ))}
 </BaseLayout>
 
+<!-- ---------- client-side GSAP / ScrollTrigger ----------- -->
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
 
-<!-- <a href={`/works/${work.id}/`} class="artwork-link">
-    <h2 id={`work-${work.id}-title`} class="title">
-      {work.data.title}
-    </h2>
-    <p class="description">{work.data.intro}</p>
-  </a>
-  <p class="year">{work.data.year}</p> -->
+  /**
+   * Build one ScrollTrigger-powered timeline per artwork.
+   * Each timeline has two *phases* so that we can:
+   *   1. “reveal the first 10 %” (or the centre-clip)
+   *   2. scroll to the very end of the picture
+   * This way one section never overlaps the next, yet there is no
+   * hard-coded 100 vh gap either – ScrollTrigger adds exactly the
+   * spacing it needs.
+   */
+  function initArtworks() {
+    gsap.utils.toArray(".artwork-content").forEach((section) => {
+      const img  = section.querySelector("img");
+      const mode = Number(section.dataset.top);
 
-<!-- <Artwork id="dismantle" offset={5} />
-<Artwork id="dragonrain" offset={-15} />
-<Artwork id="holiness" offset={23} />
-<Artwork id="moment" offset={-17} />
-<Artwork id="clair" offset={12} />
-<Artwork id="overbillions" offset={-30} />
-<Artwork id="arsdas" offset={10} />
-<Artwork id="count" offset={21} />
-<Artwork id="postoperative" offset={-3} />
-<Artwork id="river" offset={20} />
-<Artwork id="scalar8k" offset={-5} />
-<Artwork id="triplet" offset={15} />
-<Artwork id="xhiasma" offset={-5} /> -->
+      if (!img.complete) img.addEventListener("load", () => makeTimeline(section, img, mode));
+      else               makeTimeline(section, img, mode);
+    });
+  }
+
+  function makeTimeline(section, img, mode) {
+    /** Helper numbers we need more than once */
+    const vOverflow = Math.max(0, img.naturalHeight - window.innerHeight);
+    const hOverflow = Math.max(0, img.naturalWidth  - window.innerWidth);
+
+    /* The timeline runs while the section is *pinned*.                    *
+     * end: "+=<distance>" tells ScrollTrigger exactly how long the pin is */
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: mode === 3 ? "center center" : "top top",
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        // one extra viewport for the “10 % reveal” phase
+        end: () => "+=" + (
+          mode === 1 ? vOverflow + window.innerHeight :
+          mode === 2 ? hOverflow + window.innerHeight :
+          /* mode 3  */ window.innerHeight
+        ),
+      },
+    });
+
+    /* ---------- phase 1: reveal the first 10 % (or centre clip) --------- */
+    if (mode === 1) {
+      // show only the top 10 % → clip bottom 90 %
+      tl.fromTo(
+        img,
+        { clipPath: "inset(0% 0% 90% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 0.5 },
+        0,
+      );
+    } else if (mode === 2) {
+      // show only the left 10 % → clip right 90 %
+      tl.fromTo(
+        img,
+        { clipPath: "inset(0% 90% 0% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 0.5 },
+        0,
+      );
+    } else {
+      // centre-clip: show 20 % × 20 % in the middle of the picture
+      tl.fromTo(
+        img,
+        { clipPath: "inset(40% 40% 40% 40%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 1 },
+        0,
+      );
+    }
+
+    /* ---------- phase 2: scroll through the rest of the picture --------- */
+    if (mode === 1) {
+      tl.to(
+        img,
+        { y: -vOverflow, ease: "none", duration: 0.5 },
+        ">",
+      );
+    } else if (mode === 2) {
+      tl.to(
+        img,
+        { x: -hOverflow, ease: "none", duration: 0.5 },
+        ">",
+      );
+    }
+    // mode 3 has no second phase – the simple clip expansion is enough
+  }
+
+  /** Run after the whole document (incl. images) is ready */
+  if (document.readyState === "complete") initArtworks();
+  else window.addEventListener("load", initArtworks);
+</script>
