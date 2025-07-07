@@ -2,6 +2,7 @@
 title: Dismantling Awe
 thumbnail: dismantle_thumb.jpg
 has_video: true
+top: 3
 year: 2018
 keywords:
   - Installation

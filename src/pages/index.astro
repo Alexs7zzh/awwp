@@ -1,0 +1,73 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { gsap, ScrollTrigger } from "@libs/gsap.ts";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+// data.top is number | undefined. If number, it would be 1, 2, or 3 only
+// 1 means scroll vertically, 2 means scroll horizontally, 3 means reveal from center
+const tops = await getCollection("work", ({ data }) => data.top != undefined);
+console.log(tops);
+const imageMetaMap: Record<string, ImageMetadata> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<{ default: ImageMetadata }>(
+      "/src/top/*.{png,jpg}", {
+        eager: true,
+    })
+  ).map(([path, mod]) => {
+    const filename = path.split("/").pop()!.split(".")[0];
+    return [filename, mod.default];
+  })
+);
+
+const topsWithImages = tops.map((work) => {
+  const meta = imageMetaMap[work.id];
+  if (!meta) {
+    throw new Error(
+      `No image called "${work.id}.png|jpg" found inside /top for the “${work.data.title}” artwork.`
+    );
+  }
+  return {
+    ...work,
+    image: meta,
+  };
+});
+---
+
+<BaseLayout>
+  {topsWithImages.map((work) => (
+    <article class="artwork-content" aria-labelledby={`work-${work.id}-title`}>
+      <Image
+        src={work.image}
+        alt={work.data.title}
+        class="artwork-image"
+        loading="lazy"
+        format="webp"
+      />
+    </article>
+  ))}
+</BaseLayout>
+
+
+<!-- <a href={`/works/${work.id}/`} class="artwork-link">
+    <h2 id={`work-${work.id}-title`} class="title">
+      {work.data.title}
+    </h2>
+    <p class="description">{work.data.intro}</p>
+  </a>
+  <p class="year">{work.data.year}</p> -->
+
+<!-- <Artwork id="dismantle" offset={5} />
+<Artwork id="dragonrain" offset={-15} />
+<Artwork id="holiness" offset={23} />
+<Artwork id="moment" offset={-17} />
+<Artwork id="clair" offset={12} />
+<Artwork id="overbillions" offset={-30} />
+<Artwork id="arsdas" offset={10} />
+<Artwork id="count" offset={21} />
+<Artwork id="postoperative" offset={-3} />
+<Artwork id="river" offset={20} />
+<Artwork id="scalar8k" offset={-5} />
+<Artwork id="triplet" offset={15} />
+<Artwork id="xhiasma" offset={-5} /> -->

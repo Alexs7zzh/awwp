@@ -2,6 +2,7 @@
 title: Holiness
 thumbnail: holiness_back.jpg
 year: 2020
+top: 2
 keywords:
   - Installation
 background_img:

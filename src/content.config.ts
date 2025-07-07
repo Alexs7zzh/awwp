@@ -13,6 +13,7 @@ const work = defineCollection({
     return z.object({
       title: z.string(),
       thumbnail: image(),
+      top: z.number().optional(),
       has_video: z.boolean().optional(),
       year: z.number(),
       keywords: z.array(z.string()),
@@ -25,7 +26,7 @@ const work = defineCollection({
       }).optional(),
       imgs: z.array(ImageData),
     })
-  }
+  },
 });
 
 export const collections = { work };

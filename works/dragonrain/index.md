@@ -2,6 +2,7 @@
 title: 龍雨図 - Dragon Rain
 thumbnail: dragonrain_3.jpg
 year: 2024
+top: 3
 keywords:
   - Audio Visual Installation
 background_img:

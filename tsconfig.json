@@ -9,7 +9,8 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "@components/*": ["src/components/*"],
-      "@layouts/*": ["src/layouts/*"]
+      "@layouts/*": ["src/layouts/*"],
+      "@libs/*": ["src/libs/*"]
     },
     "plugins": [
       {
