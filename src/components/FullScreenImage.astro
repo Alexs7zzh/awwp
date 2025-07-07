@@ -1,6 +1,6 @@
 ---
-import { Picture } from 'astro:assets';
-import { getEntry } from 'astro:content';
+import { Picture } from "astro:assets";
+import { getEntry } from "astro:content";
 
 type Props = {
   workId: string;
@@ -9,18 +9,18 @@ type Props = {
 
 const { workId, priorityLoad = false } = Astro.props;
 
-const work = await getEntry('work', workId);
+const work = await getEntry("work", workId);
 if (!work) {
   throw new Error(`Work with ID ${workId} not found`);
 }
 ---
 
 <div class="image-container" aria-labelledby={`title-${workId}`}>
-  <Picture 
-    src={work.data.thumbnail} 
-    alt={work.data.title} 
-    formats={['avif', 'webp']} 
-    widths={[360, 480, 720, 1024, 1920, 2048]} 
+  <Picture
+    src={work.data.thumbnail}
+    alt={work.data.title}
+    formats={["avif", "webp"]}
+    widths={[360, 480, 720, 1024, 1920, 2048]}
     sizes="100vw"
     loading={priorityLoad ? "eager" : "lazy"}
     fetchpriority={priorityLoad ? "high" : "auto"}
@@ -29,7 +29,6 @@ if (!work) {
     <h2 id={`title-${workId}`} class="title">{work.data.title}</h2>
   </div>
 </div>
-
 
 <style>
   :root {
@@ -85,7 +84,7 @@ if (!work) {
       --title-spacing-bottom: 10%;
       --image-height: 80vh;
     }
-    
+
     .title {
       font-size: 2rem;
     }
@@ -96,7 +95,7 @@ if (!work) {
       --title-spacing-horizontal: 1.5rem;
       --image-height: 60vh;
     }
-    
+
     .title {
       font-size: 1.75rem;
     }

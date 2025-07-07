@@ -1,22 +1,30 @@
 ---
 // Front-matter – unchanged apart from the comment
-import BaseLayout        from "@layouts/BaseLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { Image }         from "astro:assets";
+import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 
 // 1 = vertical, 2 = horizontal, 3 = centre-clip
-const tops   = await getCollection("work", ({ data }) => data.top !== undefined);
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/top/*.{png,jpg}", { eager: true });
+const tops = await getCollection("work", ({ data }) => data.top !== undefined);
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/top/*.{png,jpg}",
+  { eager: true },
+);
 
 const imageMetaMap: Record<string, ImageMetadata> = Object.fromEntries(
-  Object.entries(images).map(([path, mod]) => [path.split("/").pop()!.split(".")[0], mod.default]),
+  Object.entries(images).map(([path, mod]) => [
+    path.split("/").pop()!.split(".")[0],
+    mod.default,
+  ]),
 );
 
 const topsWithImages = tops.map((work) => {
   const meta = imageMetaMap[work.id];
   if (!meta) {
-    throw new Error(`No image called "${work.id}.png|jpg" in /src/top for “${work.data.title}”.`);
+    throw new Error(
+      `No image called "${work.id}.png|jpg" in /src/top for “${work.data.title}”.`,
+    );
   }
   return { ...work, image: meta };
 });
@@ -32,41 +40,53 @@ const topsWithImages = tops.map((work) => {
   }
 
   /* ———— intrinsic image sizing, depending on the reveal mode ———— */
-  /* vertical (1) & centre-clip (3) → full width               */
-  .artwork-content[data-top="1"] .artwork-image,
-  .artwork-content[data-top="3"] .artwork-image {
-    width: 100%;
+  /* vertical (1)                      */
+  .artwork-content[data-top="1"] .artwork-image {
+    width: 50%;
     height: auto;
+  }
+  .artwork-content[data-top="1"] {
+    margin-top: 50vh;
   }
   /* horizontal (2) → full height                              */
   .artwork-content[data-top="2"] .artwork-image {
-    height: 100vh;
+    height: 60vh;
     width: auto;
+  }
+  .artwork-content[data-top="2"] {
+    margin-top: 50vh; /* optional – mirrors the vertical panels’ gap */
+  }
+
+  .artwork-content[data-top="3"] .artwork-image {
+    height: 100vh;
+    width: 100%;
+    object-fit: cover;
   }
 
   .artwork-image {
     display: block;
-    will-change: transform, clip-path; /* keeps the animation crisp */
+    will-change: transform, clip-path;
   }
-
 </style>
 
 <BaseLayout>
-  {topsWithImages.map((work) => (
-    <article
-      class="artwork-content"
-      data-top={work.data.top}
-      aria-labelledby={`work-${work.id}-title`}
-    >
-      <Image
-        src={work.image}
-        alt={work.data.title}
-        class="artwork-image"
-        loading="lazy"
-        format="webp"
-      />
-    </article>
-  ))}
+  {
+    topsWithImages.map((work) => (
+      <article
+        class="artwork-content"
+        data-top={work.data.top}
+        aria-labelledby={`work-${work.id}-title`}
+      >
+        <Image
+          src={work.image}
+          alt={work.data.title}
+          class="artwork-image"
+          loading="lazy"
+          format="webp"
+        />
+      </article>
+    ))
+  }
 </BaseLayout>
 
 <!-- ---------- client-side GSAP / ScrollTrigger ----------- -->
@@ -86,54 +106,63 @@ const topsWithImages = tops.map((work) => {
    */
   function initArtworks() {
     gsap.utils.toArray(".artwork-content").forEach((section) => {
-      const img  = section.querySelector("img");
+      const img = section.querySelector("img");
       const mode = Number(section.dataset.top);
 
-      if (!img.complete) img.addEventListener("load", () => makeTimeline(section, img, mode));
-      else               makeTimeline(section, img, mode);
+      if (!img.complete)
+        img.addEventListener("load", () => makeTimeline(section, img, mode));
+      else makeTimeline(section, img, mode);
     });
   }
 
   function makeTimeline(section, img, mode) {
     /** Helper numbers we need more than once */
-    const vOverflow = Math.max(0, img.naturalHeight - window.innerHeight);
-    const hOverflow = Math.max(0, img.naturalWidth  - window.innerWidth);
+    const hOverflow = Math.max(0, img.offsetWidth - window.innerWidth);
 
+    const triggerEl = mode === 3 ? img : section;
     /* The timeline runs while the section is *pinned*.                    *
      * end: "+=<distance>" tells ScrollTrigger exactly how long the pin is */
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: section,
+        trigger: triggerEl,
         start: mode === 3 ? "center center" : "top top",
-        pin: true,
-        scrub: 1,
+        pin: section,
+        scrub: mode === 3 ? 1 : true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         // one extra viewport for the “10 % reveal” phase
-        end: () => "+=" + (
-          mode === 1 ? vOverflow + window.innerHeight :
-          mode === 2 ? hOverflow + window.innerHeight :
-          /* mode 3  */ window.innerHeight
-        ),
+        end: () =>
+          "+=" +
+          (mode === 1
+            ? img.offsetHeight
+            : mode === 2
+              ? hOverflow + window.innerHeight
+              : /* mode 3  */ window.innerHeight),
       },
     });
 
     /* ---------- phase 1: reveal the first 10 % (or centre clip) --------- */
     if (mode === 1) {
-      // show only the top 10 % → clip bottom 90 %
-      tl.fromTo(
-        img,
-        { clipPath: "inset(0% 0% 90% 0%)" },
-        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 0.5 },
-        0,
-      );
+      const vOverflow = Math.max(0, img.offsetHeight - innerHeight);
+
+      /* pin lasts exactly that distance */
+      tl.scrollTrigger.end = "+=" + vOverflow;
+
+      /* one clean slide from start (y = 0) to end (picture’s bottom edge
+   reaches the bottom of the viewport)                               */
+      tl.fromTo(img, { y: 0 }, { y: -vOverflow, ease: "none" });
     } else if (mode === 2) {
-      // show only the left 10 % → clip right 90 %
+      const vpW = window.innerWidth;
+      const imgW = img.offsetWidth;
+      const xStart = vpW - 0.1 * imgW;
+      const xEnd = imgW <= vpW ? (vpW - imgW) / 2 : 0;
+      const slideDist = xStart - xEnd;
+      tl.scrollTrigger.end = "+=" + slideDist;
+      ScrollTrigger.refresh();
       tl.fromTo(
         img,
-        { clipPath: "inset(0% 90% 0% 0%)" },
-        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 0.5 },
-        0,
+        { x: xStart }, // picture starts on the right
+        { x: xEnd, ease: "none" }, // ends flush with the left edge
       );
     } else {
       // centre-clip: show 20 % × 20 % in the middle of the picture
@@ -144,22 +173,6 @@ const topsWithImages = tops.map((work) => {
         0,
       );
     }
-
-    /* ---------- phase 2: scroll through the rest of the picture --------- */
-    if (mode === 1) {
-      tl.to(
-        img,
-        { y: -vOverflow, ease: "none", duration: 0.5 },
-        ">",
-      );
-    } else if (mode === 2) {
-      tl.to(
-        img,
-        { x: -hOverflow, ease: "none", duration: 0.5 },
-        ">",
-      );
-    }
-    // mode 3 has no second phase – the simple clip expansion is enough
   }
 
   /** Run after the whole document (incl. images) is ready */

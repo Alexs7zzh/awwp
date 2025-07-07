@@ -1,29 +1,32 @@
 ---
-import { Picture } from 'astro:assets';
-import { getEntry } from 'astro:content';
+import { Picture } from "astro:assets";
+import { getEntry } from "astro:content";
 
 type Props = {
   workId: string;
-  layout: 'left' | 'right';
+  layout: "left" | "right";
   priorityLoad?: boolean;
 };
 
 const { workId, layout, priorityLoad = false } = Astro.props;
 
 // Fetch single work
-const work = await getEntry('work', workId);
+const work = await getEntry("work", workId);
 if (!work) {
   throw new Error(`Work with ID ${workId} not found`);
 }
 ---
 
-<section class={`gallery-item image-${layout}`} aria-labelledby={`title-${workId}`}>
+<section
+  class={`gallery-item image-${layout}`}
+  aria-labelledby={`title-${workId}`}
+>
   <div class="image-container">
-    <Picture 
-      src={work.data.thumbnail} 
+    <Picture
+      src={work.data.thumbnail}
       alt={work.data.title}
-      formats={['avif', 'webp']} 
-      widths={[480, 800, 1200, 1600]} 
+      formats={["avif", "webp"]}
+      widths={[480, 800, 1200, 1600]}
       sizes="(max-width: 768px) 100vw, 60vw"
       class="artwork-image"
       loading={priorityLoad ? "eager" : "lazy"}
@@ -33,8 +36,16 @@ if (!work) {
   <div class="content-container">
     <div class="content-wrapper">
       <h2 id={`title-${workId}`} class="artwork-title">{work.data.title}</h2>
-      {work.data.year && <p class="artwork-year">{work.data.year.toString()}</p>}
-      {work.data.intro && <div class="artwork-description">{work.data.intro}</div>}
+      {
+        work.data.year && (
+          <p class="artwork-year">{work.data.year.toString()}</p>
+        )
+      }
+      {
+        work.data.intro && (
+          <div class="artwork-description">{work.data.intro}</div>
+        )
+      }
       <div class="action-button">
         <a href={`/works/${work.id}`} class="more-link">
           詳細情報
@@ -162,11 +173,11 @@ if (!work) {
     :root {
       --image-height: 70vh;
     }
-    
+
     .artwork-title {
       font-size: 2rem;
     }
-    
+
     .content-wrapper {
       padding: var(--spacing-base);
     }
@@ -178,8 +189,9 @@ if (!work) {
       --image-width: 100%;
       --content-width: 100%;
     }
-    
-    .gallery-item, .image-right {
+
+    .gallery-item,
+    .image-right {
       flex-direction: column;
       min-height: auto;
       margin-top: 4rem;
@@ -191,13 +203,14 @@ if (!work) {
     :root {
       --image-height: 40vh;
     }
-    
+
     .artwork-title {
       font-size: 1.8rem;
     }
-    
+
     .content-wrapper {
       padding: var(--spacing-base);
     }
   }
-</style> 
+</style>
+

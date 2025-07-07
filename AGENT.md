@@ -1,12 +1,14 @@
 # AGENT.md - Coding Guidelines for awwp
 
 ## Commands
+
 - **Dev server**: `pnpm dev` (Astro development)
 - **Build**: `pnpm build`
 - **Format**: `pnpm format` (Prettier with astro plugin)
 - **Type check**: `pnpm astro check`
 
 ## Code Style
+
 - **Project**: Astro + TypeScript with MDX
 - **Imports**: Use path aliases `@components/*` and `@layouts/*`
 - **Types**: TypeScript interfaces in frontmatter, strict mode enabled
@@ -18,8 +20,9 @@
 - **Structure**: Frontmatter first, then HTML template, then styles
 - **Formatting**: Prettier with astro plugin (no quotes around simple props)
 
-## Project Structure  
+## Project Structure
+
 - `src/pages/` - Astro pages and MDX files
-- `src/components/` - Reusable Astro components  
+- `src/components/` - Reusable Astro components
 - `src/layouts/` - Layout components
 - `src/content/` - Content collections

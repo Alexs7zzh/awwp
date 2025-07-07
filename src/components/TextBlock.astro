@@ -1,5 +1,5 @@
 ---
-import FloatingContainer from '@components/FloatingContainer.astro';
+import FloatingContainer from "@components/FloatingContainer.astro";
 
 interface Props {
   offset: number;
@@ -14,7 +14,7 @@ const { offset, date } = Astro.props;
     <div class="prose-content">
       <slot />
     </div>
-    {date && <p class="date">{date}</p>} 
+    {date && <p class="date">{date}</p>}
   </article>
 </FloatingContainer>
 
@@ -22,7 +22,7 @@ const { offset, date } = Astro.props;
   .text-content {
     /* Optional: Add specific styles for text block container */
   }
-  
+
   .date {
     margin-top: 0.5rem;
     font-size: 0.8rem;
@@ -37,11 +37,12 @@ const { offset, date } = Astro.props;
   }
 
   .prose-content > :global(p) {
-      margin-bottom: 1em;
+    margin-bottom: 1em;
   }
   .prose-content > :global(h3) {
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
-      font-size: 1.2em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-size: 1.2em;
   }
-</style> 
+</style>
+

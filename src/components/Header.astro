@@ -8,41 +8,41 @@ import { getEntry } from "astro:content";
 // const { color = 'black' } = Astro.props;
 
 const pathname = Astro.url.pathname;
-let activeSection = 'home'; // Default to home
-let workTitle = '';
+let activeSection = "home"; // Default to home
+let workTitle = "";
 
 const worksRegex = /^\/works\/?$/;
 const aboutRegex = /^\/about\/?$/;
 const workDetailRegex = /^\/works\/([^\/]+)\/?$/;
 
 if (worksRegex.test(pathname)) {
-  activeSection = 'works';
+  activeSection = "works";
 } else if (aboutRegex.test(pathname)) {
-  activeSection = 'about';
+  activeSection = "about";
 } else {
   const match = pathname.match(workDetailRegex);
   if (match && match[1]) {
     const workId = match[1];
     try {
-      const work = await getEntry('work', workId);
+      const work = await getEntry("work", workId);
       // Assuming the work entry has a 'title' in its data
       if (work && work.data.title) {
         workTitle = work.data.title;
-        activeSection = 'workDetail';
+        activeSection = "workDetail";
       } else {
         // Handle case where work entry or title is not found,
         // default to 'home' or another appropriate state
         console.warn(`Work entry or title not found for ID: ${workId}`);
-        activeSection = 'home'; // Or perhaps 'works'? Decide fallback behavior.
+        activeSection = "home"; // Or perhaps 'works'? Decide fallback behavior.
       }
     } catch (error) {
       console.error(`Error fetching work entry for ID: ${workId}`, error);
       // Fallback if getEntry fails
-      activeSection = 'home'; // Or perhaps 'works'?
+      activeSection = "home"; // Or perhaps 'works'?
     }
   } else {
     // Default to home if root path or other unmatched paths
-    activeSection = 'home';
+    activeSection = "home";
   }
 }
 
@@ -51,19 +51,42 @@ const isActive = (section: string) => section === activeSection;
 
 <header>
   <nav>
-    <a href="/" class:list={[ "link", "margin-right", { active: isActive('home'), inactive: !isActive('home') } ]}>Akita Wakira</a>
+    <a
+      href="/"
+      class:list={[
+        "link",
+        "margin-right",
+        { active: isActive("home"), inactive: !isActive("home") },
+      ]}>Akita Wakira</a
+    >
     <span class="group works-about margin-right">
       <span class="separator slash">/</span>
-      <a href="/works" class:list={[ "link", { active: isActive('works'), inactive: !isActive('works') } ]}>Works</a>
+      <a
+        href="/works"
+        class:list={[
+          "link",
+          { active: isActive("works"), inactive: !isActive("works") },
+        ]}>Works</a
+      >
       <span class="separator dot">・</span>
-      <a href="/about" class:list={[ "link", { active: isActive('about'), inactive: !isActive('about') } ]}>About</a>
+      <a
+        href="/about"
+        class:list={[
+          "link",
+          { active: isActive("about"), inactive: !isActive("about") },
+        ]}>About</a
+      >
     </span>
-    {activeSection === 'workDetail' && workTitle && (
-      <span class="group work-title">
-        <span class="separator slash">/</span>
-        <span class:list={[ "link", { active: true, inactive: false } ]}>{workTitle}</span>
-      </span>
-    )}
+    {
+      activeSection === "workDetail" && workTitle && (
+        <span class="group work-title">
+          <span class="separator slash">/</span>
+          <span class:list={["link", { active: true, inactive: false }]}>
+            {workTitle}
+          </span>
+        </span>
+      )
+    }
   </nav>
 </header>
 
@@ -97,8 +120,8 @@ const isActive = (section: string) => section === activeSection;
   }
 
   span.active {
-     color: black;
-     font-weight: bold;
+    color: black;
+    font-weight: bold;
   }
 
   .margin-right {
@@ -123,10 +146,10 @@ const isActive = (section: string) => section === activeSection;
     align-items: center;
   }
 
-  @media (min-width: 600px) { /* Styles for larger screens */
+  @media (min-width: 600px) {
+    /* Styles for larger screens */
     nav {
       font-size: 1.4rem;
     }
   }
 </style>
-

@@ -7,9 +7,12 @@ import Header from "@components/Header.astro";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
     <title>Akira Wakita</title>
     <slot name="head" />
@@ -30,7 +33,7 @@ import Header from "@components/Header.astro";
     padding: 0;
     min-width: 0;
   }
-  
+
   html {
     overflow-x: hidden;
     width: 100%;
@@ -47,15 +50,21 @@ import Header from "@components/Header.astro";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    
 
-    font-family: 'Inter', 'Noto Sans JP', 'Helvetica Neue', 'Hiragino Kaku Gothic Pro', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    font-family:
+      "Inter", "Noto Sans JP", "Helvetica Neue", "Hiragino Kaku Gothic Pro",
+      "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     text-wrap: balance;
   }
 
@@ -63,18 +72,31 @@ import Header from "@components/Header.astro";
     text-wrap: pretty;
   }
 
-  img, picture, video, canvas, svg {
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
     display: block;
     max-width: 100%;
     width: auto;
     height: auto;
   }
 
-  input, button, textarea, select {
+  input,
+  button,
+  textarea,
+  select {
     font: inherit;
   }
 
-  p, h1, h2, h3, h4, h5, h6 {
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     overflow-wrap: break-word;
   }
 

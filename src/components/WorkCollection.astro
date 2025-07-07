@@ -5,31 +5,45 @@ interface Props {
 }
 
 import { getEntry } from "astro:content";
-import { Picture } from 'astro:assets';
+import { Picture } from "astro:assets";
 
 const { title, workIds } = Astro.props;
-const works = 
-  (await Promise.all(workIds.map(async id => await getEntry('work', id))))
-  .filter(work => work !== undefined);
+const works = (
+  await Promise.all(workIds.map(async (id) => await getEntry("work", id)))
+).filter((work) => work !== undefined);
 ---
 
 <div class="work-collection">
   <h2>{title}</h2>
-  {works.map(work => (
-    <div class="work-item">
-      <div class="work-header">
-        <h3>{work.data.title}</h3>
-        <p>{work.data.intro}</p>
+  {
+    works.map((work) => (
+      <div class="work-item">
+        <div class="work-header">
+          <h3>{work.data.title}</h3>
+          <p>{work.data.intro}</p>
+        </div>
+        <div class="image-grid">
+          <Picture
+            src={work.data.thumbnail}
+            alt={work.data.thumbnail.src}
+            formats={["avif", "webp"]}
+          />
+          <Picture
+            src={work.data.background_img.url}
+            alt={work.data.background_img.label}
+            formats={["avif", "webp"]}
+          />
+          {work.data.imgs.map((image) => (
+            <Picture
+              src={image.url}
+              alt={image.label}
+              formats={["avif", "webp"]}
+            />
+          ))}
+        </div>
       </div>
-      <div class="image-grid">
-        <Picture src={work.data.thumbnail} alt={work.data.thumbnail.src} formats={['avif', 'webp']}  />
-        <Picture src={work.data.background_img.url} alt={work.data.background_img.label} formats={['avif', 'webp']}  />
-        {work.data.imgs.map(image => (
-          <Picture src={image.url} alt={image.label} formats={['avif', 'webp']}  />
-        ))}
-      </div>
-    </div>
-  ))}
+    ))
+  }
 </div>
 
 <style>
@@ -87,7 +101,7 @@ const works =
     margin: 0;
     display: block;
   }
-  
+
   picture img {
     width: 100%;
     height: 100%;

@@ -9,6 +9,7 @@ const { offset, maxWidth = 60 } = Astro.props;
 const clampedOffsetX = Math.min(Math.max(offset, -10), 10);
 const styles = `--offset-x: ${clampedOffsetX}%; --max-width: ${maxWidth}%`;
 ---
+
 <div class="floating-container" style={styles}>
   <slot />
 </div>
@@ -33,4 +34,5 @@ const styles = `--offset-x: ${clampedOffsetX}%; --max-width: ${maxWidth}%`;
       padding: 0;
     }
   }
-</style> 
+</style>
+

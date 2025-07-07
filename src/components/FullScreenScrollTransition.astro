@@ -1,6 +1,6 @@
 ---
-import { Picture } from 'astro:assets';
-import { getEntry } from 'astro:content';
+import { Picture } from "astro:assets";
+import { getEntry } from "astro:content";
 
 type Props = {
   workIds: string[];
@@ -10,56 +10,64 @@ const { workIds } = Astro.props;
 
 // Batch fetch all works
 const workEntries = await Promise.all(
-  workIds.map(id => getEntry('work', id))
+  workIds.map((id) => getEntry("work", id)),
 );
 
 // Filter out any undefined entries
-const works = workEntries.filter(entry => entry !== undefined);
+const works = workEntries.filter((entry) => entry !== undefined);
 const last = works.length > 0 ? works[works.length - 1] : null;
 ---
 
-<div class="scroll-container" aria-roledescription="carousel" aria-label="Image gallery">
+<div
+  class="scroll-container"
+  aria-roledescription="carousel"
+  aria-label="Image gallery"
+>
   <div class="transition-container">
-    {works.map((work, index) => (
-      <div 
-        class="image-layer" 
-        data-index={index} 
-        aria-hidden={index !== 0 ? "true" : "false"}
-        role="img" 
-        aria-label={work.data.title}
-      >
-        <Picture 
-          src={work.data.thumbnail} 
-          alt={work.data.title} 
-          formats={['avif', 'webp']} 
-          widths={[360, 480, 720, 1024, 1920, 2048]} 
+    {
+      works.map((work, index) => (
+        <div
+          class="image-layer"
+          data-index={index}
+          aria-hidden={index !== 0 ? "true" : "false"}
+          role="img"
+          aria-label={work.data.title}
+        >
+          <Picture
+            src={work.data.thumbnail}
+            alt={work.data.title}
+            formats={["avif", "webp"]}
+            widths={[360, 480, 720, 1024, 1920, 2048]}
+            sizes="100vw"
+            loading={index === 0 ? "eager" : "lazy"}
+          />
+          <div class="title-container">
+            <h2 class="title">{work.data.title}</h2>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="transition-spacer"></div>
+
+  {
+    last && (
+      <div class="last-image" aria-hidden="true">
+        <Picture
+          src={last.data.thumbnail}
+          alt={last.data.title}
+          formats={["avif", "webp"]}
+          widths={[360, 480, 720, 1024, 1920, 2048]}
           sizes="100vw"
-          loading={index === 0 ? "eager" : "lazy"}
+          loading="lazy"
         />
         <div class="title-container">
-          <h2 class="title">{work.data.title}</h2>
+          <h2 class="title">{last.data.title}</h2>
         </div>
       </div>
-    ))}
-  </div>
-  
-  <div class="transition-spacer"></div>
-  
-  {last && (
-    <div class="last-image" aria-hidden="true">
-      <Picture 
-        src={last.data.thumbnail} 
-        alt={last.data.title} 
-        formats={['avif', 'webp']} 
-        widths={[360, 480, 720, 1024, 1920, 2048]} 
-        sizes="100vw"
-        loading="lazy"
-      />
-      <div class="title-container">
-        <h2 class="title">{last.data.title}</h2>
-      </div>
-    </div>
-  )}
+    )
+  }
 </div>
 
 <style>
@@ -134,7 +142,9 @@ const last = works.length > 0 ? works[works.length - 1] : null;
     transform: translateY(15px);
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     will-change: opacity, transform;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
   }
 
   /* Mobile optimization - shorter height on small devices */
@@ -150,7 +160,7 @@ const last = works.length > 0 ? works[works.length - 1] : null;
       --title-spacing-horizontal: 5%;
       --title-spacing-bottom: 10%;
     }
-    
+
     .title {
       font-size: 2rem;
     }
@@ -160,7 +170,7 @@ const last = works.length > 0 ? works[works.length - 1] : null;
     :root {
       --title-spacing-horizontal: 1.5rem;
     }
-    
+
     .title {
       font-size: 1.75rem;
     }
@@ -185,7 +195,7 @@ const last = works.length > 0 ? works[works.length - 1] : null;
 
 <script>
   // Add fix for iOS Safari scrolling issues
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // Force a minimal repaint to help iOS recognize the scrollable area
     setTimeout(() => {
       window.scrollTo(0, 1);
@@ -201,7 +211,7 @@ const last = works.length > 0 ? works[works.length - 1] : null;
         get passive() {
           passiveSupported = true;
           return false;
-        }
+        },
       };
       // @ts-ignore - Test passive event listeners
       window.addEventListener("test", null, options);
@@ -223,25 +233,29 @@ const last = works.length > 0 ? works[works.length - 1] : null;
     }
   }
 
-  const container = getElementSafely<HTMLElement>('.scroll-container');
-  const transitionContainer = getElementSafely<HTMLElement>('.transition-container');
-  const transitionImages = document.querySelectorAll('.image-layer') as NodeListOf<HTMLElement>;
-  const lastNormalImage = getElementSafely<HTMLElement>('.last-image');
+  const container = getElementSafely<HTMLElement>(".scroll-container");
+  const transitionContainer = getElementSafely<HTMLElement>(
+    ".transition-container",
+  );
+  const transitionImages = document.querySelectorAll(
+    ".image-layer",
+  ) as NodeListOf<HTMLElement>;
+  const lastNormalImage = getElementSafely<HTMLElement>(".last-image");
   const totalTransitionImages = transitionImages.length;
-  
+
   // Get all title elements
-  const titles = document.querySelectorAll('.title') as NodeListOf<HTMLElement>;
+  const titles = document.querySelectorAll(".title") as NodeListOf<HTMLElement>;
 
   // Exit early if there are no images to transition
   if (totalTransitionImages === 0) {
     if (container) {
-      container.style.height = '100vh';
+      container.style.height = "100vh";
     }
     if (transitionContainer) {
-      transitionContainer.style.display = 'none';
+      transitionContainer.style.display = "none";
     }
   }
-  
+
   // Constants for controlling the scroll behavior
   const STATIC_PHASE = 0.7; // 70% of scroll distance is static (opacity = 1)
   const TRANSITION_PHASE = 0.3; // 30% is transition phase
@@ -250,198 +264,236 @@ const last = works.length > 0 ? works[works.length - 1] : null;
   const TITLE_FADE_START = 0.6; // Title starts fading out at 60% of scroll
   const TITLE_FADE_END = 0.75; // Title is completely faded out at 75% of scroll
   const MAX_TITLE_OPACITY = 0.9; // Maximum opacity for titles
-  
+
   // Calculate section heights
   let sectionHeight = window.innerHeight; // Each image section is full viewport height
-  
+
   // Set the total height for scrolling - we need one less viewport height if we have a separate last image
-  const hasSeparateLastImage = lastNormalImage !== null && totalTransitionImages > 1;
-  const effectiveTransitionSections = hasSeparateLastImage 
-    ? totalTransitionImages - 1 
+  const hasSeparateLastImage =
+    lastNormalImage !== null && totalTransitionImages > 1;
+  const effectiveTransitionSections = hasSeparateLastImage
+    ? totalTransitionImages - 1
     : totalTransitionImages;
-  
-  const spacer = getElementSafely<HTMLElement>('.transition-spacer');
+
+  const spacer = getElementSafely<HTMLElement>(".transition-spacer");
   if (spacer) {
-    spacer.style.setProperty('--transition-sections', String(effectiveTransitionSections));
+    spacer.style.setProperty(
+      "--transition-sections",
+      String(effectiveTransitionSections),
+    );
   }
-  
+
   // Use requestAnimationFrame for smoother scrolling
   let ticking = false;
   let isDestroyed = false; // Track if component is destroyed
-  
+
   function updateScroll() {
-    if (isDestroyed || !container || !transitionContainer || totalTransitionImages === 0) return;
-    
+    if (
+      isDestroyed ||
+      !container ||
+      !transitionContainer ||
+      totalTransitionImages === 0
+    )
+      return;
+
     try {
       // Guard against negative scroll values (overscroll up)
       const scrollTop = Math.max(0, window.scrollY);
-      
+
       // Calculate which section we're in
-      const currentSection = Math.min(Math.floor(scrollTop / sectionHeight), totalTransitionImages - 1);
-      
+      const currentSection = Math.min(
+        Math.floor(scrollTop / sectionHeight),
+        totalTransitionImages - 1,
+      );
+
       // Calculate how far we are through the current section (0 to 1)
       const sectionProgress = (scrollTop % sectionHeight) / sectionHeight;
-      
+
       // Determine if we should transition to the next image
       const inTransitionPhase = sectionProgress > STATIC_PHASE;
-      
+
       // Calculate the transition progress (0 to 1) if in transition phase
-      const transitionProgress = inTransitionPhase 
-        ? (sectionProgress - STATIC_PHASE) / TRANSITION_PHASE 
+      const transitionProgress = inTransitionPhase
+        ? (sectionProgress - STATIC_PHASE) / TRANSITION_PHASE
         : 0;
-      
+
       // Calculate title animation with smooth transitions
       // This creates a more gradual fade-in and fade-out cycle
       let titleProgress = 0;
-      
+
       // Fade in phase (start to fully visible)
       if (sectionProgress >= TITLE_START && sectionProgress <= TITLE_END) {
-        titleProgress = (sectionProgress - TITLE_START) / (TITLE_END - TITLE_START);
-      } 
-      // Fully visible phase
-      else if (sectionProgress > TITLE_END && sectionProgress < TITLE_FADE_START) {
-        titleProgress = 1;
-      } 
-      // Fade out phase (fully visible to invisible)
-      else if (sectionProgress >= TITLE_FADE_START && sectionProgress <= TITLE_FADE_END) {
-        titleProgress = 1 - (sectionProgress - TITLE_FADE_START) / (TITLE_FADE_END - TITLE_FADE_START);
+        titleProgress =
+          (sectionProgress - TITLE_START) / (TITLE_END - TITLE_START);
       }
-      
+      // Fully visible phase
+      else if (
+        sectionProgress > TITLE_END &&
+        sectionProgress < TITLE_FADE_START
+      ) {
+        titleProgress = 1;
+      }
+      // Fade out phase (fully visible to invisible)
+      else if (
+        sectionProgress >= TITLE_FADE_START &&
+        sectionProgress <= TITLE_FADE_END
+      ) {
+        titleProgress =
+          1 -
+          (sectionProgress - TITLE_FADE_START) /
+            (TITLE_FADE_END - TITLE_FADE_START);
+      }
+
       // Clamp between 0 and 1 to avoid any unexpected values
       titleProgress = Math.max(0, Math.min(1, titleProgress));
-      
+
       // Apply the max opacity limit for subtler effect
       const titleOpacity = titleProgress * MAX_TITLE_OPACITY;
-      
+
       // Only calculate these values if we have multiple images
       let pastLastImageTransition = false;
       if (totalTransitionImages > 1) {
         // Calculate when the transition to the last image is complete
         const secondToLastImageIndex = totalTransitionImages - 2;
-        const lastImageTransitionStart = sectionHeight * secondToLastImageIndex + (STATIC_PHASE * sectionHeight);
-        const lastImageTransitionEnd = lastImageTransitionStart + (TRANSITION_PHASE * sectionHeight);
-        
+        const lastImageTransitionStart =
+          sectionHeight * secondToLastImageIndex + STATIC_PHASE * sectionHeight;
+        const lastImageTransitionEnd =
+          lastImageTransitionStart + TRANSITION_PHASE * sectionHeight;
+
         // Check if we've passed the point where the last image is fully transitioned in
         pastLastImageTransition = scrollTop >= lastImageTransitionEnd;
-        
+
         // Handle last image transition if we have a separate normal flow image
         if (hasSeparateLastImage && lastNormalImage) {
           if (pastLastImageTransition) {
             // Once the last image is fully visible, hide the transition container
-            transitionContainer.style.opacity = '0';
-            transitionContainer.style.visibility = 'hidden';
-            transitionContainer.style.pointerEvents = 'none';
-            
+            transitionContainer.style.opacity = "0";
+            transitionContainer.style.visibility = "hidden";
+            transitionContainer.style.pointerEvents = "none";
+
             // Make sure normal flow image is fully visible
-            lastNormalImage.style.opacity = '1';
-            
+            lastNormalImage.style.opacity = "1";
+
             // Animate the title for the last normal image
-            if (lastNormalImage.querySelector('.title')) {
-              const lastTitle = lastNormalImage.querySelector('.title') as HTMLElement;
+            if (lastNormalImage.querySelector(".title")) {
+              const lastTitle = lastNormalImage.querySelector(
+                ".title",
+              ) as HTMLElement;
               lastTitle.style.opacity = String(MAX_TITLE_OPACITY);
-              lastTitle.style.transform = 'translateY(0)';
+              lastTitle.style.transform = "translateY(0)";
             }
           } else {
             // Normal transition behavior
-            transitionContainer.style.opacity = '1';
-            transitionContainer.style.visibility = 'visible';
-            transitionContainer.style.pointerEvents = 'auto';
-            
+            transitionContainer.style.opacity = "1";
+            transitionContainer.style.visibility = "visible";
+            transitionContainer.style.pointerEvents = "auto";
+
             // Show the normal flow last image during the last transition
-            if (currentSection === secondToLastImageIndex && inTransitionPhase) {
+            if (
+              currentSection === secondToLastImageIndex &&
+              inTransitionPhase
+            ) {
               // Fade in the normal image as we transition to the last image
               lastNormalImage.style.opacity = String(transitionProgress);
-              
+
               // Also animate the title
-              if (lastNormalImage.querySelector('.title')) {
-                const lastTitle = lastNormalImage.querySelector('.title') as HTMLElement;
-                lastTitle.style.opacity = String(transitionProgress * MAX_TITLE_OPACITY);
+              if (lastNormalImage.querySelector(".title")) {
+                const lastTitle = lastNormalImage.querySelector(
+                  ".title",
+                ) as HTMLElement;
+                lastTitle.style.opacity = String(
+                  transitionProgress * MAX_TITLE_OPACITY,
+                );
                 lastTitle.style.transform = `translateY(${15 * (1 - transitionProgress)}px)`;
               }
             } else {
-              lastNormalImage.style.opacity = '0';
-              
+              lastNormalImage.style.opacity = "0";
+
               // Hide title
-              if (lastNormalImage.querySelector('.title')) {
-                const lastTitle = lastNormalImage.querySelector('.title') as HTMLElement;
-                lastTitle.style.opacity = '0';
-                lastTitle.style.transform = 'translateY(15px)';
+              if (lastNormalImage.querySelector(".title")) {
+                const lastTitle = lastNormalImage.querySelector(
+                  ".title",
+                ) as HTMLElement;
+                lastTitle.style.opacity = "0";
+                lastTitle.style.transform = "translateY(15px)";
               }
             }
           }
         }
-        
+
         // Update accessibility attributes for screen readers
         transitionImages.forEach((img, i) => {
-          img.setAttribute('aria-hidden', i === currentSection ? 'false' : 'true');
+          img.setAttribute(
+            "aria-hidden",
+            i === currentSection ? "false" : "true",
+          );
         });
       }
-      
+
       // Update image opacities in the transition container
       // Only update the images that need changing to improve performance
       transitionImages.forEach((img, i) => {
-        let newOpacity = '0';
-        
+        let newOpacity = "0";
+
         if (i === currentSection) {
           // Current image - fade out if in transition phase
-          newOpacity = inTransitionPhase 
-            ? String(1 - transitionProgress) 
-            : '1';
-            
+          newOpacity = inTransitionPhase ? String(1 - transitionProgress) : "1";
+
           // Animate title for current section
-          const title = img.querySelector('.title');
-          if (title && typeof title === 'object') {
+          const title = img.querySelector(".title");
+          if (title && typeof title === "object") {
             const titleEl = title as HTMLElement;
-            
+
             // Set opacity and transform with smooth transitions
             titleEl.style.opacity = String(titleOpacity);
             titleEl.style.transform = `translateY(${15 * (1 - titleProgress)}px)`;
-            
+
             // Add transition duration for smoother changes
-            titleEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            titleEl.style.transition = "opacity 0.4s ease, transform 0.4s ease";
           }
         } else if (i === currentSection + 1 && inTransitionPhase) {
           // Next image - fade in if in transition phase
           newOpacity = String(transitionProgress);
-          
+
           // Animate title for the next section when transitioning
-          const title = img.querySelector('.title');
-          if (title && typeof title === 'object') {
+          const title = img.querySelector(".title");
+          if (title && typeof title === "object") {
             const titleEl = title as HTMLElement;
-            
+
             // Apply a different animation for the upcoming title
             // This creates a smooth handoff between titles
-            let nextTitleOpacity = titleProgress * transitionProgress * MAX_TITLE_OPACITY;
-            
+            let nextTitleOpacity =
+              titleProgress * transitionProgress * MAX_TITLE_OPACITY;
+
             // Boost the opacity slightly during transition to avoid complete disappearance
             if (transitionProgress > 0.3 && titleProgress > 0.3) {
               nextTitleOpacity = Math.max(nextTitleOpacity, 0.05);
             }
-            
+
             titleEl.style.opacity = String(nextTitleOpacity);
             titleEl.style.transform = `translateY(${15 * (1 - transitionProgress * titleProgress)}px)`;
-            titleEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            titleEl.style.transition = "opacity 0.4s ease, transform 0.4s ease";
           }
         } else {
           // Hide titles for non-visible sections, but keep a slight delay
-          const title = img.querySelector('.title');
-          if (title && typeof title === 'object') {
+          const title = img.querySelector(".title");
+          if (title && typeof title === "object") {
             const titleEl = title as HTMLElement;
-            titleEl.style.opacity = '0';
-            titleEl.style.transform = 'translateY(15px)';
-            titleEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            titleEl.style.opacity = "0";
+            titleEl.style.transform = "translateY(15px)";
+            titleEl.style.transition = "opacity 0.5s ease, transform 0.5s ease";
           }
         }
-        
+
         // Only update the DOM if the opacity needs to change
         if (img.style.opacity !== newOpacity) {
           img.style.opacity = newOpacity;
         }
       });
     } catch (error) {
-      console.error('Error in scroll transition update:', error);
+      console.error("Error in scroll transition update:", error);
     }
-    
+
     ticking = false;
   }
 
@@ -456,7 +508,7 @@ const last = works.length > 0 ? works[works.length - 1] : null;
   // Debounce function for resize
   function debounce(func: Function, wait: number) {
     let timeout: number | null = null;
-    return function(...args: any[]) {
+    return function (...args: any[]) {
       const later = () => {
         timeout = null;
         func(...args);
@@ -471,16 +523,16 @@ const last = works.length > 0 ? works[works.length - 1] : null;
   // Handle resize properly - recalculate dimensions
   function onResize() {
     if (isDestroyed) return;
-    
+
     // Update section height
     sectionHeight = window.innerHeight;
     // Force recalculation
     ticking = false;
     updateScroll();
   }
-  
+
   const debouncedResize = debounce(onResize, 150);
-  
+
   // Add touch event listeners for better mobile experience
   let touchStartY = 0;
   function onTouchStart(e: TouchEvent) {
@@ -489,31 +541,31 @@ const last = works.length > 0 ? works[works.length - 1] : null;
 
   // Set up event listeners with passive option where supported
   const passiveOption = supportsPassiveEvents ? { passive: true } : false;
-  window.addEventListener('scroll', onScroll, passiveOption);
-  window.addEventListener('resize', debouncedResize);
-  
+  window.addEventListener("scroll", onScroll, passiveOption);
+  window.addEventListener("resize", debouncedResize);
+
   // Only add touch listeners on mobile devices
-  if ('ontouchstart' in window) {
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
+  if ("ontouchstart" in window) {
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
   }
-  
+
   // Clean up function to remove event listeners
   function cleanup() {
     isDestroyed = true;
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('resize', debouncedResize);
-    if ('ontouchstart' in window) {
-      window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", debouncedResize);
+    if ("ontouchstart" in window) {
+      window.removeEventListener("touchstart", onTouchStart);
     }
   }
-  
+
   // Set up cleanup when page changes - works with most SPA frameworks
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
       cleanup();
     }
   });
-  
+
   // Initial update
   updateScroll();
 </script>
