@@ -1,5 +1,4 @@
 ---
-// Front-matter – unchanged apart from the comment
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
@@ -23,159 +22,169 @@ const topsWithImages = tops.map((work) => {
   const meta = imageMetaMap[work.id];
   if (!meta) {
     throw new Error(
-      `No image called "${work.id}.png|jpg" in /src/top for “${work.data.title}”.`,
+      `No image called \"${work.id}.png|jpg\" in /src/top for “${work.data.title}”.`,
     );
   }
   return { ...work, image: meta };
 });
 ---
+<BaseLayout>
+  {
+    topsWithImages.map((work) => {
+      const { top } = work.data;
+      const overlayCls = top === 3
+        ? "overlay-fixed"
+        : top === 1
+        ? "overlay-vertical"
+        : top === 2
+        ? "overlay-horizontal"
+        : "";
+
+      return (
+        <article
+          class="artwork-content"
+          data-top={top}
+          aria-labelledby={`work-${work.id}-title`}
+        >
+          <Image
+            src={work.image}
+            alt={work.data.title}
+            class="artwork-image"
+            loading="lazy"
+            format="webp"
+          />
+          <a
+            href={`/works/${work.id}/`}
+            class={["artwork-link", overlayCls].filter(Boolean).join(" ")}
+          >
+            <h2 id={`work-${work.id}-title`} class="title">
+              {work.data.title}
+            </h2>
+            {top != 3 && <p class="description">{work.data.intro}</p>}
+          </a>
+        </article>
+      );
+    })}
+</BaseLayout>
 
 <style>
-  /* one full-screen panel per artwork, *without* manual bottom margin */
+  /* ───────────────── Base section ───────────────── */
   .artwork-content {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100vh; /* All sections occupy 100vh in the document flow */
     overflow: hidden;
   }
 
-  /* ———— intrinsic image sizing, depending on the reveal mode ———— */
-  /* vertical (1)                      */
-  .artwork-content[data-top="1"] .artwork-image {
-    width: 50%;
-    height: auto;
-  }
-  .artwork-content[data-top="1"] {
-    margin-top: 50vh;
-  }
-  /* horizontal (2) → full height                              */
-  .artwork-content[data-top="2"] .artwork-image {
-    height: 60vh;
-    width: auto;
-  }
-  .artwork-content[data-top="2"] {
-    margin-top: 50vh; /* optional – mirrors the vertical panels’ gap */
-  }
+  /* image sizing */
+  .artwork-content[data-top="1"] .artwork-image { width: 50%; height: auto; }
+  .artwork-content[data-top="2"] .artwork-image { height: 60vh; width: auto; }
+  .artwork-content[data-top="3"] .artwork-image { height: 100vh; width: 100%; object-fit: cover; }
 
-  .artwork-content[data-top="3"] .artwork-image {
-    height: 100vh;
-    width: 100%;
-    object-fit: cover;
-  }
+  /* spacing so next section waits */
+  .artwork-content[data-top="1"] { margin-top: 60vh; overflow: visible; }
+  .artwork-content[data-top="2"] { overflow: visible; }
 
-  .artwork-image {
-    display: block;
-    will-change: transform, clip-path;
+  .artwork-image { display:block; will-change:transform; }
+
+  /* ───────────────── Overlay blocks ───────────────── */
+  .artwork-link { text-decoration:none; color:inherit; }
+
+  .overlay-fixed,
+  .overlay-vertical,
+  .overlay-horizontal {
+    position: absolute; /* becomes fixed while pinned */
+    padding: 0.75rem 1.25rem;
+    background: rgba(255 255 255 / .85);
+    backdrop-filter: blur(6px);
+    border-radius: 6px;
+    max-width: 60ch;
+    z-index: 10;
+  }
+  .overlay-fixed { bottom: 2rem; right: 2rem; }
+  .overlay-vertical   { top: 2rem; right: 2rem; }
+  .overlay-horizontal { bottom: 2rem; left: 2rem; }
+
+  /* switch to fixed only while pinned */
+  .artwork-content.is-pinned .overlay-fixed,
+  .artwork-content.is-pinned .overlay-vertical,
+  .artwork-content.is-pinned .overlay-horizontal { position: fixed; }
+
+  /* Title underline */
+  .title{font-size:1rem; font-weight:500; letter-spacing:2px; margin-bottom:.3rem; display:inline-block; position:relative; padding-bottom:2px; }
+  .title::after{content:""; position:absolute; left:0; bottom:0; width:0; height:1px; background:currentColor; transition:width .3s;}
+  .artwork-link:hover .title::after{width:100%;}
+
+  /* MODIFIED: Added line-clamping to truncate description text to 5 lines */
+  .description{
+    line-height:1.7;
+    font-size:.85rem;
+    color:#333;
+    margin-top:.25rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
   }
 </style>
 
-<BaseLayout>
-  {
-    topsWithImages.map((work) => (
-      <article
-        class="artwork-content"
-        data-top={work.data.top}
-        aria-labelledby={`work-${work.id}-title`}
-      >
-        <Image
-          src={work.image}
-          alt={work.data.title}
-          class="artwork-image"
-          loading="lazy"
-          format="webp"
-        />
-      </article>
-    ))
-  }
-</BaseLayout>
-
-<!-- ---------- client-side GSAP / ScrollTrigger ----------- -->
 <script>
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   gsap.registerPlugin(ScrollTrigger);
 
-  /**
-   * Build one ScrollTrigger-powered timeline per artwork.
-   * Each timeline has two *phases* so that we can:
-   *   1. “reveal the first 10 %” (or the centre-clip)
-   *   2. scroll to the very end of the picture
-   * This way one section never overlaps the next, yet there is no
-   * hard-coded 100 vh gap either – ScrollTrigger adds exactly the
-   * spacing it needs.
-   */
-  function initArtworks() {
-    gsap.utils.toArray(".artwork-content").forEach((section) => {
+  function initArtworks(){
+    gsap.utils.toArray(".artwork-content").forEach(section=>{
       const img = section.querySelector("img");
-      const mode = Number(section.dataset.top);
-
-      if (!img.complete)
-        img.addEventListener("load", () => makeTimeline(section, img, mode));
-      else makeTimeline(section, img, mode);
+      const mode = +section.dataset.top;
+      if(!img.complete) img.addEventListener("load",()=>setup(section,img,mode));
+      else setup(section,img,mode);
     });
   }
 
-  function makeTimeline(section, img, mode) {
-    /** Helper numbers we need more than once */
-    const hOverflow = Math.max(0, img.offsetWidth - window.innerWidth);
+  function setup(section,img,mode){
+    const isVertical   = mode===1;
+    const isHorizontal = mode===2;
+    
+    // MODIFIED: Removed the explicit height setting for the vertical container.
+    // This was the cause of the large whitespace gap. The section will now
+    // default to 100vh from the CSS, and the pinning mechanism will handle
+    // the animation duration virtually.
 
-    const triggerEl = mode === 3 ? img : section;
-    /* The timeline runs while the section is *pinned*.                    *
-     * end: "+=<distance>" tells ScrollTrigger exactly how long the pin is */
+    const vOverflow = Math.max(0, img.offsetHeight - innerHeight);
+    const hOverflow = Math.max(0, img.offsetWidth  - innerWidth);
+
+    const start = mode === 3 ? "center center" : "top top";
+
     const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: triggerEl,
-        start: mode === 3 ? "center center" : "top top",
-        pin: section,
-        scrub: mode === 3 ? 1 : true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        // one extra viewport for the “10 % reveal” phase
-        end: () =>
-          "+=" +
-          (mode === 1
-            ? img.offsetHeight
-            : mode === 2
-              ? hOverflow + window.innerHeight
-              : /* mode 3  */ window.innerHeight),
-      },
+      scrollTrigger:{
+        trigger:section,
+        start,
+        end: () => {
+            if (mode === 1) return "+=" + img.offsetHeight;
+            if (mode === 2) return "+=" + (img.offsetWidth > innerWidth ? hOverflow : innerWidth / 2);
+            if (mode === 3) return "+=" + innerHeight;
+            return "bottom top";
+        },
+        pin:section,
+        scrub:true,
+        anticipatePin:1,
+        invalidateOnRefresh:true,
+        toggleClass:{targets:section,className:"is-pinned"},
+      }
     });
 
-    /* ---------- phase 1: reveal the first 10 % (or centre clip) --------- */
-    if (mode === 1) {
-      const vOverflow = Math.max(0, img.offsetHeight - innerHeight);
-
-      /* pin lasts exactly that distance */
-      tl.scrollTrigger.end = "+=" + vOverflow;
-
-      /* one clean slide from start (y = 0) to end (picture’s bottom edge
-   reaches the bottom of the viewport)                               */
-      tl.fromTo(img, { y: 0 }, { y: -vOverflow, ease: "none" });
-    } else if (mode === 2) {
-      const vpW = window.innerWidth;
-      const imgW = img.offsetWidth;
-      const xStart = vpW - 0.1 * imgW;
-      const xEnd = imgW <= vpW ? (vpW - imgW) / 2 : 0;
-      const slideDist = xStart - xEnd;
-      tl.scrollTrigger.end = "+=" + slideDist;
-      ScrollTrigger.refresh();
-      tl.fromTo(
-        img,
-        { x: xStart }, // picture starts on the right
-        { x: xEnd, ease: "none" }, // ends flush with the left edge
-      );
-    } else {
-      // centre-clip: show 20 % × 20 % in the middle of the picture
-      tl.fromTo(
-        img,
-        { clipPath: "inset(40% 40% 40% 40%)" },
-        { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 1 },
-        0,
-      );
+    if(isVertical){
+      tl.fromTo(img, { y: innerHeight }, { y: -vOverflow, ease: "none" });
+    } else if (isHorizontal){
+      const xStart = innerWidth;
+      const xEnd   = -hOverflow;
+      tl.fromTo(img, { x: xStart }, { x: xEnd, ease: "none" });
+    } else { // Mode 3
+      tl.fromTo(img,{clipPath:"inset(40% 40% 40% 40%)"},{clipPath:"inset(0% 0% 0% 0%)",ease:"none",duration:1});
     }
   }
 
-  /** Run after the whole document (incl. images) is ready */
-  if (document.readyState === "complete") initArtworks();
-  else window.addEventListener("load", initArtworks);
+  if(document.readyState==="complete") initArtworks();
+  else addEventListener("load",initArtworks);
 </script>

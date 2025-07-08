@@ -1,6 +1,7 @@
 ---
 title: CLAIR DE LUNE
 thumbnail: ikebukuro_thumb.jpg
+top: 2
 year: 2020
 keywords:
   - Audio Visual Installation with 4ch Sound

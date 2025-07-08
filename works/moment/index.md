@@ -1,6 +1,7 @@
 ---
 title: Moment
 thumbnail: moment_thumb.jpg
+top: 2
 year: 2019
 keywords:
   - Sculpture

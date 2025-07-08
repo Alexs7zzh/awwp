@@ -1,6 +1,7 @@
 ---
 title: Postoperative
 thumbnail: postoperative_thumb.jpg
+top: 3
 year: 2021
 keywords:
   - 360-degree Dome Video

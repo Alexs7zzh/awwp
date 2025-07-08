@@ -1,6 +1,7 @@
 ---
 title: Count The Number of Photons
 thumbnail: any2019_thumb.jpg
+top: 1
 year: 2019
 keywords:
   - 4ch Visual Installation

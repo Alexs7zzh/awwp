@@ -1,6 +1,7 @@
 ---
 title: Scalar Fields (2016)
 thumbnail: scalarfields_thumb.png
+top: 3
 year: 2016
 keywords:
   - 8K Visual Audio Intallation

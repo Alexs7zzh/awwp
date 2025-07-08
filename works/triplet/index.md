@@ -1,6 +1,7 @@
 ---
 title: Triplet
 thumbnail: triplet_thumb.jpg
+top: 2
 year: 2020
 keywords:
   - Land Art
