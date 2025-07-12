@@ -4,7 +4,7 @@ import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 
-// 1 = vertical, 2 = horizontal, 3 = centre-clip
+// Layout is vertical
 const tops = await getCollection("work", ({ data }) => data.top !== undefined);
 const images = import.meta.glob<{ default: ImageMetadata }>(
   "/src/top/*.{png,jpg}",
@@ -30,41 +30,27 @@ const topsWithImages = tops.map((work) => {
 ---
 <BaseLayout>
   {
-    topsWithImages.map((work) => {
-      const { top } = work.data;
-      const overlayCls = top === 3
-        ? "overlay-fixed"
-        : top === 1
-        ? "overlay-vertical"
-        : top === 2
-        ? "overlay-horizontal"
-        : "";
-
-      return (
-        <article
-          class="artwork-content"
-          data-top={top}
-          aria-labelledby={`work-${work.id}-title`}
-        >
-          <Image
-            src={work.image}
-            alt={work.data.title}
-            class="artwork-image"
-            loading="lazy"
-            format="webp"
-          />
-          <a
-            href={`/works/${work.id}/`}
-            class={["artwork-link", overlayCls].filter(Boolean).join(" ")}
-          >
-            <h2 id={`work-${work.id}-title`} class="title">
-              {work.data.title}
-            </h2>
-            {top != 3 && <p class="description">{work.data.intro}</p>}
-          </a>
-        </article>
-      );
-    })}
+    topsWithImages.map((work) => (
+      <article
+        class="artwork-content"
+        aria-labelledby={`work-${work.id}-title`}
+      >
+        <Image
+          src={work.image}
+          alt={work.data.title}
+          class="artwork-image"
+          loading="lazy"
+          format="webp"
+        />
+        <a href={`/works/${work.id}/`} class="artwork-link overlay-vertical">
+          <h2 id={`work-${work.id}-title`} class="title">
+            {work.data.title}
+          </h2>
+          <p class="description">{work.data.intro}</p>
+        </a>
+      </article>
+    ))
+  }
 </BaseLayout>
 
 <style>
@@ -72,55 +58,74 @@ const topsWithImages = tops.map((work) => {
   .artwork-content {
     position: relative;
     width: 100%;
-    height: 100vh; /* All sections occupy 100vh in the document flow */
-    overflow: hidden;
+    /* --- FINAL FIX for SPACING --- */
+    /* All margins are removed. Sections will be flush against each other. */
+    margin: 0;
+    /* The container must contain its absolutely positioned children for height calculation */
+    height: max-content;
   }
 
   /* image sizing */
-  .artwork-content[data-top="1"] .artwork-image { width: 50%; height: auto; }
-  .artwork-content[data-top="2"] .artwork-image { height: 60vh; width: auto; }
-  .artwork-content[data-top="3"] .artwork-image { height: 100vh; width: 100%; object-fit: cover; }
+  .artwork-content .artwork-image {
+    width: 70%;
+    height: auto;
+    /* Image position is no longer needed as it's controlled by GSAP */
+  }
 
-  /* spacing so next section waits */
-  .artwork-content[data-top="1"] { margin-top: 60vh; overflow: visible; }
-  .artwork-content[data-top="2"] { overflow: visible; }
-
-  .artwork-image { display:block; will-change:transform; }
+  .artwork-image {
+    display: block;
+    will-change: transform;
+  }
 
   /* ───────────────── Overlay blocks ───────────────── */
-  .artwork-link { text-decoration:none; color:inherit; }
+  .artwork-link {
+    text-decoration: none;
+    color: inherit;
+  }
 
-  .overlay-fixed,
-  .overlay-vertical,
-  .overlay-horizontal {
-    position: absolute; /* becomes fixed while pinned */
+  .overlay-vertical {
+    /* Position is absolute so it can be moved independently of the image */
+    position: absolute; 
     padding: 0.75rem 1.25rem;
-    background: rgba(255 255 255 / .85);
+    background: rgba(255 255 255 / 0.85);
     backdrop-filter: blur(6px);
     border-radius: 6px;
     max-width: 60ch;
     z-index: 10;
+    top: 2rem;
+    right: 2rem;
+    will-change: transform;
   }
-  .overlay-fixed { bottom: 2rem; right: 2rem; }
-  .overlay-vertical   { top: 2rem; right: 2rem; }
-  .overlay-horizontal { bottom: 2rem; left: 2rem; }
+  
+  /* Title and description styles remain the same */
+  .title {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-bottom: 0.3rem;
+    display: inline-block;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  .artwork-link:hover .title::after {
+    width: 100%;
+  }
 
-  /* switch to fixed only while pinned */
-  .artwork-content.is-pinned .overlay-fixed,
-  .artwork-content.is-pinned .overlay-vertical,
-  .artwork-content.is-pinned .overlay-horizontal { position: fixed; }
-
-  /* Title underline */
-  .title{font-size:1rem; font-weight:500; letter-spacing:2px; margin-bottom:.3rem; display:inline-block; position:relative; padding-bottom:2px; }
-  .title::after{content:""; position:absolute; left:0; bottom:0; width:0; height:1px; background:currentColor; transition:width .3s;}
-  .artwork-link:hover .title::after{width:100%;}
-
-  /* MODIFIED: Added line-clamping to truncate description text to 5 lines */
-  .description{
-    line-height:1.7;
-    font-size:.85rem;
-    color:#333;
-    margin-top:.25rem;
+  .description {
+    line-height: 1.7;
+    font-size: 0.85rem;
+    color: #333;
+    margin-top: 0.25rem;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 5;
@@ -133,58 +138,61 @@ const topsWithImages = tops.map((work) => {
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   gsap.registerPlugin(ScrollTrigger);
 
-  function initArtworks(){
-    gsap.utils.toArray(".artwork-content").forEach(section=>{
-      const img = section.querySelector("img");
-      const mode = +section.dataset.top;
-      if(!img.complete) img.addEventListener("load",()=>setup(section,img,mode));
-      else setup(section,img,mode);
-    });
+  function initArtworks() {
+    // A small delay to ensure all images are rendered and have dimensions
+    setTimeout(() => {
+      gsap.utils.toArray(".artwork-content").forEach((section) => {
+        const img = section.querySelector("img.artwork-image");
+        setupAnimation(section, img);
+      });
+    }, 100);
   }
 
-  function setup(section,img,mode){
-    const isVertical   = mode===1;
-    const isHorizontal = mode===2;
+  function setupAnimation(section, img) {
+    const text = section.querySelector(".overlay-vertical");
     
-    // MODIFIED: Removed the explicit height setting for the vertical container.
-    // This was the cause of the large whitespace gap. The section will now
-    // default to 100vh from the CSS, and the pinning mechanism will handle
-    // the animation duration virtually.
-
-    const vOverflow = Math.max(0, img.offsetHeight - innerHeight);
-    const hOverflow = Math.max(0, img.offsetWidth  - innerWidth);
-
-    const start = mode === 3 ? "center center" : "top top";
+    // Only run the animation if the image is taller than the viewport
+    if (img.offsetHeight <= window.innerHeight) {
+      return; 
+    }
 
     const tl = gsap.timeline({
-      scrollTrigger:{
-        trigger:section,
-        start,
-        end: () => {
-            if (mode === 1) return "+=" + img.offsetHeight;
-            if (mode === 2) return "+=" + (img.offsetWidth > innerWidth ? hOverflow : innerWidth / 2);
-            if (mode === 3) return "+=" + innerHeight;
-            return "bottom top";
-        },
-        pin:section,
-        scrub:true,
-        anticipatePin:1,
-        invalidateOnRefresh:true,
-        toggleClass:{targets:section,className:"is-pinned"},
-      }
+      scrollTrigger: {
+        trigger: section,
+        // --- FINAL FIX ---
+        // NO MORE PINNING. We just scrub the animation as the section
+        // scrolls through the viewport.
+        scrub: true,
+        // Start when the top of the section hits the top of the viewport
+        start: "top top",
+        // End when the bottom of the section hits the bottom of the viewport
+        // This creates a natural animation duration without any artificial space.
+        end: "bottom bottom",
+        invalidateOnRefresh: true,
+      },
     });
 
-    if(isVertical){
-      tl.fromTo(img, { y: innerHeight }, { y: -vOverflow, ease: "none" });
-    } else if (isHorizontal){
-      const xStart = innerWidth;
-      const xEnd   = -hOverflow;
-      tl.fromTo(img, { x: xStart }, { x: xEnd, ease: "none" });
-    } else { // Mode 3
-      tl.fromTo(img,{clipPath:"inset(40% 40% 40% 40%)"},{clipPath:"inset(0% 0% 0% 0%)",ease:"none",duration:1});
-    }
+    // Animate the image to move it up.
+    // It moves from y=0 to a negative value that ensures its bottom
+    // aligns with the viewport bottom at the end of the scroll.
+    tl.to(img, {
+      y: -(img.offsetHeight - window.innerHeight),
+      ease: "none",
+    });
+
+    // Animate the text box to COUNTER the scroll, making it appear fixed.
+    // It moves from y=0 to a positive value that is equal to the
+    // total distance the section has scrolled past the top of the screen.
+    // We add the animation to the timeline at position 0 to make it
+    // run in parallel with the image animation.
+    tl.to(text, {
+        y: section.offsetHeight - window.innerHeight,
+        ease: "none",
+      },
+      0 // Start at the same time as the image tween
+    );
   }
 
-  if(document.readyState==="complete") initArtworks();
-  else addEventListener("load",initArtworks);
+  // Use window.onload to ensure image dimensions are available
+  window.onload = initArtworks;
 </script>
