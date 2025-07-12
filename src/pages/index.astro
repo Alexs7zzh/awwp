@@ -28,6 +28,7 @@ const topsWithImages = tops.map((work) => {
   return { ...work, image: meta };
 });
 ---
+
 <BaseLayout>
   {
     topsWithImages.map((work) => (
@@ -42,7 +43,7 @@ const topsWithImages = tops.map((work) => {
           loading="lazy"
           format="webp"
         />
-        <a href={`/works/${work.id}/`} class="artwork-link overlay-vertical">
+        <a href={`/works/${work.id}/`} class="artwork-link">
           <h2 id={`work-${work.id}-title`} class="title">
             {work.data.title}
           </h2>
@@ -54,50 +55,48 @@ const topsWithImages = tops.map((work) => {
 </BaseLayout>
 
 <style>
-  /* ───────────────── Base section ───────────────── */
   .artwork-content {
-    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
     width: 100%;
-    /* --- FINAL FIX for SPACING --- */
-    /* All margins are removed. Sections will be flush against each other. */
-    margin: 0;
-    /* The container must contain its absolutely positioned children for height calculation */
-    height: max-content;
+    margin-bottom: 50vh;
   }
 
-  /* image sizing */
-  .artwork-content .artwork-image {
-    width: 70%;
-    height: auto;
-    /* Image position is no longer needed as it's controlled by GSAP */
+  /* On smaller screens, stack the layout */
+  @media (max-width: 767px) {
+    .artwork-content {
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 25vh;
+    }
+    .artwork-image {
+      width: 100% !important; /* Override inline style */
+    }
+    .artwork-link {
+        margin-top: 0;
+        margin-right: 0;
+    }
   }
 
   .artwork-image {
+    width: 70%;
+    flex-shrink: 0;
+    height: auto;
     display: block;
     will-change: transform;
   }
 
-  /* ───────────────── Overlay blocks ───────────────── */
   .artwork-link {
     text-decoration: none;
     color: inherit;
+    margin-top: 2rem;
+    margin-right: 2rem;
+    padding: 0;
+    will-change: transform;
+    flex-grow: 1;
   }
 
-  .overlay-vertical {
-    /* Position is absolute so it can be moved independently of the image */
-    position: absolute; 
-    padding: 0.75rem 1.25rem;
-    background: rgba(255 255 255 / 0.85);
-    backdrop-filter: blur(6px);
-    border-radius: 6px;
-    max-width: 60ch;
-    z-index: 10;
-    top: 2rem;
-    right: 2rem;
-    will-change: transform;
-  }
-  
-  /* Title and description styles remain the same */
   .title {
     font-size: 1rem;
     font-weight: 500;
@@ -139,60 +138,62 @@ const topsWithImages = tops.map((work) => {
   gsap.registerPlugin(ScrollTrigger);
 
   function initArtworks() {
-    // A small delay to ensure all images are rendered and have dimensions
-    setTimeout(() => {
-      gsap.utils.toArray(".artwork-content").forEach((section) => {
-        const img = section.querySelector("img.artwork-image");
-        setupAnimation(section, img);
-      });
-    }, 100);
+    // Use the modern gsap.matchMedia() for responsive animations
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      // This function runs when the media query matches
+      const triggers = [];
+
+      // A small delay to ensure all images are rendered and have dimensions
+      setTimeout(() => {
+        gsap.utils.toArray(".artwork-content").forEach((section) => {
+          const img = section.querySelector("img.artwork-image");
+          if (img) {
+            // Pass the triggers array to the setup function
+            const st = setupAnimation(section, img);
+            if (st) triggers.push(st);
+          }
+        });
+      }, 100);
+
+      // Return a cleanup function that will be called when the media query no longer matches
+      return () => {
+        triggers.forEach((st) => st.kill());
+      };
+    });
   }
 
   function setupAnimation(section, img) {
-    const text = section.querySelector(".overlay-vertical");
-    
-    // Only run the animation if the image is taller than the viewport
+    // Only apply the effect if the image is taller than the viewport
     if (img.offsetHeight <= window.innerHeight) {
-      return; 
+      return null;
     }
 
+    // This timeline will animate the image upwards while the parent container is pinned.
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        // --- FINAL FIX ---
-        // NO MORE PINNING. We just scrub the animation as the section
-        // scrolls through the viewport.
-        scrub: true,
-        // Start when the top of the section hits the top of the viewport
         start: "top top",
-        // End when the bottom of the section hits the bottom of the viewport
-        // This creates a natural animation duration without any artificial space.
         end: "bottom bottom",
+        scrub: true,
+        pin: true, // Pin the entire section
+        pinSpacing: true,
         invalidateOnRefresh: true,
       },
     });
 
-    // Animate the image to move it up.
-    // It moves from y=0 to a negative value that ensures its bottom
-    // aligns with the viewport bottom at the end of the scroll.
+    // Animate the image's "y" position.
+    // The distance to move is the image's total height minus the viewport's height.
+    // This makes the image scroll perfectly from top to bottom within the viewport.
     tl.to(img, {
       y: -(img.offsetHeight - window.innerHeight),
-      ease: "none",
+      ease: "none", // Use a linear ease for a direct scroll correlation
     });
 
-    // Animate the text box to COUNTER the scroll, making it appear fixed.
-    // It moves from y=0 to a positive value that is equal to the
-    // total distance the section has scrolled past the top of the screen.
-    // We add the animation to the timeline at position 0 to make it
-    // run in parallel with the image animation.
-    tl.to(text, {
-        y: section.offsetHeight - window.innerHeight,
-        ease: "none",
-      },
-      0 // Start at the same time as the image tween
-    );
+    // Return the ScrollTrigger instance so it can be killed on cleanup
+    return tl.scrollTrigger;
   }
 
-  // Use window.onload to ensure image dimensions are available
-  window.onload = initArtworks;
+  document.addEventListener("DOMContentLoaded", initArtworks);
 </script>
