@@ -133,67 +133,57 @@ const topsWithImages = tops.map((work) => {
 </style>
 
 <script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
-  function initArtworks() {
-    // Use the modern gsap.matchMedia() for responsive animations
-    const mm = gsap.matchMedia();
+// wait until every .artwork-image knows its real size
+function whenImagesReady(sel, cb) {
+  Promise.all(
+    gsap.utils.toArray(sel).map(img =>
+      img.complete ? 1 : new Promise(res => (img.onload = res))
+    )
+  ).then(cb);
+}
 
-    mm.add("(min-width: 768px)", () => {
-      // This function runs when the media query matches
-      const triggers = [];
+whenImagesReady(".artwork-image", () => {
+  const mm = gsap.matchMedia();
 
-      // A small delay to ensure all images are rendered and have dimensions
-      setTimeout(() => {
-        gsap.utils.toArray(".artwork-content").forEach((section) => {
-          const img = section.querySelector("img.artwork-image");
-          if (img) {
-            // Pass the triggers array to the setup function
-            const st = setupAnimation(section, img);
-            if (st) triggers.push(st);
-          }
-        });
-      }, 100);
+  mm.add("(min-width:768px)", () => {
+    const cleanups = [];
 
-      // Return a cleanup function that will be called when the media query no longer matches
-      return () => {
-        triggers.forEach((st) => st.kill());
-      };
-    });
-  }
+    gsap.utils.toArray(".artwork-content").forEach(section => {
+      const img  = section.querySelector(".artwork-image");
+      if (!img || img.naturalHeight <= innerHeight) return; // skip small ones
 
-  function setupAnimation(section, img) {
-    // Only apply the effect if the image is taller than the viewport
-    if (img.offsetHeight <= window.innerHeight) {
-      return null;
-    }
+      const travel = () => img.naturalHeight - innerHeight; // pixels to move
 
-    // This timeline will animate the image upwards while the parent container is pinned.
-    const tl = gsap.timeline({
-      scrollTrigger: {
+      // pin **only the image** so the link block keeps scrolling
+      const st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: "bottom bottom",
+        end: () => `+=${travel()}`,
+        pin: img,
+        pinSpacing: "margin",     // prevent flex/layout jumps
         scrub: true,
-        pin: true, // Pin the entire section
-        pinSpacing: true,
-        invalidateOnRefresh: true,
-      },
+        anticipatePin: 1,
+        invalidateOnRefresh: true
+      });
+
+      gsap.to(img, {               // vertical reveal
+        y: () => -travel(),
+        ease: "none",
+        scrollTrigger: st
+      });
+
+      cleanups.push(() => st.kill());
     });
 
-    // Animate the image's "y" position.
-    // The distance to move is the image's total height minus the viewport's height.
-    // This makes the image scroll perfectly from top to bottom within the viewport.
-    tl.to(img, {
-      y: -(img.offsetHeight - window.innerHeight),
-      ease: "none", // Use a linear ease for a direct scroll correlation
-    });
+    // return a cleanup so gsap.matchMedia() removes everything on breakpoint change
+    return () => cleanups.forEach(f => f());
+  });
 
-    // Return the ScrollTrigger instance so it can be killed on cleanup
-    return tl.scrollTrigger;
-  }
+  ScrollTrigger.refresh(); // just in case
+});
 
-  document.addEventListener("DOMContentLoaded", initArtworks);
 </script>
