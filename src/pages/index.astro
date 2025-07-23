@@ -34,7 +34,7 @@ const topsWithImages = tops.map((work) => {
     topsWithImages.map((work) => (
       <article
         class="artwork-content"
-        aria-labelledby={`work-${work.id}-title`}
+        aria-labelledby={`work-${work.id}-title}`}
       >
         <Image
           src={work.image}
@@ -63,37 +63,18 @@ const topsWithImages = tops.map((work) => {
     margin-bottom: 50vh;
   }
 
-  /* On smaller screens, stack the layout */
-  @media (max-width: 767px) {
-    .artwork-content {
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 25vh;
-    }
-    .artwork-image {
-      width: 100% !important; /* Override inline style */
-    }
-    .artwork-link {
-        margin-top: 0;
-        margin-right: 0;
-    }
-  }
-
   .artwork-image {
     width: 70%;
     flex-shrink: 0;
     height: auto;
     display: block;
-    will-change: transform;
   }
 
   .artwork-link {
     text-decoration: none;
     color: inherit;
-    margin-top: 2rem;
-    margin-right: 2rem;
+    margin: 2rem;
     padding: 0;
-    will-change: transform;
     flex-grow: 1;
   }
 
@@ -127,63 +108,113 @@ const topsWithImages = tops.map((work) => {
     margin-top: 0.25rem;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
+    
     overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .artwork-content {
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 25vh;
+    }
+    .artwork-image {
+      width: 100% !important; /* Override inline style */
+    }
+    .artwork-link {
+        margin-top: 0;
+    }
+    .description {
+      -webkit-line-clamp: 6;
+    }
   }
 </style>
 
 <script>
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
+  function updatePositions() {
+    const vh = window.innerHeight;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const artworks = document.querySelectorAll('.artwork-content');
 
-// wait until every .artwork-image knows its real size
-function whenImagesReady(sel, cb) {
-  Promise.all(
-    gsap.utils.toArray(sel).map(img =>
-      img.complete ? 1 : new Promise(res => (img.onload = res))
-    )
-  ).then(cb);
-}
-
-whenImagesReady(".artwork-image", () => {
-  const mm = gsap.matchMedia();
-
-  mm.add("(min-width:768px)", () => {
-    const cleanups = [];
-
-    gsap.utils.toArray(".artwork-content").forEach(section => {
-      const img  = section.querySelector(".artwork-image");
-      if (!img || img.naturalHeight <= innerHeight) return; // skip small ones
-
-      const travel = () => img.naturalHeight - innerHeight; // pixels to move
-
-      // pin **only the image** so the link block keeps scrolling
-      const st = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: () => `+=${travel()}`,
-        pin: img,
-        pinSpacing: "margin",     // prevent flex/layout jumps
-        scrub: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true
-      });
-
-      gsap.to(img, {               // vertical reveal
-        y: () => -travel(),
-        ease: "none",
-        scrollTrigger: st
-      });
-
-      cleanups.push(() => st.kill());
+    // First, reset all to normal to allow measuring natural state
+    artworks.forEach((art) => {
+      const text = art.querySelector<HTMLElement>('.artwork-link');
+      if (text) {
+        text.style.position = '';
+        text.style.top = '';
+        text.style.right = '';
+        text.style.width = '';
+        text.style.margin = '';
+        text.style.zIndex = '';
+      }
     });
 
-    // return a cleanup so gsap.matchMedia() removes everything on breakpoint change
-    return () => cleanups.forEach(f => f());
+    if (isMobile) return;
+
+    // Get rem size for calculations
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const pinnedTopPx = 2 * rootFontSize;
+    const pinnedRightPx = 2 * rootFontSize;
+
+    artworks.forEach((art) => {
+      const image = art.querySelector<HTMLElement>('.artwork-image');
+      const text = art.querySelector<HTMLElement>('.artwork-link');
+      if (!image || !text) return;
+      const rect = image.getBoundingClientRect();
+
+      // Skip if not tall enough
+      if (rect.height <= vh) return;
+
+      // Measure natural width after reset
+      const naturalWidth = text.offsetWidth;
+
+      let mode = 'normal';
+      if (rect.top <= 0 && rect.bottom > vh) {
+        mode = 'pinned';
+      } else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0) {
+        mode = 'leaving';
+      }
+
+      if (mode !== 'normal') {
+        text.style.position = 'fixed';
+        text.style.right = `${pinnedRightPx}px`;
+        text.style.width = `${naturalWidth}px`;
+        text.style.margin = '0';
+        text.style.zIndex = '10';
+
+        if (mode === 'pinned') {
+          text.style.top = `${pinnedTopPx}px`;
+        } else if (mode === 'leaving') {
+          const moved = vh - rect.bottom;
+          const newTopPx = pinnedTopPx - moved;
+          text.style.top = `${newTopPx}px`;
+        }
+      }
+    });
+  }
+
+  // Throttle scroll updates with RAF
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updatePositions();
+        ticking = false;
+      });
+      ticking = true;
+    }
   });
 
-  ScrollTrigger.refresh(); // just in case
-});
+  // Handle resize
+  window.addEventListener('resize', updatePositions);
 
+  // Handle image loads (for lazy loading)
+  const artworks = document.querySelectorAll('.artwork-content');
+  artworks.forEach((art) => {
+    const img = art.querySelector('.artwork-image');
+    if (img) img.addEventListener('load', updatePositions);
+  });
+
+  // Initial update
+  updatePositions();
 </script>
