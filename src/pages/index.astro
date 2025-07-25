@@ -1,190 +1,136 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
+import LongImage from "@components/LongImage.astro"
+import MultiImageSide from "@components/MultiImage_Side.astro"
 
-// Layout is vertical
-const tops = await getCollection("work", ({ data }) => data.top !== undefined);
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/top/*.{png,jpg}",
-  { eager: true },
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/works/**/*.{png,jpg,jpeg,webp}",
+  { eager: true }
 );
+const images: Record<string, ImageMetadata> = {};
+for (const [path, mod] of Object.entries(allImages)) {
+  const img = mod.default;
 
-const imageMetaMap: Record<string, ImageMetadata> = Object.fromEntries(
-  Object.entries(images).map(([path, mod]) => [
-    path.split("/").pop()!.split(".")[0],
-    mod.default,
-  ]),
-);
+  const noExt = path.replace(/\.(png|jpe?g|webp)$/i, "");
 
-const topsWithImages = tops.map((work) => {
-  const meta = imageMetaMap[work.id];
-  if (!meta) {
-    throw new Error(
-      `No image called \"${work.id}.png|jpg\" in /src/top for “${work.data.title}”.`,
-    );
-  }
-  return { ...work, image: meta };
-});
+  const relFromContent = noExt.split("/works").pop()!;
+  const basename = relFromContent.split("/").pop()!;
+  images[basename] = img;
+}
+
+console.log(images)
 ---
 
 <BaseLayout>
-  {
-    topsWithImages.map((work) => (
-      <article
-        class="artwork-content"
-        aria-labelledby={`work-${work.id}-title}`}
-      >
-        <Image
-          src={work.image}
-          alt={work.data.title}
-          class="artwork-image"
-          loading="lazy"
-          format="webp"
-        />
-        <a href={`/works/${work.id}/`} class="artwork-link">
-          <h2 id={`work-${work.id}-title`} class="title">
-            {work.data.title}
-          </h2>
-          <p class="description">{work.data.intro}</p>
-        </a>
-      </article>
-    ))
-  }
+  <LongImage id="dismantle" image={images["dismantle_top"]} />
+  <MultiImageSide id="clair" images={[images["clair_01"], images["clair_02"], images["clair_back"], images["ikebukuro_thumb"]]}/>
+  <LongImage id="dragonrain" image={images["dragonrain_top"]} />
+  <LongImage id="triplet" image={images["triplet_top"]} />
 </BaseLayout>
-
-<style>
-  .artwork-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 2rem;
-    width: 100%;
-    margin-bottom: 50vh;
-  }
-
-  .artwork-image {
-    width: 70%;
-    flex-shrink: 0;
-    height: auto;
-    display: block;
-  }
-
-  .artwork-link {
-    text-decoration: none;
-    color: inherit;
-    margin: 2rem;
-    padding: 0;
-    flex-grow: 1;
-  }
-
-  .title {
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 2px;
-    margin-bottom: 0.3rem;
-    display: inline-block;
-    position: relative;
-    padding-bottom: 2px;
-  }
-  .title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 1px;
-    background: currentColor;
-    transition: width 0.3s;
-  }
-  .artwork-link:hover .title::after {
-    width: 100%;
-  }
-
-  .description {
-    line-height: 1.7;
-    font-size: 0.85rem;
-    color: #333;
-    margin-top: 0.25rem;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    
-    overflow: hidden;
-  }
-
-  @media (max-width: 767px) {
-    .artwork-content {
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 25vh;
-    }
-    .artwork-image {
-      width: 100% !important; /* Override inline style */
-    }
-    .artwork-link {
-        margin-top: 0;
-    }
-    .description {
-      -webkit-line-clamp: 6;
-    }
-  }
-</style>
 
 <script>
   function updatePositions() {
     const vh = window.innerHeight;
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    const artworks = document.querySelectorAll('.artwork-content');
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    // MODIFICATION: Select all artwork containers, not just one type.
+    const artworks = document.querySelectorAll(".artwork-content");
 
-    // First, reset all to normal to allow measuring natural state
+    // --- Opacity Logic ---
+    // This part now works on both component types automatically because
+    // the selector above was broadened.
+    let dominantElement = null;
+    let maxVisibleHeight = -1;
+    const visibleElements = [];
+
     artworks.forEach((art) => {
-      const text = art.querySelector<HTMLElement>('.artwork-link');
+      const rect = art.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < vh) {
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(vh, rect.bottom);
+        const visibleHeight = visibleBottom - visibleTop;
+
+        if (visibleHeight > 0) {
+          visibleElements.push(art);
+          if (visibleHeight > maxVisibleHeight) {
+            maxVisibleHeight = visibleHeight;
+            dominantElement = art;
+          }
+        }
+      }
+    });
+
+    const areMultipleVisible = visibleElements.length > 1;
+    artworks.forEach((art) => {
+      art.style.transition = "opacity 0.3s ease";
+      const isVisible = visibleElements.includes(art);
+      const isDominant = art === dominantElement;
+
+      if (areMultipleVisible && isVisible && !isDominant) {
+        art.style.opacity = "0.7";
+      } else {
+        art.style.opacity = "1";
+      }
+    });
+    // --- End Opacity Logic ---
+
+    // --- Modified Sticky Positioning Logic ---
+    artworks.forEach((art) => {
+      const text = art.querySelector(".artwork-link");
       if (text) {
-        text.style.position = '';
-        text.style.top = '';
-        text.style.right = '';
-        text.style.width = '';
-        text.style.margin = '';
-        text.style.zIndex = '';
+        text.style.position = "";
+        text.style.top = "";
+        text.style.right = "";
+        text.style.width = "";
+        text.style.margin = "";
+        text.style.zIndex = "";
       }
     });
 
     if (isMobile) return;
 
-    // Get rem size for calculations
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const rootFontSize = parseFloat(
+      getComputedStyle(document.documentElement).fontSize,
+    );
     const pinnedTopPx = 2 * rootFontSize;
     const pinnedRightPx = 2 * rootFontSize;
 
     artworks.forEach((art) => {
-      const image = art.querySelector<HTMLElement>('.artwork-image');
-      const text = art.querySelector<HTMLElement>('.artwork-link');
-      if (!image || !text) return;
-      const rect = image.getBoundingClientRect();
-
-      // Skip if not tall enough
-      if (rect.height <= vh) return;
-
-      // Measure natural width after reset
-      const naturalWidth = text.offsetWidth;
-
-      let mode = 'normal';
-      if (rect.top <= 0 && rect.bottom > vh) {
-        mode = 'pinned';
-      } else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0) {
-        mode = 'leaving';
+      // MODIFICATION: Find the correct element to measure for height.
+      // For LongImage, it's the single image.
+      // For MultiImageSide, it's the container of all images.
+      let scrollableElement;
+      if (art.classList.contains('long-image')) {
+        scrollableElement = art.querySelector(".artwork-image");
+      } else if (art.classList.contains('multi-image')) {
+        scrollableElement = art.querySelector(".images-container");
       }
 
-      if (mode !== 'normal') {
-        text.style.position = 'fixed';
+      const text = art.querySelector(".artwork-link");
+      if (!scrollableElement || !text) return; // Use the new variable
+
+      const rect = scrollableElement.getBoundingClientRect(); // Measure the correct element
+
+      if (rect.height <= vh) return;
+
+      const naturalWidth = text.offsetWidth;
+
+      let mode = "normal";
+      if (rect.top <= 0 && rect.bottom > vh) {
+        mode = "pinned";
+      } else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0) {
+        mode = "leaving";
+      }
+
+      if (mode !== "normal") {
+        text.style.position = "fixed";
         text.style.right = `${pinnedRightPx}px`;
         text.style.width = `${naturalWidth}px`;
-        text.style.margin = '0';
-        text.style.zIndex = '10';
+        text.style.margin = "0";
+        text.style.zIndex = "10";
 
-        if (mode === 'pinned') {
+        if (mode === "pinned") {
           text.style.top = `${pinnedTopPx}px`;
-        } else if (mode === 'leaving') {
+        } else if (mode === "leaving") {
           const moved = vh - rect.bottom;
           const newTopPx = pinnedTopPx - moved;
           text.style.top = `${newTopPx}px`;
@@ -193,9 +139,8 @@ const topsWithImages = tops.map((work) => {
     });
   }
 
-  // Throttle scroll updates with RAF
   let ticking = false;
-  window.addEventListener('scroll', () => {
+  window.addEventListener("scroll", () => {
     if (!ticking) {
       requestAnimationFrame(() => {
         updatePositions();
@@ -205,14 +150,17 @@ const topsWithImages = tops.map((work) => {
     }
   });
 
-  // Handle resize
-  window.addEventListener('resize', updatePositions);
+  window.addEventListener("resize", updatePositions);
 
-  // Handle image loads (for lazy loading)
-  const artworks = document.querySelectorAll('.artwork-content');
-  artworks.forEach((art) => {
-    const img = art.querySelector('.artwork-image');
-    if (img) img.addEventListener('load', updatePositions);
+  // MODIFICATION: Handle image loads for all images in all components.
+  const artworksWithImages = document.querySelectorAll(".artwork-content");
+  artworksWithImages.forEach((art) => {
+    const imgs = art.querySelectorAll(".artwork-image"); // Get ALL images
+    imgs.forEach(img => {
+      if (img) {
+        img.addEventListener("load", updatePositions);
+      }
+    });
   });
 
   // Initial update
