@@ -1,0 +1,132 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  title: string;
+  content: string;
+  image?: ImageMetadata
+  styleClass?: 'style-gallery' | 'style-brutalist' | 'style-editorial';
+}
+const { title, content, styleClass = 'style-gallery', image = undefined } = Astro.props;
+---
+
+<article class:list={["artwork-content", styleClass]}>
+  {
+    image != undefined ?
+    <Image
+      src={image}
+      alt={title}
+      class="artwork-image"
+      loading="lazy"
+      format="webp"
+    /> : <div/>
+  }
+  <h2 class="text-block-title">{title}</h2>
+  <p class="text-block-content" set:html={content}></p> 
+</article>
+
+<style>
+  .artwork-content {
+    min-height: 70vh;
+    width: 100%;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    padding: 2rem;
+    margin-bottom: 30vh;
+
+    /* A smooth transition for any property changes between styles */
+    transition: all 0.3s ease-in-out;
+  }
+
+  .artwork-image {
+    width: 40%;
+    flex-shrink: 0;
+    height: auto;
+    display: block;
+    margin-bottom: 4rem;
+  }
+
+  .text-block-title,
+  .text-block-content {
+    /* Base max-width that can be overridden by specific styles */
+    max-width: 900px; 
+  }
+
+
+  /* --- Style 1: The Gallery --- */
+  /* Delicate, airy, and intellectual. Small text with lots of breathing room. */
+  .style-gallery .text-block-title {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase; /* A formal, label-like feel */
+    letter-spacing: 0.1em;   /* Adds air between letters */
+    max-width: 600px;
+  }
+
+  .style-gallery .text-block-content {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.6; /* Very high line-height for stylistic effect */
+    color: #444;
+    max-width: 600px; /* A narrower column feels more precious */
+  }
+
+
+  /* --- Style 2: The Brutalist --- */
+  /* Impactful, raw, and full-width. Breaks readability for a strong visual statement. */
+  .style-brutalist {
+    /* For this style, we want the content to be justified full-width */
+    text-align: justify;
+    align-items: stretch; /* Makes children take full width */
+  }
+
+  .style-brutalist .text-block-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    max-width: 100%; /* Override base to take full available width */
+    text-align: center; /* Keep title centered even if container is justified */
+  }
+
+  .style-brutalist .text-block-content {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #111;
+    max-width: 100%; /* Override base to take full available width */
+  }
+
+
+  /* --- Style 3: The Editorial --- */
+  /* Classic, sensible, and elegant using serif fonts. Feels like a high-end publication. */
+  .style-editorial .text-block-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: #222;
+    max-width: 800px;
+  }
+
+  .style-editorial .text-block-content {
+    font-family: 'Lora', serif;
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: #333;
+    max-width: 700px; /* Optimal reading width for serif text */
+  }
+</style>
