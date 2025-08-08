@@ -1,5 +1,8 @@
 ---
-import Header from "@components/Header.astro";
+import { Config } from "@config";
+import Transparent from "@components/headers/Transparent.astro";
+import White from "@components/headers/White.astro";
+import Blur from "@components/headers/Blur.astro";
 ---
 
 <!doctype html>
@@ -13,14 +16,21 @@ import Header from "@components/Header.astro";
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
     <title>Akira Wakita</title>
     <slot name="head" />
   </head>
   <body>
-    <Header />
+    {
+      Config.header.background == 'transparent'
+      ? <Transparent />
+      : (
+        Config.header.background == 'white'
+        ? <White />
+        : <Blur />
+      )
+    }
 
-    <div style="margin-top: 10rem;">
+    <div style={`margin-top: 10rem;--text-horizontal-margin: ${Config.text.horizontalMargin}; --text-vertical-margin: ${Config.text.verticalMargin};`}>
       <slot />
     </div>
   </body>

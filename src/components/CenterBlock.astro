@@ -7,11 +7,12 @@ interface Props {
   content: string;
   image?: ImageMetadata
   styleClass?: 'style-gallery' | 'style-brutalist' | 'style-editorial';
+  parallaxSpeed?: number;
 }
-const { title, content, styleClass = 'style-gallery', image = undefined } = Astro.props;
+const { title, content, styleClass = 'style-gallery', image = undefined, parallaxSpeed = Math.random() } = Astro.props;
 ---
 
-<article class:list={["artwork-content", styleClass]}>
+<article class:list={["artwork-content", styleClass]} data-parallax-speed={parallaxSpeed}>
   {
     image != undefined ?
     <Image

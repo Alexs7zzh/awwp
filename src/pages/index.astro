@@ -19,13 +19,14 @@ for (const [path, mod] of Object.entries(allImages)) {
   const basename = relFromContent.split("/").pop()!;
   images[basename] = img;
 }
-
-console.log(images)
 ---
  
 <BaseLayout>
   <LongImage id="dismantle" image={images["dismantle_top"]} />
-  <MultiImageSide id="clair" images={[images["clair_01"], images["clair_02"], images["clair_back"], images["ikebukuro_thumb"]]}/>
+  <MultiImageSide id="clair"
+    images={[images["clair_01"], images["clair_02"], images["ikebukuro_thumb"], images["clair_back"] ]}
+    positions={[0.5, 0.8, 0.2]}
+    />
   <LongImage id="dragonrain" image={images["dragonrain_top"]} />
   <MultiImageMixed id="clair" images={[images["clair_01"], images["clair_02"], images["clair_back"], images["ikebukuro_thumb"]]}/>
   <CenterBlock image={images["arsdas_thumb"]} title="Mother Fluctuation" content="本作は気候変動のビッグデータを用いた没入型のオーディオビジュアルインスタレーションです。複数のシーンを通して、温度、海面高度、市場、文明などのフラクチュエーション（上昇と下降）という現象に着目し、人間の営為には頓着することのない母なる地球が描かれています。日本伝統の地獄絵の表現を参照しながら、オープンな科学データにアート特有の操作を適用し、温暖化が人類にもたらす大災害を想起させる風景を可視化／可聴化しています。8K映像と5.1ch立体音響を駆使して、没入的な映像音響空間を構築しました。" />
@@ -33,15 +34,46 @@ console.log(images)
 </BaseLayout>
 
 <script>
+  /* -----------------------------------------------------------
+   *  Helpers – read the spacing that was set via CSS variables
+   * --------------------------------------------------------- */
+  const PX_FALLBACK = 32;          // ≒ 2 rem – used if nothing is defined
+
+  /** Convert something like “2rem”, “24px”, “1.5em” → absolute px */
+  function toPx(lengthStr, contextPx) {
+    const v = parseFloat(lengthStr);
+    if (lengthStr.endsWith("rem") || lengthStr.endsWith("em"))
+      return v * contextPx;
+    return v;                      // px values arrive as “…px”
+  }
+
+  /** Get vertical / horizontal spacing for one `.artwork-link` */
+  function getMargins(el) {
+    const rootStyle  = getComputedStyle(document.documentElement);
+    const linkStyle  = getComputedStyle(el);
+
+    const rootFontPx = parseFloat(rootStyle.fontSize) || 16;
+
+    // 1. per-element margin (takes priority)
+    let v = parseFloat(linkStyle.marginTop);
+    let h = parseFloat(linkStyle.marginRight);
+
+    // 2. fall back to CSS custom properties (defined on <BaseLayout/>)
+    if (!v) v = toPx(rootStyle.getPropertyValue("--text-vertical-margin")   || "", rootFontPx) || PX_FALLBACK;
+    if (!h) h = toPx(rootStyle.getPropertyValue("--text-horizontal-margin") || "", rootFontPx) || PX_FALLBACK;
+
+    return { v, h };
+  }
+
+  /* -----------------------------------------------------------
+   *  Main routine – unchanged except where noted
+   * --------------------------------------------------------- */
   function updatePositions() {
-    const vh = window.innerHeight;
+    const vh       = window.innerHeight;
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    // MODIFICATION: Select all artwork containers, not just one type.
     const artworks = document.querySelectorAll(".artwork-content");
 
-    // --- Opacity Logic ---
-    // This part now works on both component types automatically because
-    // the selector above was broadened.
+    /* ---------- 1. opacity section (unchanged) ---------- */
     let dominantElement = null;
     let maxVisibleHeight = -1;
     const visibleElements = [];
@@ -49,15 +81,15 @@ console.log(images)
     artworks.forEach((art) => {
       const rect = art.getBoundingClientRect();
       if (rect.bottom > 0 && rect.top < vh) {
-        const visibleTop = Math.max(0, rect.top);
-        const visibleBottom = Math.min(vh, rect.bottom);
-        const visibleHeight = visibleBottom - visibleTop;
+        const visibleTop     = Math.max(0, rect.top);
+        const visibleBottom  = Math.min(vh, rect.bottom);
+        const visibleHeight  = visibleBottom - visibleTop;
 
         if (visibleHeight > 0) {
           visibleElements.push(art);
           if (visibleHeight > maxVisibleHeight) {
             maxVisibleHeight = visibleHeight;
-            dominantElement = art;
+            dominantElement  = art;
           }
         }
       }
@@ -66,107 +98,154 @@ console.log(images)
     const areMultipleVisible = visibleElements.length > 1;
     artworks.forEach((art) => {
       art.style.transition = "opacity 0.3s ease";
-      const isVisible = visibleElements.includes(art);
+      const isVisible  = visibleElements.includes(art);
       const isDominant = art === dominantElement;
 
-      if (areMultipleVisible && isVisible && !isDominant) {
-        art.style.opacity = "0.7";
-      } else {
-        art.style.opacity = "1";
-      }
+      art.style.opacity = (areMultipleVisible && isVisible && !isDominant) ? "0.7" : "1";
     });
-    // --- End Opacity Logic ---
 
-    // --- Modified Sticky Positioning Logic ---
+    /* ---------- 2. sticky-/pinning section (changed) ---------- */
+    // reset any old inline styles first
     artworks.forEach((art) => {
       const text = art.querySelector(".artwork-link");
-      if (text) {
-        text.style.position = "";
-        text.style.top = "";
-        text.style.right = "";
-        text.style.width = "";
-        text.style.margin = "";
-        text.style.zIndex = "";
-      }
+      if (!text) return;
+
+      text.style.position = "";
+      text.style.top      = "";
+      text.style.right    = "";
+      text.style.width    = "";
+      text.style.margin   = "";
+      text.style.zIndex   = "";
+      text.style.transform = "";
     });
 
-    if (isMobile) return;
-
-    const rootFontSize = parseFloat(
-      getComputedStyle(document.documentElement).fontSize,
-    );
-    const pinnedTopPx = 2 * rootFontSize;
-    const pinnedRightPx = 2 * rootFontSize;
+    if (isMobile) return;  // no pinning on mobile
 
     artworks.forEach((art) => {
-      // MODIFICATION: Find the correct element to measure for height.
-      // For LongImage, it's the single image.
-      // For MultiImageSide, it's the container of all images.
+      const text = art.querySelector(".artwork-link");
+      if (!text) return;
+
+      /* what part of this artwork should drive the scroll logic? */
       let scrollableElement;
-      if (art.classList.contains('long-image')) {
+      if (art.classList.contains("long-image")) {
         scrollableElement = art.querySelector(".artwork-image");
-      } else if (art.classList.contains('multi-image')) {
+      } else if (art.classList.contains("multi-image")) {
         scrollableElement = art.querySelector(".images-container");
       }
 
-      const text = art.querySelector(".artwork-link");
-      if (!scrollableElement || !text) return; // Use the new variable
+      if (!scrollableElement) return;
 
-      const rect = scrollableElement.getBoundingClientRect(); // Measure the correct element
+      const rect = scrollableElement.getBoundingClientRect();
+      if (rect.height <= vh) return;  // no need to pin if it fits
 
-      if (rect.height <= vh) return;
+      /* ↓↓↓ NEW – pick up margins that may come from CSS variables ↓↓↓ */
+      const { v: marginV, h: marginH } = getMargins(text);
 
       const naturalWidth = text.offsetWidth;
 
       let mode = "normal";
-      if (rect.top <= 0 && rect.bottom > vh) {
-        mode = "pinned";
-      } else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0) {
-        mode = "leaving";
-      }
+      if (rect.top <= 0 && rect.bottom > vh)                mode = "pinned";
+      else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0) mode = "leaving";
 
       if (mode !== "normal") {
         text.style.position = "fixed";
-        text.style.right = `${pinnedRightPx}px`;
-        text.style.width = `${naturalWidth}px`;
-        text.style.margin = "0";
-        text.style.zIndex = "10";
-
+        text.style.right    = `${marginH}px`;      // honour –-text-horizontal-margin
+        text.style.width    = `${naturalWidth}px`;
+        text.style.margin   = 0;                   // avoid compounding
+        text.style.zIndex   = 10;
         if (mode === "pinned") {
-          text.style.top = `${pinnedTopPx}px`;
+          text.style.top = `${marginV}px`;         // honour –-text-vertical-margin
         } else if (mode === "leaving") {
-          const moved = vh - rect.bottom;
-          const newTopPx = pinnedTopPx - moved;
-          text.style.top = `${newTopPx}px`;
+          const moved     = vh - rect.bottom;
+          const newTopPx  = marginV - moved;
+          text.style.top  = `${newTopPx}px`;
         }
       }
+
+      art.dataset.pinned = mode === "normal" ? "false" : "true";
     });
   }
 
+  /* -----------------------------------------------------------
+ *  Parallax effect – based on data-parallax-speed
+ * --------------------------------------------------------- */
+const PARALLAX_MIN = 0.02;   // default range when no speed supplied
+const PARALLAX_MAX = 0.40;
+
+function initParallaxSpeeds() {
+  let idx = 0;
+  document.querySelectorAll('.artwork-content').forEach(el => {
+    if (!el.dataset.parallaxSpeed) {
+      // first element stays fixed, others get a random speed
+      const speed = idx === 0 ? 0 :
+        (PARALLAX_MIN + Math.random() * (PARALLAX_MAX - PARALLAX_MIN));
+      el.dataset.parallaxSpeed = speed.toFixed(3);
+    }
+    idx += 1;
+  });
+}
+
+function applyParallax() {
+  const vh      = window.innerHeight;
+  const midY    = window.scrollY + vh * 0.5;
+
+  document.querySelectorAll(".artwork-content").forEach(art => {
+    if (art.dataset.pinned === "true") {
+      // keep things perfectly aligned while the text is pinned
+      art.querySelectorAll(".artwork-image, .artwork-link")
+         .forEach(e => e.style.transform = "translate3d(0,0,0)");
+      return;
+    }
+
+    const speed = parseFloat(art.dataset.parallaxSpeed || 0);
+    if (!speed) return;
+
+    const artMid = art.offsetTop + art.offsetHeight * 0.5;
+    const delta  = midY - artMid;
+
+    if (Math.abs(delta) > vh * 1.5) {
+      // far outside the viewport → no need to draw
+      art.querySelectorAll(".artwork-image, .artwork-link")
+         .forEach(e => e.style.transform = "translate3d(0,0,0)");
+      return;
+    }
+
+    const tY = (-delta * speed).toFixed(2);
+    art.querySelectorAll(".artwork-image, .artwork-link")
+       .forEach(e => {
+         if (getComputedStyle(e).position !== "fixed") {
+           e.style.transform = `translate3d(0, ${tY}px, 0)`;
+         }
+       });
+  });
+}
+
+  /* ---------- 3. event wiring (unchanged) ---------- */
   let ticking = false;
   window.addEventListener("scroll", () => {
     if (!ticking) {
       requestAnimationFrame(() => {
         updatePositions();
+        // applyParallax();
         ticking = false;
       });
       ticking = true;
     }
   });
+window.addEventListener('resize', () => {
+  updatePositions();
+  // applyParallax();
+});
 
-  window.addEventListener("resize", updatePositions);
-
-  // MODIFICATION: Handle image loads for all images in all components.
-  const artworksWithImages = document.querySelectorAll(".artwork-content");
-  artworksWithImages.forEach((art) => {
-    const imgs = art.querySelectorAll(".artwork-image"); // Get ALL images
-    imgs.forEach(img => {
-      if (img) {
-        img.addEventListener("load", updatePositions);
-      }
+  // run once images are loaded
+  document.querySelectorAll(".artwork-content").forEach((art) => {
+    art.querySelectorAll(".artwork-image").forEach((img) => {
+      img.addEventListener("load", updatePositions);
     });
   });
 
-  // Initial update
-  updatePositions();
+  // initial
+// initParallaxSpeeds();
+updatePositions();
+// applyParallax();
 </script>

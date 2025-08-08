@@ -5,43 +5,56 @@ import type { ImageMetadata } from "astro";
 
 interface Props {
   id: string;
+  parallaxSpeed?: number;
   images: ImageMetadata[];
+  positions?: number[]; // values in [0,1]
 }
-const { id, images } = Astro.props;
 
-const work = await getEntry('work', id);
+const { id, images, positions = [], parallaxSpeed = Math.random() } = Astro.props as Props;
+
+const work = await getEntry("work", id);
 if (!work) {
   throw new Error(`No work found by id ${id}`);
 }
 
 function calculateWidthPercentage(image: ImageMetadata): number {
   const aspectRatio = image.width / image.height;
-  if (aspectRatio <= 1.1) {
-    return 48;
-  }
+  if (aspectRatio <= 1.1) return 48;
   const scaledWidth = 48 + (aspectRatio - 1.1) * 35;
   return Math.max(48, Math.min(100, scaledWidth));
 }
+
+function calculateLeftOffset(widthPercent: number, position: number): number {
+  const p = Math.min(1, Math.max(0, position)); // clamp 0‑1
+  const maxLeft = 100 - widthPercent;           // can’t overflow right edge
+  return p * maxLeft;
+}
 ---
 
-<!-- MODIFICATION 1: Changed class from 'long-image' to 'multi-image' -->
 <article
   class="artwork-content multi-image"
-  aria-labelledby={`work-${work.id}-title}`}
+  aria-labelledby={`work-${work.id}-title`}
+  data-parallax-speed={parallaxSpeed}
 >
   <div class="images-container">
     {images.map((image, index) => {
       const widthPercent = calculateWidthPercentage(image);
+      const leftPercent = calculateLeftOffset(
+        widthPercent,
+        positions[index] ?? 0.5 // default – centred
+      );
+
       return (
         <Image
+          key={index}
           src={image}
-          alt={`${work.data.title} - Image ${index + 1}`}
+          alt={`${work.data.title} – Image ${index + 1}`}
           class="artwork-image"
           loading="lazy"
           format="webp"
-          style={`width: ${widthPercent}%;`}
+          style={`width:${widthPercent}%; margin-left:${leftPercent}%`}
         />
-      )
+      );
     })}
   </div>
 
@@ -57,12 +70,16 @@ function calculateWidthPercentage(image: ImageMetadata): number {
 .artwork-content {
   display: flex;
   align-items: flex-start;
-  gap: 2rem;
   width: 100%;
   margin-bottom: 30vh;
 }
 
+/*
+ * Images are laid out with flex‑wrap so they flow naturally; we simply push each
+ * one horizontally using its computed margin‑left value.
+ */
 .images-container {
+  position: relative;   /* keeps margin‑left pooled inside block */
   width: 70%;
   padding: 2rem;
   flex-shrink: 0;
@@ -75,17 +92,16 @@ function calculateWidthPercentage(image: ImageMetadata): number {
 .artwork-image {
   height: auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin-right: auto; /* keeps image block from collapsing */
 }
 
 .artwork-link {
   text-decoration: none;
   color: inherit;
-  margin: 2rem;
+  margin: var(--text-vertical-margin, 2rem) var(--text-horizontal-margin, 2rem);
   padding: 0;
   flex-grow: 1;
-  /* MODIFICATION 2: Removed sticky positioning; JS will handle it. */
+  /* sticky removed; JS handles on scroll */
 }
 
 .title {
@@ -138,19 +154,20 @@ function calculateWidthPercentage(image: ImageMetadata): number {
 @media (max-width: 767px) {
   .artwork-content {
     flex-direction: column;
-    gap: 1rem;
     margin-bottom: 25vh;
   }
   .images-container {
     width: 100%;
     gap: 0.5rem;
   }
+  /* on mobile we ignore custom offsets and just make images full‑width */
   .artwork-image {
     width: 100% !important;
+    margin-left: 0 !important;
   }
   .artwork-link {
     margin-top: 0;
-    position: static; /* This is correct for mobile */
+    position: static; /* correct for mobile */
   }
   .description {
     -webkit-line-clamp: 6;
