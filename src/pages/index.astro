@@ -3,7 +3,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import LongImage from "@components/LongImage.astro"
 import MultiImageSide from "@components/MultiImage_Side.astro";
 import MultiImageMixed from "@components/MultiImage_Mixed.astro";
-import CenterBlock from "@components/CenterBlock.astro";
+import TextMain from "@components/TextMain.astro";
 
 const allImages = import.meta.glob<{ default: ImageMetadata }>(
   "/works/**/*.{png,jpg,jpeg,webp}",
@@ -25,11 +25,11 @@ for (const [path, mod] of Object.entries(allImages)) {
   <LongImage id="dismantle" image={images["dismantle_top"]} />
   <MultiImageSide id="clair"
     images={[images["clair_01"], images["clair_02"], images["ikebukuro_thumb"], images["clair_back"] ]}
-    positions={[0.5, 0.8, 0.2]}
+    positions={[0.5, 1, 0.1]}
     />
   <LongImage id="dragonrain" image={images["dragonrain_top"]} />
   <MultiImageMixed id="clair" images={[images["clair_01"], images["clair_02"], images["clair_back"], images["ikebukuro_thumb"]]}/>
-  <CenterBlock image={images["arsdas_thumb"]} title="Mother Fluctuation" content="本作は気候変動のビッグデータを用いた没入型のオーディオビジュアルインスタレーションです。複数のシーンを通して、温度、海面高度、市場、文明などのフラクチュエーション（上昇と下降）という現象に着目し、人間の営為には頓着することのない母なる地球が描かれています。日本伝統の地獄絵の表現を参照しながら、オープンな科学データにアート特有の操作を適用し、温暖化が人類にもたらす大災害を想起させる風景を可視化／可聴化しています。8K映像と5.1ch立体音響を駆使して、没入的な映像音響空間を構築しました。" />
+  <TextMain image={images["arsdas_thumb"]} title="Mother Fluctuation" content="本作は気候変動のビッグデータを用いた没入型のオーディオビジュアルインスタレーションです。複数のシーンを通して、温度、海面高度、市場、文明などのフラクチュエーション（上昇と下降）という現象に着目し、人間の営為には頓着することのない母なる地球が描かれています。日本伝統の地獄絵の表現を参照しながら、オープンな科学データにアート特有の操作を適用し、温暖化が人類にもたらす大災害を想起させる風景を可視化／可聴化しています。8K映像と5.1ch立体音響を駆使して、没入的な映像音響空間を構築しました。" />
   <LongImage id="triplet" image={images["triplet_top"]} />
 </BaseLayout>
 
@@ -101,11 +101,9 @@ for (const [path, mod] of Object.entries(allImages)) {
       const isVisible  = visibleElements.includes(art);
       const isDominant = art === dominantElement;
 
-      art.style.opacity = (areMultipleVisible && isVisible && !isDominant) ? "0.7" : "1";
+      art.style.opacity = (areMultipleVisible && isVisible && !isDominant) ? "0.3" : "1";
     });
 
-    /* ---------- 2. sticky-/pinning section (changed) ---------- */
-    // reset any old inline styles first
     artworks.forEach((art) => {
       const text = art.querySelector(".artwork-link");
       if (!text) return;
@@ -138,7 +136,6 @@ for (const [path, mod] of Object.entries(allImages)) {
       const rect = scrollableElement.getBoundingClientRect();
       if (rect.height <= vh) return;  // no need to pin if it fits
 
-      /* ↓↓↓ NEW – pick up margins that may come from CSS variables ↓↓↓ */
       const { v: marginV, h: marginH } = getMargins(text);
 
       const naturalWidth = text.offsetWidth;
@@ -149,12 +146,12 @@ for (const [path, mod] of Object.entries(allImages)) {
 
       if (mode !== "normal") {
         text.style.position = "fixed";
-        text.style.right    = `${marginH}px`;      // honour –-text-horizontal-margin
+        text.style.right    = `${marginH}px`; 
         text.style.width    = `${naturalWidth}px`;
-        text.style.margin   = 0;                   // avoid compounding
+        text.style.margin   = 0;
         text.style.zIndex   = 10;
         if (mode === "pinned") {
-          text.style.top = `${marginV}px`;         // honour –-text-vertical-margin
+          text.style.top = `${marginV}px`;
         } else if (mode === "leaving") {
           const moved     = vh - rect.bottom;
           const newTopPx  = marginV - moved;
@@ -166,76 +163,18 @@ for (const [path, mod] of Object.entries(allImages)) {
     });
   }
 
-  /* -----------------------------------------------------------
- *  Parallax effect – based on data-parallax-speed
- * --------------------------------------------------------- */
-const PARALLAX_MIN = 0.02;   // default range when no speed supplied
-const PARALLAX_MAX = 0.40;
-
-function initParallaxSpeeds() {
-  let idx = 0;
-  document.querySelectorAll('.artwork-content').forEach(el => {
-    if (!el.dataset.parallaxSpeed) {
-      // first element stays fixed, others get a random speed
-      const speed = idx === 0 ? 0 :
-        (PARALLAX_MIN + Math.random() * (PARALLAX_MAX - PARALLAX_MIN));
-      el.dataset.parallaxSpeed = speed.toFixed(3);
-    }
-    idx += 1;
-  });
-}
-
-function applyParallax() {
-  const vh      = window.innerHeight;
-  const midY    = window.scrollY + vh * 0.5;
-
-  document.querySelectorAll(".artwork-content").forEach(art => {
-    if (art.dataset.pinned === "true") {
-      // keep things perfectly aligned while the text is pinned
-      art.querySelectorAll(".artwork-image, .artwork-link")
-         .forEach(e => e.style.transform = "translate3d(0,0,0)");
-      return;
-    }
-
-    const speed = parseFloat(art.dataset.parallaxSpeed || 0);
-    if (!speed) return;
-
-    const artMid = art.offsetTop + art.offsetHeight * 0.5;
-    const delta  = midY - artMid;
-
-    if (Math.abs(delta) > vh * 1.5) {
-      // far outside the viewport → no need to draw
-      art.querySelectorAll(".artwork-image, .artwork-link")
-         .forEach(e => e.style.transform = "translate3d(0,0,0)");
-      return;
-    }
-
-    const tY = (-delta * speed).toFixed(2);
-    art.querySelectorAll(".artwork-image, .artwork-link")
-       .forEach(e => {
-         if (getComputedStyle(e).position !== "fixed") {
-           e.style.transform = `translate3d(0, ${tY}px, 0)`;
-         }
-       });
-  });
-}
-
   /* ---------- 3. event wiring (unchanged) ---------- */
   let ticking = false;
   window.addEventListener("scroll", () => {
     if (!ticking) {
       requestAnimationFrame(() => {
         updatePositions();
-        // applyParallax();
         ticking = false;
       });
       ticking = true;
     }
   });
-window.addEventListener('resize', () => {
-  updatePositions();
-  // applyParallax();
-});
+  window.addEventListener('resize', updatePositions);
 
   // run once images are loaded
   document.querySelectorAll(".artwork-content").forEach((art) => {
@@ -244,8 +183,5 @@ window.addEventListener('resize', () => {
     });
   });
 
-  // initial
-// initParallaxSpeeds();
-updatePositions();
-// applyParallax();
+  updatePositions();
 </script>

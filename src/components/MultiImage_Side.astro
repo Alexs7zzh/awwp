@@ -19,8 +19,8 @@ if (!work) {
 
 function calculateWidthPercentage(image: ImageMetadata): number {
   const aspectRatio = image.width / image.height;
-  if (aspectRatio <= 1.1) return 48;
-  const scaledWidth = 48 + (aspectRatio - 1.1) * 35;
+  if (aspectRatio <= 1.1) return 40;
+  const scaledWidth = 40 + (aspectRatio - 1.1) * 35;
   return Math.max(48, Math.min(100, scaledWidth));
 }
 
@@ -86,7 +86,7 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 12rem;
+  gap: 8rem;
 }
 
 .artwork-image {

@@ -15,17 +15,13 @@ if (!work) {
   throw new Error(`No work found by id ${id}`);
 }
 
-// MODIFICATION 1: Simplified width calculation based on aspect ratio.
-// This function now returns a simpler set of widths for different image shapes.
 function calculateImageWidth(image: ImageMetadata): number {
   const aspectRatio = image.width / image.height;
-  if (aspectRatio < 0.8) return 50; // Portrait images
+  if (aspectRatio < 0.8) return 40; // Portrait images
   if (aspectRatio <= 1.2) return 65; // Square-ish images
   return 85; // Landscape images
 }
 
-// MODIFICATION 2: New function to determine alignment class.
-// This will center square-ish images and alternate others left and right.
 function getAlignmentClass(image: ImageMetadata, index: number): string {
   const aspectRatio = image.width / image.height;
   if (aspectRatio > 0.9 && aspectRatio < 1.2) {

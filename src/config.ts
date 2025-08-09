@@ -4,20 +4,26 @@ interface ConfigType {
     line: boolean,
     background: 'transparent' | 'white' | 'blur'
   },
-  text: {
+  description: {
     horizontalMargin: string,
     verticalMargin: string,
+  },
+  textBlock: {
+    style: "wide" | "hero"
   }
 };
 
 export const Config : ConfigType = {
   header: {
-    resize: true,
+    resize: false,
     line: false,
-    background: 'blur'
+    background: 'transparent'
   },
-  text: {
+  description: {
     horizontalMargin: '2rem',
     verticalMargin: '4rem'
+  },
+  textBlock: {
+    style: "hero"
   }
 };
