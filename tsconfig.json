@@ -10,7 +10,7 @@
     "paths": {
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@libs/*": ["src/libs/*"],
+      "@lib/*": ["src/lib/*"],
       "@config": ["src/config.ts"]
     },
     "plugins": [

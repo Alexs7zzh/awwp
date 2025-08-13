@@ -10,6 +10,9 @@ interface ConfigType {
   },
   textBlock: {
     style: "wide" | "hero"
+  },
+  background: {
+    theme: "light" | "dark",
   }
 };
 
@@ -21,9 +24,12 @@ export const Config : ConfigType = {
   },
   description: {
     horizontalMargin: '2rem',
-    verticalMargin: '4rem'
+    verticalMargin: '2rem'
   },
   textBlock: {
     style: "hero"
+  },
+  background: {
+    theme: "dark"
   }
 };

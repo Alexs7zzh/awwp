@@ -2,66 +2,24 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
+import { imageStore } from "@lib/imageStore";
 
 const sortedWorks = await getCollection("work")
   .then((entries) => entries.sort((a, b) => b.data.year - a.data.year));
 
-// --- Part 2: Import all images (no changes here) ---
-const allImages = import.meta.glob<{ default: ImageMetadata }>(
-  "/works/**/*.{png,jpg,jpeg,webp}",
-  { eager: true }
-);
-
-// --- Part 3: Group images by their work ID for efficient lookup ---
-// We'll create a temporary map where keys are workIds and values are
-// arrays of image objects, including the path for sorting.
-const imageGroups: Record<string, { path: string; metadata: ImageMetadata }[]> = {};
-
-for (const [path, mod] of Object.entries(allImages)) {
-  // Extract the work ID (folder name) from the image path
-  const pathSegments = path.split('/works/').pop()?.split('/');
-  if (!pathSegments || pathSegments.length < 2) continue; // Safety check
-
-  const workId = pathSegments[0];
-
-  // Initialize the array if it's the first time we see this workId
-  if (!imageGroups[workId]) {
-    imageGroups[workId] = [];
-  }
-
-  // Add the image's path and metadata to the corresponding group
-  imageGroups[workId].push({ path, metadata: mod.default });
-}
-
-// --- Part 4: Map over the sorted works to build the final structure ---
-// This is where we combine the sorted works with their grouped images.
-const worksWithImages = sortedWorks.map(work => {
-  const workId = work.id;
-  const imagesForThisWork = imageGroups[workId] || []; // Use the workId to find its images
-
-  // Sort the found images alphabetically by path, then extract just the metadata
-  const sortedImageMetadata = imagesForThisWork
-    .sort((a, b) => a.path.localeCompare(b.path))
-    .map(img => img.metadata);
-
-  // Return the final object for this work
-  return {
-    workId: workId,
-    year: work.data.year,
-    images: sortedImageMetadata,
-  };
-});
+const worksWithImages = sortedWorks.map((work) => ({
+  workId: work.id,
+  year: work.data.year,
+  images: imageStore.requireImagesForWork(work.id),
+}));
 ---
 
 <BaseLayout>
   <ul class="work-grid">
-  {worksWithImages.map(work => {
-    return work.images.map(img => (
-      <li class="grid-item">
-          <a
-            href={`/works/${work.workId}`}
-            aria-labelledby={`work-title-${work.workId}`}
-          >
+    {worksWithImages.map((work) =>
+      work.images.map((img) => (
+        <li class="grid-item">
+          <a href={`/works/${work.workId}`} aria-labelledby={`work-title-${work.workId}`}>
             <div class="image-wrapper">
               <Picture
                 src={img}
@@ -76,14 +34,8 @@ const worksWithImages = sortedWorks.map(work => {
             </div>
           </a>
         </li>
-      // <img src={img.src} alt="A work sample" width={img.width} height={img.height} />
-    ));
-  })}
-    <!-- {
-      images.map((work, index) => (
-
       ))
-    } -->
+    )}
   </ul>
 </BaseLayout>
 
@@ -123,7 +75,7 @@ const worksWithImages = sortedWorks.map(work => {
     display: flex;
     align-items: flex-end;
     margin-bottom: 0.75rem;
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
   }
 
   .list-image {
@@ -140,13 +92,13 @@ const worksWithImages = sortedWorks.map(work => {
     font-size: 1rem;
     font-weight: 400;
     margin: 0 0 0.5rem 0;
-    color: #333;
+    color: var(--font-color-title);
     letter-spacing: 0.2px;
   }
 
   .text-content .meta {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--font-color-body);
     margin: 0;
   }
 

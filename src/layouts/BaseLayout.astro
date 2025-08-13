@@ -19,7 +19,7 @@ import Blur from "@components/headers/Blur.astro";
     <title>Akira Wakita</title>
     <slot name="head" />
   </head>
-  <body>
+  <body class={Config.background.theme}>
     {
       Config.header.background == 'transparent'
       ? <Transparent />
@@ -49,13 +49,26 @@ import Blur from "@components/headers/Blur.astro";
     width: 100%;
   }
 
+
+  body.light {
+    --background-color: #F8FEFF;
+    --font-color-title: black;
+    --font-color-body: #666;
+  }
+
+  body.dark {
+    --background-color: black;
+    --font-color-title: white;
+    --font-color-body: white;
+  }
+
   body {
     width: 100%;
     min-height: 100dvh;
     overflow-x: hidden;
     cursor: auto;
     -webkit-overflow-scrolling: touch;
-    background-color: #F8FEFF;
+    background-color: var(--background-color);
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -68,6 +81,7 @@ import Blur from "@components/headers/Blur.astro";
     font-weight: 400;
     font-style: normal;
   }
+
 
   h1,
   h2,

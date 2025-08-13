@@ -1,20 +1,260 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { marked } from 'marked';
 import { getCollection, render } from "astro:content";
+import { imageStore } from "@lib/imageStore";
 
 export async function getStaticPaths() {
   const works = await getCollection("work");
-  return works.map((work) => ({
-    params: { work: work.id },
-    props: work,
+  return works.map((entry) => ({
+    params: { work: entry.id },
+    props: entry,
   }));
 }
 
 const work = Astro.props;
 const { Content } = await render(work);
+
+// Expecting an array of image paths/objects for this work
+const images = imageStore.requireImagesForWork(work.id) ?? [];
+
+// Normalize keywords to an array
+const keywordsRaw = work.data.keywords ?? [];
+const keywords = Array.isArray(keywordsRaw)
+  ? keywordsRaw
+  : String(keywordsRaw)
+      .split(",")
+      .map((k) => k.trim())
+      .filter(Boolean);
 ---
 
 <BaseLayout>
-  <h1>{work.data.title}</h1>
-  <Content />
+  <article class="work">
+    <!-- Hero -->
+    <header class="work-hero variant-hero" aria-labelledby="work-title">
+      <div class="work-hero__left">
+        <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
+
+        <div class="meta-stack">
+          {work.data.year && <p class="meta-item">{work.data.year}</p>}
+
+          {keywords.length > 0 && (
+            <ul class="meta-tags" role="list">
+              {keywords.map((k) => <li class="meta-tag">{k}</li>)}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div class="work-hero__right">
+        {work.data.intro && (
+          <div class="text-block-content" set:html={marked.parse(work.data.intro)}>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <!-- Image grid -->
+    {images.length > 0 && (
+      <ul class="work-grid" role="list">
+        {images.map((img, i) => {
+          const src = typeof img === "string" ? img : (img?.src ?? "");
+          const alt = `${work.data.title} — image ${i + 1}`;
+          return (
+            <li class="grid-item">
+              <a href={src} aria-label={`Open image ${i + 1} for ${work.data.title}`}>
+                <div class="image-wrapper">
+                  <img
+                    src={src}
+                    alt={alt}
+                    loading="lazy"
+                    class="list-image"
+                    width="1600"
+                    height="1200"
+                  />
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+
+    <section class="work-notes">
+      {work.data.concept && (
+        <div class="concept">
+          <h2 class="title">Concept</h2>
+          <p class="concept">{work.data.concept}</p>
+        </div>
+      )}
+      <div class="prose">
+        <Content />
+      </div>
+    </section>
+  </article>
 </BaseLayout>
+
+  <style>
+  /* --- Hero layout (two columns) --- */
+  .work-hero {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: end;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 6rem) 1rem 0;
+    color: var(--font-color-body);
+  }
+
+  .text-block-title {
+    color: var(--font-color-title);
+  }
+  
+  .work-hero__left {
+    display: grid;
+    align-content: end;
+    gap: 0.6rem; /* slightly tighter for compact header */
+  }
+  .meta-stack {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  /* Thin, quiet meta */
+  .meta-item {
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--font-color-body);
+  }
+
+  /* Clean, pill-less tags with subtle separators */
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    list-style: none;
+    margin: 0.2rem 0 0;
+    padding: 0;
+  }
+  .meta-tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 300;
+    color: var(--font-color-body);
+    padding: 0;           /* no chip padding */
+    border: none;         /* no border */
+    border-radius: 0;     /* no rounded corners */
+  }
+  /* add a mid-dot between items, not before the first */
+  .meta-tag + .meta-tag::before {
+    content: "•";
+    margin: 0 0.45rem 0 0.2rem;
+    color: var(--font-color-body);
+  }
+
+  /* Ensure hero text spans full width per your variant-hero rules */
+  .work-hero .text-block-title,
+  .work-hero .text-block-content {
+    max-width: none;
+  }
+
+  .text-block-content {
+    font-weight: 300;
+  }
+
+  .text-block-content :global(p) {
+    line-height: 1.7;
+  }
+  .text-block-content :global(p + p) {
+    margin-block-start: 1.6em;
+  }
+
+  @media (max-width: 900px) {
+    .work-hero { grid-template-columns: 1fr; }
+    .work-hero__right { order: 2; }
+  }
+
+  /* --- Image grid --- */
+  .work-grid {
+    margin: clamp(4rem, 12vw, 10rem) auto;
+    padding: 0 1rem;
+    max-width: 1600px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: clamp(2.5rem, 6vw, 6rem) 3rem; /* a bit tighter, gallery-like gutters */
+    list-style: none;
+    align-items: end;
+  }
+
+  .grid-item a {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+  .grid-item a:hover { opacity: 0.96; }
+
+  .image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0; /* square corners for images */
+  }
+  .list-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- Notes / placard text --- */
+  .work-notes {
+    max-width: 720px;
+    margin: clamp(4rem, 10vw, 8rem) auto;
+    padding: 0 1rem;
+  }
+  .work-notes .title {
+    font-size: 0.8rem;          /* matches your small placard size */
+    font-weight: 300;           /* thinner */
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    display: inline-block;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .work-notes .title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  /* underline only when the label itself is hovered (quieter) */
+  .work-notes .title:hover::after { width: 100%; }
+
+  .work-notes .description {
+    line-height: 1.7;
+    font-size: 0.85rem; /* thinner, smaller body */
+    color: var(--font-color-body);
+    margin-top: 0.25rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Optional: calmer markdown headings to match placards */
+  .prose :where(p, ul, ol, h2, h3, blockquote) { margin-block: 1rem; }
+  .prose h2 {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;  /* thinner */
+    margin-top: 2rem;
+  }
+</style>

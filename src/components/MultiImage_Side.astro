@@ -105,13 +105,14 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
 }
 
 .title {
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 2px;
-  margin-bottom: 0.3rem;
   display: inline-block;
   position: relative;
   padding-bottom: 2px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 400;
+  margin-bottom: 0.8rem;
 }
 .title::after {
   content: "";
@@ -128,27 +129,13 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
 }
 
 .description {
-  line-height: 1.7;
-  font-size: 0.85rem;
-  color: #333;
   margin-top: 0.25rem;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.style-gallery-placard .title {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  font-weight: 400;
-  margin-bottom: 0.8rem;
-}
-
-.style-gallery-placard .description {
   font-size: 0.8rem;
   line-height: 1.6;
-  color: #666;
+  color: var(--font-color-body);
 }
 
 @media (max-width: 767px) {

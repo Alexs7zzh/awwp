@@ -9,11 +9,13 @@
     "format": "pnpm exec prettier . --write \"!**/*.{jpg,jpeg,png}\""
   },
   "dependencies": {
+    "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/mdx": "^4.3.3",
     "@astrojs/sitemap": "^3.4.2",
     "@astrojs/ts-plugin": "^1.10.4",
     "astro": "^5.12.8",
     "gsap": "^3.13.0",
+    "marked": "^16.1.2",
     "sharp": "^0.34.3"
   },
   "packageManager": "pnpm@10.14.0",

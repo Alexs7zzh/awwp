@@ -20,11 +20,11 @@ imgs:
   - label: ''
     url: ct-fig3.jpg
   - label: ''
-    url: gallery04.jpg
+    url: ct_gallery04.jpg
   - label: ''
-    url: gallery05.jpg
+    url: ct_gallery05.jpg
   - label: ''
-    url: gallery06.jpg
+    url: ct_gallery06.jpg
   - label: ''
     url: ct-fig7.jpg
 intro: >-

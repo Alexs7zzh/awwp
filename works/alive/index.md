@@ -1,16 +1,16 @@
 ---
 title: RYUKYU ALIVE
-thumbnail: alive.jpeg
+thumbnail: alive_2.jpeg
 year: 2002
 keywords:
   - Web-based 3D Visualization
   - VRML / Digital Archive / Interface Metaphor
 background_img:
-  url: alive.jpeg
+  url: alive_2.jpeg
   label: ''
 imgs:
   - label: ''
-    url: alive.jpg
+    url: alive_1.jpg
   - label: ''
     url: gallery03.jpg
   - label: ''
