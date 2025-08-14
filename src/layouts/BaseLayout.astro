@@ -21,16 +21,18 @@ import Blur from "@components/headers/Blur.astro";
   </head>
   <body class={Config.background.theme}>
     {
-      Config.header.background == 'transparent'
-      ? <Transparent />
-      : (
-        Config.header.background == 'white'
-        ? <White />
-        : <Blur />
+      Config.header.background == "transparent" ? (
+        <Transparent />
+      ) : Config.header.background == "white" ? (
+        <White />
+      ) : (
+        <Blur />
       )
     }
 
-    <div style={`margin-top: 10rem;--text-horizontal-margin: ${Config.description.horizontalMargin}; --text-vertical-margin: ${Config.description.verticalMargin};`}>
+    <div
+      style={`margin-top: 10rem;--text-horizontal-margin: ${Config.description.horizontalMargin}; --text-vertical-margin: ${Config.description.verticalMargin};`}
+    >
       <slot />
     </div>
   </body>
@@ -49,9 +51,8 @@ import Blur from "@components/headers/Blur.astro";
     width: 100%;
   }
 
-
   body.light {
-    --background-color: #F8FEFF;
+    --background-color: #f8feff;
     --font-color-title: black;
     --font-color-body: #666;
   }
@@ -81,7 +82,6 @@ import Blur from "@components/headers/Blur.astro";
     font-weight: 400;
     font-style: normal;
   }
-
 
   h1,
   h2,

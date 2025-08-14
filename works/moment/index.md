@@ -7,16 +7,14 @@ keywords:
   - Sculpture
 background_img:
   url: moment_back.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: moment_01.jpg
-  - label: ''
+  - label: ""
     url: moment_02.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

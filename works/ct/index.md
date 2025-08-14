@@ -7,25 +7,25 @@ keywords:
   - Urban Space Design / Interface Metaphor / Space Communication
 background_img:
   url: ct.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: ct-ukiyoe-big.jpg
-  - label: ''
+  - label: ""
     url: ct2.png
-  - label: ''
+  - label: ""
     url: ct-fig1.jpg
-  - label: ''
+  - label: ""
     url: ct-fig2.jpg
-  - label: ''
+  - label: ""
     url: ct-fig3.jpg
-  - label: ''
+  - label: ""
     url: ct_gallery04.jpg
-  - label: ''
+  - label: ""
     url: ct_gallery05.jpg
-  - label: ''
+  - label: ""
     url: ct_gallery06.jpg
-  - label: ''
+  - label: ""
     url: ct-fig7.jpg
 intro: >-
   CT, City Tomography, is a project to reconstruct visible or invisible aspects
@@ -35,8 +35,6 @@ intro: >-
   urban space. It will enhance an overall image of the city through a reciprocal
   relation between a place and information.
 ---
-
-
 
 ## クレジット
 

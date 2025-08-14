@@ -7,7 +7,7 @@ keywords:
   - Audio Visual Installation
 background_img:
   url: dragonrain_3.jpg
-  label: ''
+  label: ""
 imgs:
   - label: Photo by Chise Toshiro
     url: dragonrain_1.jpg
@@ -17,7 +17,7 @@ imgs:
     url: dragonrain_3.jpg
   - label: Photo by @anya_photographer
     url: dragonrain_4.jpg
-  - label: ''
+  - label: ""
     url: ryuuzu_thumb.jpg
 intro: >-
   禅宗寺院において、龍は守護神であり、僧に仏法の雨を降らせる存在とされています。本作では、非線形物理システム、デジタル映像技術、そして脳科学に基づくサウンドを駆使することで、現代ならではの「仏法の雨を降らせる龍」を描くことに挑戦します。建仁寺の法堂の天井に描かれた小泉淳作の『双龍図』と対をなす形で本作『龍雨図』は設置されます。
@@ -28,8 +28,6 @@ intro: >-
 
   最後に。非線形の力学系が龍を創発するという現象はとても興味深く、ここに科学、芸術、宗教の横断的な対話を見ることができるかもしれません。シンプルなシステムが生み出す「無から有、有から無」への転換は、全てが一つであり一つが全てであるという禅の世界と共振します
 ---
-
-
 
 ## 展示
 

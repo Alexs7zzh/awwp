@@ -6,16 +6,14 @@ keywords:
   - FullHD Movie
 background_img:
   url: raydraw_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: raydrawing_01.jpg
-  - label: ''
+  - label: ""
     url: raydrawing_02.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

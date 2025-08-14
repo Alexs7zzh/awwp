@@ -9,13 +9,13 @@ keywords:
   - Stereo Sound
 background_img:
   url: newsyn_thumb.jpg
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/252284586
 imgs:
-  - label: ''
+  - label: ""
     url: newsyn_1.png
-  - label: ''
+  - label: ""
     url: newsyn_2.jpg
 intro: >-
   「New Synergetics」はNIISAN LEAFのデザイン思想にインスパイアされて制作した映像群です。
@@ -71,8 +71,6 @@ concept:
     Connection 3 :
     アトラクタカオスと呼ばれる現象にはある種のルールが背後に存在する。蝶の羽ばたきと株価に関係を見出すことは難しいが、地球大に伸びづけるネットワークはいつの日か空間と時間を超えた新しいつながりのデザインを可能にするだろう。
 ---
-
-
 
 ## クレジット
 

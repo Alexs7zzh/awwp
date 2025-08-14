@@ -6,7 +6,7 @@ keywords:
   - Audio Visual Installation with 128ch Line Array Speakers & 8K Movie
 background_img:
   url: overbillions_header.jpg
-  label: ''
+  label: ""
 imgs:
   - label: Photo by Takahiro Tsushima
     url: overbillions_01.jpg
@@ -28,8 +28,6 @@ intro: >-
   （札幌国際芸術祭 解説より）
 ---
 
-
-
 ## 展示
 
 - 札幌国際芸術祭, モエレ沼公園, 2024
@@ -38,9 +36,9 @@ intro: >-
 
 Akira Wakita in collaboration with NHK Science & Technology Research Laboratories, with the support of Astrodesign Inc.
 
-----
+---
 
-Concept / Direction : AKIRA WAKITA 
+Concept / Direction : AKIRA WAKITA
 
 Visual Software Development : YUKI KUWASHIMA
 

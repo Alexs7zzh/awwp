@@ -6,17 +6,15 @@ keywords:
   - 3ch HD Video
 background_img:
   url: keith_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: keith_1.jpg
   - label: Photo by Takahiro Tsushima
     url: keith_2.jpg
 intro: >-
   チューリングパターンを用いてキース・ヘリングのドローイングを数学的に解釈することはどこまで可能でしょうか。反応拡散系のKillとFeedのパラメータを変更しながら形態生成のアニメーションを展開し、ヘリングの作品に特徴的な「生物的形状」「動きの軌跡」「波動」「十字架」などのパターンの生成とそれらの遷移を試みました。
 ---
-
-
 
 ## クレジット
 

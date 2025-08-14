@@ -6,13 +6,13 @@ keywords:
   - FullHD Video
 background_img:
   url: equation_0.jpg
-  label: ''
+  label: ""
 imgs:
   - label: Photo by Takahiro Tsushima
     url: equation_1.jpg
   - label: Photo by Takahiro Tsushima
     url: equation_2.jpg
-  - label: ''
+  - label: ""
     url: equation_0.jpg
 intro: >-
   設営の朝、私は珍しく夜明けと同時に目を覚ましました。朝食までに随分と時間があったので、キース・ヘリング美術館に隣接する森を散歩することにしました。朝日を浴びる枯れ木の裏に隠れた菌類の皺、八ヶ岳から穏やかに降りてくる風に揺れる草花のまだ小さいものに見られる葉序。1時間ほどの散策で、多くのパターンをスマートフォンで撮影することができました。
@@ -24,8 +24,6 @@ intro: >-
 
   何らかの支配方程式をプログラミングした経験のある者は、そのソフトウェアがアウトプットする様態と自然の風景が重なって見え、システムとして一段階深いレベルで自然を見ることができるようになります。我々はプログラミングによって自然を再解釈できる時代を生きる最初の世代なのです。
 ---
-
-
 
 ## クレジット
 

@@ -4,8 +4,9 @@ import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
 
-const sortedWorks = await getCollection("work")
-  .then((entries) => entries.sort((a, b) => b.data.year - a.data.year));
+const sortedWorks = await getCollection("work").then((entries) =>
+  entries.sort((a, b) => b.data.year - a.data.year),
+);
 
 const worksWithImages = sortedWorks.map((work) => ({
   workId: work.id,
@@ -16,26 +17,31 @@ const worksWithImages = sortedWorks.map((work) => ({
 
 <BaseLayout>
   <ul class="work-grid">
-    {worksWithImages.map((work) =>
-      work.images.map((img) => (
-        <li class="grid-item">
-          <a href={`/works/${work.workId}`} aria-labelledby={`work-title-${work.workId}`}>
-            <div class="image-wrapper">
-              <Picture
-                src={img}
-                alt={work.workId}
-                formats={["avif", "webp"]}
-                widths={[400, 800]}
-                sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 33vw"
-                class="list-image"
-                loading="lazy"
-                fetchpriority="auto"
-              />
-            </div>
-          </a>
-        </li>
-      ))
-    )}
+    {
+      worksWithImages.map((work) =>
+        work.images.map((img) => (
+          <li class="grid-item">
+            <a
+              href={`/works/${work.workId}`}
+              aria-labelledby={`work-title-${work.workId}`}
+            >
+              <div class="image-wrapper">
+                <Picture
+                  src={img}
+                  alt={work.workId}
+                  formats={["avif", "webp"]}
+                  widths={[400, 800]}
+                  sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 33vw"
+                  class="list-image"
+                  loading="lazy"
+                  fetchpriority="auto"
+                />
+              </div>
+            </a>
+          </li>
+        )),
+      )
+    }
   </ul>
 </BaseLayout>
 

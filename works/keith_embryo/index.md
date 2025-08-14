@@ -6,9 +6,9 @@ keywords:
   - Digital Print
 background_img:
   url: embryo_1.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: embryo_1.jpg
   - label: Photo by Takahiro Tsushima
     url: embryo_2.jpg
@@ -16,8 +16,6 @@ intro: >-
   アラン・チューリングの記念碑的論文「The Chemical Basis of
   Morphogenesis」を読み進めた人であれば、この思想の根源は「胎児」の概念にあることに気が付くはずです。
 ---
-
-
 
 ## クレジット
 

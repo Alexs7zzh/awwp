@@ -6,30 +6,28 @@ keywords:
   - Installation
 background_img:
   url: scenery_bg.jpg
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/322604452
 imgs:
-  - label: ''
+  - label: ""
     url: scenery_kiyoharu_01.jpg
-  - label: ''
+  - label: ""
     url: scenery_kiyoharu_02.jpg
-  - label: ''
+  - label: ""
     url: scenery_kiyoharu_03.jpg
-  - label: ''
+  - label: ""
     url: scenery_kiyoharu_4.jpg
   - label: Photo by Ken Ishii
     url: scenery_kiyoharu_5.jpg
-  - label: ''
+  - label: ""
     url: scenery_04.jpg
 intro: 未来の人間はどのような日常風景を見ることになるのだろうか。
 ---
 
-
-
 ## クレジット
 
-ヴィジュアライゼーション / コンセプト：脇田玲 
+ヴィジュアライゼーション / コンセプト：脇田玲
 
 サウンドデザイン：瀧本花乃介
 

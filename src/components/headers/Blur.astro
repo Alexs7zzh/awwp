@@ -21,27 +21,33 @@ const { header } = Config;
   /* Shared foundations                                            */
   /* -------------------------------------------------------------- */
   :root {
-    --blur-strength: 24px;              /* overall blur amount       */
-    --pad-side: 2rem;                   /* horizontal padding        */
+    --blur-strength: 24px; /* overall blur amount       */
+    --pad-side: 2rem; /* horizontal padding        */
   }
 
   /* -------- Base link styles -------- */
-  a { text-decoration: none; transition: opacity 0.2s ease-in-out; text-transform: uppercase; }
-  a:hover { opacity: 0.7; }
+  a {
+    text-decoration: none;
+    transition: opacity 0.2s ease-in-out;
+    text-transform: uppercase;
+  }
+  a:hover {
+    opacity: 0.7;
+  }
 
   /* -------- Header layout -------- */
   .site-header {
     /* State‑driven custom props (big state by default) */
-    --pad-top: 2rem;        /* distance from page edge (padding) */
-    --home-size: 1.5rem;    /* site title size                    */
-    --nav-size: 1rem;       /* nav links size                     */
-    --gap: 2rem;            /* space between title and nav        */
-    --nav-gap: 1.5rem;      /* space between nav items            */
+    --pad-top: 2rem; /* distance from page edge (padding) */
+    --home-size: 1.5rem; /* site title size                    */
+    --nav-size: 1rem; /* nav links size                     */
+    --gap: 2rem; /* space between title and nav        */
+    --nav-gap: 1.5rem; /* space between nav items            */
     --letter-spacing: 0.04em;
     --line-color: rgba(128, 128, 128, 0.35);
 
     position: fixed;
-    inset: 0 auto auto 0;   /* top-left corner, full width */
+    inset: 0 auto auto 0; /* top-left corner, full width */
     right: 0;
     display: flex;
     align-items: center;
@@ -51,7 +57,7 @@ const { header } = Config;
     z-index: 1000;
 
     /* Each variant overrides these CSS vars */
-    --bg-color: rgba(255,255,255,0.25); /* default tint */
+    --bg-color: rgba(255, 255, 255, 0.25); /* default tint */
     --text-color: #111;
 
     color: var(--text-color);
@@ -60,7 +66,8 @@ const { header } = Config;
   /* Overlay (blur layer) */
   .site-header::before {
     content: "";
-    position: absolute; inset: 0;
+    position: absolute;
+    inset: 0;
     background: var(--bg-color);
     /* blur only – saturation boost optional */
     backdrop-filter: blur(var(--blur-strength)) saturate(180%);
@@ -68,44 +75,86 @@ const { header } = Config;
     border-bottom: 1px solid transparent;
     pointer-events: none;
     z-index: -1;
-    transition: background-color 200ms ease,
-                backdrop-filter 200ms ease,
-                border-color 200ms ease;
+    transition:
+      background-color 200ms ease,
+      backdrop-filter 200ms ease,
+      border-color 200ms ease;
   }
 
   /* Bottom border line */
-  .site-header[data-line="true"]::before { border-bottom-color: transparent; }
-  .site-header.shrunken[data-line="true"]::before { border-bottom-color: var(--line-color); }
+  .site-header[data-line="true"]::before {
+    border-bottom-color: transparent;
+  }
+  .site-header.shrunken[data-line="true"]::before {
+    border-bottom-color: var(--line-color);
+  }
 
-  .home { font-size: var(--home-size); font-weight: 300; letter-spacing: var(--letter-spacing); transition: font-size 200ms ease, letter-spacing 200ms ease; }
-  .site-header nav { display: flex; align-items: center; gap: var(--nav-gap); }
-  .site-header nav a { font-size: var(--nav-size); font-weight: 300; transition: font-size 200ms ease; }
+  .home {
+    font-size: var(--home-size);
+    font-weight: 300;
+    letter-spacing: var(--letter-spacing);
+    transition:
+      font-size 200ms ease,
+      letter-spacing 200ms ease;
+  }
+  .site-header nav {
+    display: flex;
+    align-items: center;
+    gap: var(--nav-gap);
+  }
+  .site-header nav a {
+    font-size: var(--nav-size);
+    font-weight: 300;
+    transition: font-size 200ms ease;
+  }
 
   /* -------- Shrunk state -------- */
   .site-header.shrunken {
-    --pad-top: 0.9rem; --home-size: 1.1rem; --nav-size: 0.95rem; --gap: 1.25rem; --nav-gap: 1rem; --letter-spacing: 0.03em;
+    --pad-top: 0.9rem;
+    --home-size: 1.1rem;
+    --nav-size: 0.95rem;
+    --gap: 1.25rem;
+    --nav-gap: 1rem;
+    --letter-spacing: 0.03em;
   }
 
   /* -------- Mobile tweaks -------- */
   @media (max-width: 600px) {
-    .site-header { --pad-top: 1rem; --home-size: 1.2rem; --nav-gap: 1.25rem; }
-    .site-header.shrunken { --pad-top: 0.75rem; --home-size: 1.05rem; --nav-size: 0.9rem; }
+    .site-header {
+      --pad-top: 1rem;
+      --home-size: 1.2rem;
+      --nav-gap: 1.25rem;
+    }
+    .site-header.shrunken {
+      --pad-top: 0.75rem;
+      --home-size: 1.05rem;
+      --nav-size: 0.9rem;
+    }
   }
 
-  @media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before {
+      transition: none !important;
+    }
+  }
 
-  .variant-glass { --bg-color: rgba(255,255,255,0.25); --text-color: #111; }
+  .variant-glass {
+    --bg-color: rgba(255, 255, 255, 0.25);
+    --text-color: #111;
+  }
 </style>
 
 <script>
-(() => {
-  const header = document.getElementById('site-header');
-  if (!header) return;
-  if (header.dataset.resize !== 'true') return;
+  (() => {
+    const header = document.getElementById("site-header");
+    if (!header) return;
+    if (header.dataset.resize !== "true") return;
 
-  const SHRINK_OFFSET = 40;
-  const onScroll = () => header.classList.toggle('shrunken', window.scrollY > SHRINK_OFFSET);
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
-})();
+    const SHRINK_OFFSET = 40;
+    const onScroll = () =>
+      header.classList.toggle("shrunken", window.scrollY > SHRINK_OFFSET);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
 </script>

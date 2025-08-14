@@ -6,13 +6,13 @@ keywords:
   - Installation
 background_img:
   url: kokuyo_head.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: kokuyo_2.jpg
-  - label: ''
+  - label: ""
     url: kokuyo_1.jpg
-  - label: ''
+  - label: ""
     url: result.jpg
 intro: >-
   AIは果たして理想のオフィス空間をデザインしうるのでしょうか？
@@ -31,8 +31,6 @@ intro: >-
   本作はハンス・ハーケ(Hans Haacke)が1970年に発表した「MoMA
   Poll」にインスパイアされています。2020年代における権力、つまりAIやアルゴリズムを支持するかどうかを鑑賞者に問う「AIとの政治学」の最初の試みです。
 ---
-
-
 
 ## クレジット
 

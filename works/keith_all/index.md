@@ -6,9 +6,9 @@ keywords:
   - A Series of Works
 background_img:
   url: keith_all_2.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: keith_all_1.jpg
   - label: Photo by Takahiro Tsushima
     url: keith_all_2.jpg
@@ -16,8 +16,6 @@ intro: >-
   性的マイノリティとして異なる時代を生きた二人の天才、アラン・チューリング（計算機科学の父）とキース・ヘリングの時を超えた対話の場を作ろうと考えました。ヘリングのドローイングへの数学的な再解釈、ホモフォビアから
   LGBT へと変化してきた多様性の議論の変遷など、副次的なメッセージも込めて作品を作りました。
 ---
-
-
 
 ## クレジット
 

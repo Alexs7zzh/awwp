@@ -6,16 +6,14 @@ keywords:
   - Installation
 background_img:
   url: religion_back.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: religion_01.jpg
-  - label: ''
+  - label: ""
     url: religion_02.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

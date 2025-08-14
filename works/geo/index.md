@@ -6,21 +6,19 @@ keywords:
   - Augmented Reality Visualization
 background_img:
   url: geo_thum.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: ocean_03.jpg
-  - label: ''
+  - label: ""
     url: ocean_02.jpg
-  - label: ''
+  - label: ""
     url: ocean_01.jpg
 intro: >-
   脇田研究室は日本科学未来館のジオ・プリズムに流体ビジュアライゼーションを提供しました。
   ジオ・プリズムは、AR（拡張現実感）技術を用いて、全球型ディスプレイ「ジオ･コスモス」にデータやシミュレーションを重ねて表示できるシステムです。
   このビジュアライゼーションでは、海洋研究開発機構（JAMSTEC）のスーパーコンピュータ「地球シミュレータ」によって計算された超高解像度海洋大循環モデルOFESのデータを使い、地球上の波の動きを3つの詳細度で可視化しています。
 ---
-
-
 
 ## 展示
 

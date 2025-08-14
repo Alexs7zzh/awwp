@@ -2,7 +2,6 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import LongImage from "@components/LongImage.astro";
 import MultiImageSide from "@components/MultiImage_Side.astro";
-import TextMain from "@components/TextMain.astro";
 import { imageStore } from "@lib/imageStore";
 
 const img = (id: string) => imageStore.requireImage(id);
@@ -10,179 +9,184 @@ const img = (id: string) => imageStore.requireImage(id);
 
 <BaseLayout>
   <LongImage id="dismantle" image={img("dismantle:dismantle_top")} />
-  <MultiImageSide id="clair"
-    images={[img("clair:clair_01"), img("clair:clair_02"), img("clair:ikebukuro_thumb"), img("clair:clair_back")]}
+  <MultiImageSide
+    id="clair"
+    images={[
+      img("clair:clair_01"),
+      img("clair:clair_02"),
+      img("clair:ikebukuro_thumb"),
+      img("clair:clair_back"),
+    ]}
     positions={[0.5, 1, 0.1]}
   />
   <LongImage id="dragonrain" image={img("dragonrain:dragonrain_top")} />
-  <TextMain image={img("arsdas:arsdas_thumb")} title="Mother Fluctuation" content="本作は気候変動のビッグデータを用いた没入型のオーディオビジュアルインスタレーションです。複数のシーンを通して、温度、海面高度、市場、文明などのフラクチュエーション（上昇と下降）という現象に着目し、人間の営為には頓着することのない母なる地球が描かれています。日本伝統の地獄絵の表現を参照しながら、オープンな科学データにアート特有の操作を適用し、温暖化が人類にもたらす大災害を想起させる風景を可視化／可聴化しています。8K映像と5.1ch立体音響を駆使して、没入的な映像音響空間を構築しました。" />
   <LongImage id="triplet" image={img("triplet:triplet_top")} />
 </BaseLayout>
 
 <script>
-/* -----------------------------------------------------------
- *  Helpers – read the spacing that was set via CSS variables
- * --------------------------------------------------------- */
-const PX_FALLBACK = 32; // ≒ 2 rem – used if nothing is defined
+  /* -----------------------------------------------------------
+   *  Helpers – read the spacing that was set via CSS variables
+   * --------------------------------------------------------- */
+  const PX_FALLBACK = 32; // ≒ 2 rem – used if nothing is defined
 
-/** Convert something like “2rem”, “24px”, “1.5em” → absolute px */
-function toPx(lengthStr: string, contextPx: number): number {
-  const s = (lengthStr || "").trim().toLowerCase();
-  const v = parseFloat(s);
-  if (!s) return NaN;
-  if (s.endsWith("rem") || s.endsWith("em")) return v * contextPx;
-  // px values arrive as “…px” (parseFloat handles it)
-  return v;
-}
+  /** Convert something like “2rem”, “24px”, “1.5em” → absolute px */
+  function toPx(lengthStr: string, contextPx: number): number {
+    const s = (lengthStr || "").trim().toLowerCase();
+    const v = parseFloat(s);
+    if (!s) return NaN;
+    if (s.endsWith("rem") || s.endsWith("em")) return v * contextPx;
+    // px values arrive as “…px” (parseFloat handles it)
+    return v;
+  }
 
-/** Get vertical / horizontal spacing for one `.artwork-link` */
-function getMargins(el: HTMLElement): { v: number; h: number } {
-  const rootStyle = getComputedStyle(document.documentElement);
-  const linkStyle = getComputedStyle(el);
+  /** Get vertical / horizontal spacing for one `.text-info` */
+  function getMargins(el: HTMLElement): { v: number; h: number } {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const linkStyle = getComputedStyle(el);
 
-  const rootFontPx = parseFloat(rootStyle.fontSize) || 16;
+    const rootFontPx = parseFloat(rootStyle.fontSize) || 16;
 
-  // 1. per-element margin (takes priority)
-  let v = parseFloat(linkStyle.marginTop);
-  let h = parseFloat(linkStyle.marginRight);
+    // 1. per-element margin (takes priority)
+    let v = parseFloat(linkStyle.marginTop);
+    let h = parseFloat(linkStyle.marginRight);
 
-  // 2. fall back to CSS custom properties (defined on <BaseLayout/>)
-  if (!v)
-    v =
-      toPx(
-        rootStyle.getPropertyValue("--text-vertical-margin") || "",
-        rootFontPx
-      ) || PX_FALLBACK;
-  if (!h)
-    h =
-      toPx(
-        rootStyle.getPropertyValue("--text-horizontal-margin") || "",
-        rootFontPx
-      ) || PX_FALLBACK;
+    // 2. fall back to CSS custom properties (defined on <BaseLayout/>)
+    if (!v)
+      v =
+        toPx(
+          rootStyle.getPropertyValue("--text-vertical-margin") || "",
+          rootFontPx,
+        ) || PX_FALLBACK;
+    if (!h)
+      h =
+        toPx(
+          rootStyle.getPropertyValue("--text-horizontal-margin") || "",
+          rootFontPx,
+        ) || PX_FALLBACK;
 
-  return { v, h };
-}
+    return { v, h };
+  }
 
-/* -----------------------------------------------------------
- *  Main routine – unchanged except where noted
- * --------------------------------------------------------- */
-function updatePositions(): void {
-  const vh = window.innerHeight;
-  const isMobile = window.matchMedia("(max-width: 767px)").matches;
-  const artworks = document.querySelectorAll<HTMLElement>(".artwork-content");
+  /* -----------------------------------------------------------
+   *  Main routine – unchanged except where noted
+   * --------------------------------------------------------- */
+  function updatePositions(): void {
+    const vh = window.innerHeight;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const artworks = document.querySelectorAll<HTMLElement>(".artwork-content");
 
-  /* ---------- 1. opacity section (unchanged) ---------- */
-  let dominantElement: HTMLElement | null = null;
-  let maxVisibleHeight = -1;
-  const visibleElements: HTMLElement[] = [];
+    /* ---------- 1. opacity section (unchanged) ---------- */
+    let dominantElement: HTMLElement | null = null;
+    let maxVisibleHeight = -1;
+    const visibleElements: HTMLElement[] = [];
 
-  artworks.forEach((art) => {
-    const rect = art.getBoundingClientRect();
-    if (rect.bottom > 0 && rect.top < vh) {
-      const visibleTop = Math.max(0, rect.top);
-      const visibleBottom = Math.min(vh, rect.bottom);
-      const visibleHeight = visibleBottom - visibleTop;
+    artworks.forEach((art) => {
+      const rect = art.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < vh) {
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(vh, rect.bottom);
+        const visibleHeight = visibleBottom - visibleTop;
 
-      if (visibleHeight > 0) {
-        visibleElements.push(art);
-        if (visibleHeight > maxVisibleHeight) {
-          maxVisibleHeight = visibleHeight;
-          dominantElement = art;
+        if (visibleHeight > 0) {
+          visibleElements.push(art);
+          if (visibleHeight > maxVisibleHeight) {
+            maxVisibleHeight = visibleHeight;
+            dominantElement = art;
+          }
         }
       }
-    }
-  });
-
-  const areMultipleVisible = visibleElements.length > 1;
-  artworks.forEach((art) => {
-    art.style.transition = "opacity 0.3s ease";
-    const isVisible = visibleElements.includes(art);
-    const isDominant = art === dominantElement;
-
-    art.style.opacity =
-      areMultipleVisible && isVisible && !isDominant ? "0.3" : "1";
-  });
-
-  artworks.forEach((art) => {
-    const text = art.querySelector<HTMLElement>(".artwork-link");
-    if (!text) return;
-
-    text.style.position = "";
-    text.style.top = "";
-    text.style.right = "";
-    text.style.width = "";
-    text.style.margin = "";
-    text.style.zIndex = "";
-    text.style.transform = "";
-  });
-
-  if (isMobile) return; // no pinning on mobile
-
-  artworks.forEach((art) => {
-    const text = art.querySelector<HTMLElement>(".artwork-link");
-    if (!text) return;
-
-    /* what part of this artwork should drive the scroll logic? */
-    let scrollableElement: HTMLElement | null = null;
-    if (art.classList.contains("long-image")) {
-      scrollableElement = art.querySelector<HTMLElement>(".artwork-image");
-    } else if (art.classList.contains("multi-image")) {
-      scrollableElement = art.querySelector<HTMLElement>(".images-container");
-    }
-
-    if (!scrollableElement) return;
-
-    const rect = scrollableElement.getBoundingClientRect();
-    if (rect.height <= vh) return; // no need to pin if it fits
-
-    const { v: marginV, h: marginH } = getMargins(text);
-
-    const naturalWidth = text.offsetWidth;
-
-    type Mode = "normal" | "pinned" | "leaving";
-    let mode: Mode = "normal";
-    if (rect.top <= 0 && rect.bottom > vh) mode = "pinned";
-    else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0)
-      mode = "leaving";
-
-    if (mode !== "normal") {
-      text.style.position = "fixed";
-      text.style.right = `${marginH}px`;
-      text.style.width = `${naturalWidth}px`;
-      text.style.margin = "0";
-      text.style.zIndex = "10";
-      if (mode === "pinned") {
-        text.style.top = `${marginV}px`;
-      } else if (mode === "leaving") {
-        const moved = vh - rect.bottom;
-        const newTopPx = marginV - moved;
-        text.style.top = `${newTopPx}px`;
-      }
-    }
-
-    art.dataset.pinned = mode === "normal" ? "false" : "true";
-  });
-}
-
-/* ---------- 3. event wiring (unchanged) ---------- */
-let ticking = false;
-window.addEventListener("scroll", () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      updatePositions();
-      ticking = false;
     });
-    ticking = true;
+
+    const areMultipleVisible = visibleElements.length > 1;
+    artworks.forEach((art) => {
+      art.style.transition = "opacity 0.1s ease";
+      const isVisible = visibleElements.includes(art);
+      const isDominant = art === dominantElement;
+
+      art.style.opacity =
+        areMultipleVisible && isVisible && !isDominant ? "0.1" : "1";
+    });
+
+    artworks.forEach((art) => {
+      const text = art.querySelector<HTMLElement>(".text-info");
+      if (!text) return;
+
+      text.style.position = "";
+      text.style.top = "";
+      text.style.right = "";
+      text.style.width = "";
+      text.style.margin = "";
+      text.style.zIndex = "";
+      text.style.transform = "";
+    });
+
+    if (isMobile) return; // no pinning on mobile
+
+    artworks.forEach((art) => {
+      const text = art.querySelector<HTMLElement>(".text-info");
+      if (!text) return;
+
+      /* what part of this artwork should drive the scroll logic? */
+      let scrollableElement: HTMLElement | null = null;
+      if (art.classList.contains("long-image")) {
+        scrollableElement = art.querySelector<HTMLElement>(".artwork-image");
+      } else if (art.classList.contains("multi-image")) {
+        scrollableElement = art.querySelector<HTMLElement>(".images-container");
+      }
+
+      if (!scrollableElement) return;
+
+      const rect = scrollableElement.getBoundingClientRect();
+      if (rect.height <= vh) return; // no need to pin if it fits
+
+      const { v: marginV, h: marginH } = getMargins(text);
+
+      const naturalWidth = text.offsetWidth;
+
+      type Mode = "normal" | "pinned" | "leaving";
+      let mode: Mode = "normal";
+      if (rect.top <= 0 && rect.bottom > vh) mode = "pinned";
+      else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0)
+        mode = "leaving";
+
+      if (mode !== "normal") {
+        text.style.position = "fixed";
+        text.style.right = `${marginH}px`;
+        text.style.width = `${naturalWidth}px`;
+        text.style.margin = "0";
+        text.style.zIndex = "10";
+        if (mode === "pinned") {
+          text.style.top = `${marginV}px`;
+        } else if (mode === "leaving") {
+          const moved = vh - rect.bottom;
+          const newTopPx = marginV - moved;
+          text.style.top = `${newTopPx}px`;
+        }
+      }
+
+      art.dataset.pinned = mode === "normal" ? "false" : "true";
+    });
   }
-});
-window.addEventListener("resize", updatePositions);
 
-// run once images are loaded
-document.querySelectorAll<HTMLElement>(".artwork-content").forEach((art) => {
-  art
-    .querySelectorAll<HTMLImageElement>(".artwork-image")
-    .forEach((img) => img.addEventListener("load", updatePositions));
-});
+  /* ---------- 3. event wiring (unchanged) ---------- */
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updatePositions();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  window.addEventListener("resize", updatePositions);
 
-updatePositions();
+  // run once images are loaded
+  document.querySelectorAll<HTMLElement>(".artwork-content").forEach((art) => {
+    art
+      .querySelectorAll<HTMLImageElement>(".artwork-image")
+      .forEach((img) => img.addEventListener("load", updatePositions));
+  });
+
+  updatePositions();
 </script>

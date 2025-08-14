@@ -6,16 +6,14 @@ keywords:
   - Realtime Software
 background_img:
   url: xray_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: cognition_01.jpg
-  - label: ''
+  - label: ""
     url: cognition_02.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

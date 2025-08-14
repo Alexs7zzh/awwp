@@ -8,15 +8,15 @@ keywords:
   - Custom Fluid Dynamics Software
 background_img:
   url: sfos_thum.png
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/150054096
 imgs:
-  - label: ''
+  - label: ""
     url: sfos_1.jpg
-  - label: ''
+  - label: ""
     url: sfos_2.jpg
-intro: ''
+intro: ""
 concept:
   title: Concept Detail
   content: >-
@@ -38,8 +38,6 @@ concept:
     美しい靴と4K映像を一体化したこのインスタレーションは、靴のデザインへのコンピュテーションによる再解釈を促し、見えない世界へのリアリティを拡張する。数値流体力学というハイテクノロジーをデザインを解釈する言語として位置づけることで、芸術と科学の新しい関係が生まれる。
 ---
 
-
-
 ## クレジット
 
 アーティスト : 脇田玲
@@ -52,7 +50,7 @@ concept:
 
 ## 展示
 
-- AnyTokyo 2015, 増上寺, 2015/10/24〜11/3. 
+- AnyTokyo 2015, 増上寺, 2015/10/24〜11/3.
 
 ## 関連リンク
 

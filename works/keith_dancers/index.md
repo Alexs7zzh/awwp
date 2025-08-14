@@ -6,15 +6,13 @@ keywords:
   - 5ch Realtime Software
 background_img:
   url: dancers_1.jpg
-  label: ''
+  label: ""
 imgs:
   - label: Photo by Takahiro Tsushima
     url: dancers_1.jpg
 intro: >-
   キース・ヘリングが来日時に残した未発表のドローイングを見せてもらった時、曲線が生きていると思った。ヘリングのDNAをもった生物がそのまま自然に生長した結果、うねりながら、回転しながら、躍動する身体が描かれていったのではなかろうか。チューリングパターンのアルゴリズムに独自の改良を加え、自ら生長しながら曲線を描くシステムを開発し、ヘリングのドローイングと併置した。
 ---
-
-
 
 ## クレジット
 

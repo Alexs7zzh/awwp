@@ -6,17 +6,17 @@ keywords:
   - Installation
 background_img:
   url: proposaljr_back.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: proposaljr_01.jpg
-  - label: ''
+  - label: ""
     url: proposaljr_02.jpg
-  - label: ''
+  - label: ""
     url: proposaljr_03.jpg
-  - label: ''
+  - label: ""
     url: proposaljr_04.jpg
-  - label: ''
+  - label: ""
     url: proposaljr_05.jpg
 intro: >-
   AIは果たして理想の移動環境をデザインしうるのでしょうか?
@@ -31,8 +31,6 @@ intro: >-
   本作はハンス・ハーケ(Hans Haacke)が1970年に発表した「MoMA
   Poll」にインスパイアされています。2020年代における権力、つまりAIやアルゴリズム、を支持するかどうかを鑑賞者に問う「AIとの政治学」のささやかな試みです。
 ---
-
-
 
 ## クレジット
 

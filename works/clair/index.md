@@ -7,15 +7,15 @@ keywords:
   - Audio Visual Installation with 4ch Sound
 background_img:
   url: clair_back.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: clair_01.png
-  - label: ''
+  - label: ""
     url: clair_02.png
-  - label: ''
+  - label: ""
     url: clair_03.jpg
-  - label: ''
+  - label: ""
     url: clair_04.jpg
 intro: >-
   CLAIR DE LUNE - 月の光
@@ -27,15 +27,13 @@ intro: >-
   太陽で生まれた光は、数分後には月に到着し、その表面で反射し、我々の眼球に届いている。月を見ている時、我々はこの壮大な現象を見ている。身の回りの当たり前のことは実は脅威的なことでもある。
 ---
 
-
-
 ## アーティスト
 
-ビジュアライゼーション：脇田玲 
+ビジュアライゼーション：脇田玲
 
-音楽／サウンドデザイン：冨田勲 
+音楽／サウンドデザイン：冨田勲
 
-## 
+##
 
 映像：ツール開発 水野雄基・パーゴラ映像 眞鍋創人
 
@@ -47,7 +45,7 @@ intro: >-
 
 テクニカル・プロデューサー　伊吹圭策（Drill-inc.）
 
-プロデューサー　大石　暉（Nomadic TOKYO） 
+プロデューサー　大石　暉（Nomadic TOKYO）
 
 アーティスト・キュレーター　岩波秀一郎 / 竹川潤一（MUTEK.JP）
 

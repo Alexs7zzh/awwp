@@ -6,20 +6,18 @@ keywords:
   - Mixed Media
 background_img:
   url: homeelectronics_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: homeelectronics_4.jpg
-  - label: ''
+  - label: ""
     url: homeelectronics_3.jpg
-  - label: ''
+  - label: ""
     url: homeelectronics_2.jpg
   - label: Photo by Takahiro Tsushima
     url: homeelectronics_1.jpg
 intro: 20世紀工業デザインが作り上げた風景
 ---
-
-
 
 ## 展示
 

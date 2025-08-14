@@ -6,7 +6,7 @@ keywords:
   - 3ch Audio Visual Installation
 background_img:
   url: holiness_2_1.jpg
-  label: ''
+  label: ""
 imgs:
   - label: Photo by Tomohiro Nakaya / xorium
     url: holiness_2_1.jpg
@@ -19,8 +19,6 @@ intro: >-
 
   本作では新たにサウンドを付与し、聴覚的体験としての「神聖さ」の検討も開始しました。
 ---
-
-
 
 ## クレジット
 

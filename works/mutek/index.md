@@ -6,22 +6,20 @@ keywords:
   - Audio Visual Performance
 background_img:
   url: mutek_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: mutek_4.jpg
-  - label: ''
+  - label: ""
     url: mutek_2.jpg
-  - label: ''
+  - label: ""
     url: mutek_3.jpg
-  - label: ''
+  - label: ""
     url: mutek_1.jpg
 intro: >-
   音楽家 小室哲哉とサイエンティスト
   脇田玲によるヴィジュアル・オーディオ・パフォーマンス。幻想的なシンセサイザー・サウンドと物理・化学シミュレーションの映像を用いた40分間のスペースジャーニー。宇宙と地球、物理現象と生命現象、構造と動き、の観点から共感覚性の高い音像と映像を構築している。サウンドと映像は基本的なシナリオは共有しつつも、いずれもライブのパフォーマンスとして生成されている。映像の一部には日本のスーパーコンピュータ「地球シミュレータ」による海流の計算データを用いている。
 ---
-
-
 
 ## パフォーマンス
 

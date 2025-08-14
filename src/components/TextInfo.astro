@@ -1,0 +1,99 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  description: string;
+}
+
+const { id, title, description } = Astro.props;
+---
+
+<div class="text-info">
+  <h2 id={`work-${id}-title`} class="title">
+    {title}
+  </h2>
+  <p class="description">{description}</p>
+
+  <a
+    href={`/works/${id}/`}
+    aria-labelledby={`work-${id}-title`}
+  >
+    View work →
+  </a>
+</div>
+
+<style>
+  .text-info {
+    /* same spacing & color inheritance as your old anchor */
+    text-decoration: none;
+    color: inherit;
+    margin: var(--text-vertical-margin, 2rem)
+      var(--text-horizontal-margin, 2rem);
+    padding: 0;
+    flex-grow: 1;
+
+    /* make it easy to pin the CTA at the bottom-right */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    display: inline-block;
+    position: relative;
+    padding-bottom: 2px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+    color: var(--font-color-title);
+  }
+
+  .description {
+    line-height: 1.6;
+    font-size: 0.8rem;
+    color: var(--font-color-body);
+    margin-top: 0.25rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* bottom-right CTA that feels like your title text */
+  a {
+    align-self: flex-end;    /* right align */
+    margin-top: auto;        /* push to bottom when there's extra space */
+    display: inline-block;
+    position: relative;
+    padding-bottom: 2px;
+
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 400;
+    color: var(--font-color-title);
+    text-decoration: none;
+  }
+  a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  a:hover::after {
+    width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    .work-card {
+      margin-top: 0;
+    }
+    .description {
+      -webkit-line-clamp: 6;
+    }
+  }
+</style>

@@ -6,20 +6,18 @@ keywords:
   - Realtime Software
 background_img:
   url: jomonverse_head.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: jomonverse_2.png
-  - label: ''
+  - label: ""
     url: jomonverse_3.png
-  - label: ''
+  - label: ""
     url: jomonverse_4.png
-  - label: ''
+  - label: ""
     url: jomonverse_1.png
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

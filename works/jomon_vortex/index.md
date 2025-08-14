@@ -7,11 +7,11 @@ keywords:
   - (Realtime Software, Jomon Pottery)
 background_img:
   url: jomon_vortex.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: vortex_2.jpg
-  - label: ''
+  - label: ""
     url: vortex_1.jpg
   - label: Photo by Issei Suzuki
     url: vortex_3.jpg
@@ -35,8 +35,6 @@ intro: >-
 
   我々には何が見えていて、何が見えていないのか。縄文人は我々よりも多くのものを見ていたのではないか。パンデミックで混乱した世界の中で、そのような問いが浮かび上がります。この展示では、縄文時代の土器や石器とデータサイエンスに基づく映像を併置することで、我々にとって「見る」「見える」とはどのようなことなのか改めて問いたいと考えました。
 ---
-
-
 
 ## クレジット
 

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { marked } from 'marked';
+import { marked } from "marked";
 import { getCollection, render } from "astro:content";
 import { imageStore } from "@lib/imageStore";
 
@@ -38,55 +38,70 @@ const keywords = Array.isArray(keywordsRaw)
         <div class="meta-stack">
           {work.data.year && <p class="meta-item">{work.data.year}</p>}
 
-          {keywords.length > 0 && (
-            <ul class="meta-tags" role="list">
-              {keywords.map((k) => <li class="meta-tag">{k}</li>)}
-            </ul>
-          )}
+          {
+            keywords.length > 0 && (
+              <ul class="meta-tags" role="list">
+                {keywords.map((k) => (
+                  <li class="meta-tag">{k}</li>
+                ))}
+              </ul>
+            )
+          }
         </div>
       </div>
 
       <div class="work-hero__right">
-        {work.data.intro && (
-          <div class="text-block-content" set:html={marked.parse(work.data.intro)}>
-          </div>
-        )}
+        {
+          work.data.intro && (
+            <div
+              class="text-block-content"
+              set:html={marked.parse(work.data.intro)}
+            ></div>
+          )
+        }
       </div>
     </header>
 
     <!-- Image grid -->
-    {images.length > 0 && (
-      <ul class="work-grid" role="list">
-        {images.map((img, i) => {
-          const src = typeof img === "string" ? img : (img?.src ?? "");
-          const alt = `${work.data.title} — image ${i + 1}`;
-          return (
-            <li class="grid-item">
-              <a href={src} aria-label={`Open image ${i + 1} for ${work.data.title}`}>
-                <div class="image-wrapper">
-                  <img
-                    src={src}
-                    alt={alt}
-                    loading="lazy"
-                    class="list-image"
-                    width="1600"
-                    height="1200"
-                  />
-                </div>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    )}
+    {
+      images.length > 0 && (
+        <ul class="work-grid" role="list">
+          {images.map((img, i) => {
+            const src = typeof img === "string" ? img : (img?.src ?? "");
+            const alt = `${work.data.title} — image ${i + 1}`;
+            return (
+              <li class="grid-item">
+                <a
+                  href={src}
+                  aria-label={`Open image ${i + 1} for ${work.data.title}`}
+                >
+                  <div class="image-wrapper">
+                    <img
+                      src={src}
+                      alt={alt}
+                      loading="lazy"
+                      class="list-image"
+                      width="1600"
+                      height="1200"
+                    />
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
 
     <section class="work-notes">
-      {work.data.concept && (
-        <div class="concept">
-          <h2 class="title">Concept</h2>
-          <p class="concept">{work.data.concept}</p>
-        </div>
-      )}
+      {
+        work.data.concept && (
+          <div class="concept">
+            <h2 class="title">Concept</h2>
+            <p class="concept">{work.data.concept}</p>
+          </div>
+        )
+      }
       <div class="prose">
         <Content />
       </div>
@@ -94,7 +109,7 @@ const keywords = Array.isArray(keywordsRaw)
   </article>
 </BaseLayout>
 
-  <style>
+<style>
   /* --- Hero layout (two columns) --- */
   .work-hero {
     display: grid;
@@ -110,7 +125,7 @@ const keywords = Array.isArray(keywordsRaw)
   .text-block-title {
     color: var(--font-color-title);
   }
-  
+
   .work-hero__left {
     display: grid;
     align-content: end;
@@ -144,9 +159,9 @@ const keywords = Array.isArray(keywordsRaw)
     letter-spacing: 0.14em;
     font-weight: 300;
     color: var(--font-color-body);
-    padding: 0;           /* no chip padding */
-    border: none;         /* no border */
-    border-radius: 0;     /* no rounded corners */
+    padding: 0; /* no chip padding */
+    border: none; /* no border */
+    border-radius: 0; /* no rounded corners */
   }
   /* add a mid-dot between items, not before the first */
   .meta-tag + .meta-tag::before {
@@ -173,8 +188,12 @@ const keywords = Array.isArray(keywordsRaw)
   }
 
   @media (max-width: 900px) {
-    .work-hero { grid-template-columns: 1fr; }
-    .work-hero__right { order: 2; }
+    .work-hero {
+      grid-template-columns: 1fr;
+    }
+    .work-hero__right {
+      order: 2;
+    }
   }
 
   /* --- Image grid --- */
@@ -196,7 +215,9 @@ const keywords = Array.isArray(keywordsRaw)
     color: inherit;
     transition: opacity 0.2s ease;
   }
-  .grid-item a:hover { opacity: 0.96; }
+  .grid-item a:hover {
+    opacity: 0.96;
+  }
 
   .image-wrapper {
     position: relative;
@@ -216,8 +237,8 @@ const keywords = Array.isArray(keywordsRaw)
     padding: 0 1rem;
   }
   .work-notes .title {
-    font-size: 0.8rem;          /* matches your small placard size */
-    font-weight: 300;           /* thinner */
+    font-size: 0.8rem; /* matches your small placard size */
+    font-weight: 300; /* thinner */
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 0.6rem;
@@ -236,7 +257,9 @@ const keywords = Array.isArray(keywordsRaw)
     transition: width 0.3s;
   }
   /* underline only when the label itself is hovered (quieter) */
-  .work-notes .title:hover::after { width: 100%; }
+  .work-notes .title:hover::after {
+    width: 100%;
+  }
 
   .work-notes .description {
     line-height: 1.7;
@@ -249,12 +272,14 @@ const keywords = Array.isArray(keywordsRaw)
   }
 
   /* Optional: calmer markdown headings to match placards */
-  .prose :where(p, ul, ol, h2, h3, blockquote) { margin-block: 1rem; }
+  .prose :where(p, ul, ol, h2, h3, blockquote) {
+    margin-block: 1rem;
+  }
   .prose h2 {
     font-size: 0.9rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    font-weight: 300;  /* thinner */
+    font-weight: 300; /* thinner */
     margin-top: 2rem;
   }
 </style>

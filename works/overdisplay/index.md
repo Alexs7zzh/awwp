@@ -6,16 +6,14 @@ keywords:
   - Mixed Media
 background_img:
   url: overdisplay_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: overdisplay_1.jpg
   - label: Photo by Takahiro Tsushima
     url: overdisplay_2.jpg
 intro: 本作ではコンピュータの想定された用途や作法に抗うメディア表現を探求している。
 ---
-
-
 
 ## 展示
 

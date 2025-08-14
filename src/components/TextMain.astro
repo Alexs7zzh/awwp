@@ -18,23 +18,28 @@ const {
 } = Astro.props;
 ---
 
-<article class={`artwork-content variant-${Config.textBlock.style}`} data-parallax-speed={parallaxSpeed}>
+<article
+  class={`artwork-content variant-${Config.textBlock.style}`}
+  data-parallax-speed={parallaxSpeed}
+>
   <div class="text-block">
     <h2 class="text-block-title">{title}</h2>
-    <p class="text-block-content" set:html={content}></p>
+    <p class="text-block-content" set:html={content} />
   </div>
 
-  {image !== undefined && (
-    <figure class="image-wrapper">
-      <Image
-        src={image}
-        alt={title}
-        class="artwork-image"
-        loading="lazy"
-        format="webp"
-      />
-    </figure>
-  )}
+  {
+    image !== undefined && (
+      <figure class="image-wrapper">
+        <Image
+          src={image}
+          alt={title}
+          class="artwork-image"
+          loading="lazy"
+          format="webp"
+        />
+      </figure>
+    )
+  }
 </article>
 
 <style>

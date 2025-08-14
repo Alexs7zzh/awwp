@@ -6,7 +6,7 @@ keywords:
   - Custom Software
 background_img:
   url: ryoanji_thumb.jpg
-  label: ''
+  label: ""
 imgs:
   - label: © Nacása & Partners Inc. FUTA Moriishi
     url: ryoanji.jpg
@@ -18,8 +18,6 @@ intro: >-
   同時に、全くデザインがなされていないと考えられる都内のある駐車場を俯瞰した風景にも同様のシミュレーションを適用し、
   龍安寺のそれと並置することで、人の意図が介在する場合としない場合の、両者の類似と相違を考える契機を提供することにした。
 ---
-
-
 
 ## 展示
 

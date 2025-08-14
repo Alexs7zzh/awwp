@@ -6,18 +6,16 @@ keywords:
   - Installation
 background_img:
   url: science_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: science_01.jpg
-  - label: ''
+  - label: ""
     url: science_03.jpg
-  - label: ''
+  - label: ""
     url: science_02.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

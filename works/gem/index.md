@@ -7,16 +7,14 @@ keywords:
   - with 6ch FullHD Videos
 background_img:
   url: gem_back.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: gem_01.jpg
-  - label: ''
+  - label: ""
     url: gem_02.png
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

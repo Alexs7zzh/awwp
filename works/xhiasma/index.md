@@ -7,22 +7,20 @@ keywords:
   - Dance Performance
 background_img:
   url: xhiasma_bg.jpg
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/284910004
 imgs:
-  - label: ''
+  - label: ""
     url: xhiasma_1.jpg
-  - label: ''
+  - label: ""
     url: xhiasma_2.jpg
 intro: 廣川玉枝、湯浅永麻、脇田玲のコラボレーションとして一夜限りで実現したパフォーマンス。ファッション、レーザー映像、ダンスの融合による新しい舞台表現を目指した。
 ---
 
-
-
 ## クレジット
 
-企画・演出・コンセプト：廣川玉枝（SOMA DESIGN）、脇田玲 
+企画・演出・コンセプト：廣川玉枝（SOMA DESIGN）、脇田玲
 
 振付・出演：Ema Yuasa
 

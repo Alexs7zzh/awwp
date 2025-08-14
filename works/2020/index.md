@@ -1,5 +1,5 @@
 ---
-title: '2020'
+title: "2020"
 thumbnail: 2020_thumb.jpg
 year: 2021
 keywords:
@@ -7,15 +7,15 @@ keywords:
   - 8K Movie + 4K Realtime Software
 background_img:
   url: 2020_2.png
-  label: ''
+  label: ""
 videos:
   - https://www.youtube.com/embed/YFtu78qaNQk
 imgs:
-  - label: ''
+  - label: ""
     url: 2020_1.png
-  - label: ''
+  - label: ""
     url: 2020_3.png
-  - label: ''
+  - label: ""
     url: 2020_1.jpg
 intro: |-
   2020年は激動の一年でした。
@@ -33,11 +33,7 @@ intro: |-
   少し離れたところに真っ黒な小さなモニターが置いてあり、8Kのシーンを1ピクセルに縮小した赤い点を描きました。
 
   その点には「we are here」と書いてあります。
-
-  　
 ---
-
-
 
 ## クレジット
 

@@ -7,20 +7,18 @@ keywords:
   - Custom Materials / Wearable Computing / Interior Design / Fashion Design
 background_img:
   url: fabcell.jpeg
-  label: ''
+  label: ""
 videos:
   - https://www.youtube.com/embed/kEWdqSsE88s
 imgs:
-  - label: ''
+  - label: ""
     url: ex_detail_img6_1.jpg
-  - label: ''
+  - label: ""
     url: ex_detail_img6_2.jpg
 intro: >-
   Fabcell(Fabric
   Element)は非発光の変色テキスタイルです。導電性繊維と示温インキによって構成される布型モジュールはピクセルのように組み合わせることで実空間におけるアンビエントディスプレイとして機能します。有機ELなどの発光性のフレキシブルディスプレイと異なり、非発光の変色テキスタイルによる動的なグラフィックスは、環境にとけ込んだ快適で美的な情報呈示を実現します。ファッションやインテリアに用いられる布製の人工物を対象とした新しいコミュニケーションメディアのデザインが期待できます。
 ---
-
-
 
 ## クレジット
 

@@ -1,35 +1,35 @@
 interface ConfigType {
   header: {
-    resize: boolean,
-    line: boolean,
-    background: 'transparent' | 'white' | 'blur'
-  },
+    resize: boolean;
+    line: boolean;
+    background: "transparent" | "white" | "blur";
+  };
   description: {
-    horizontalMargin: string,
-    verticalMargin: string,
-  },
+    horizontalMargin: string;
+    verticalMargin: string;
+  };
   textBlock: {
-    style: "wide" | "hero"
-  },
+    style: "wide" | "hero";
+  };
   background: {
-    theme: "light" | "dark",
-  }
-};
+    theme: "light" | "dark";
+  };
+}
 
-export const Config : ConfigType = {
+export const Config: ConfigType = {
   header: {
     resize: false,
     line: false,
-    background: 'transparent'
+    background: "transparent",
   },
   description: {
-    horizontalMargin: '2rem',
-    verticalMargin: '2rem'
+    horizontalMargin: "2rem",
+    verticalMargin: "2rem",
   },
   textBlock: {
-    style: "hero"
+    style: "hero",
   },
   background: {
-    theme: "dark"
-  }
+    theme: "light",
+  },
 };

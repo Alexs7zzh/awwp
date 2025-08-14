@@ -7,19 +7,19 @@ keywords:
   - VRML / Digital Archive / Interface Metaphor
 background_img:
   url: alive_2.jpeg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: alive_1.jpg
-  - label: ''
+  - label: ""
     url: gallery03.jpg
-  - label: ''
+  - label: ""
     url: ginga_image01.jpg
-  - label: ''
+  - label: ""
     url: gallery08.jpg
-  - label: ''
+  - label: ""
     url: gallery05.jpg
-  - label: ''
+  - label: ""
     url: gallery06.jpg
 intro: >-
   Ryukyu ALIVE is an information visualization system of the huge Web Archives
@@ -52,10 +52,8 @@ concept:
     window provides interesting functions: Seiza (constellation) to show or hide
     information according to categories, Wakusei(planet) to show all contents in
     a specific category in another galaxy and time machine to visualize past
-    status of Ryukyu ALIVE. 
+    status of Ryukyu ALIVE.
 ---
-
-
 
 ## クレジット
 

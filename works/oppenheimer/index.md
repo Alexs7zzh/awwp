@@ -6,19 +6,17 @@ keywords:
   - Installation
 background_img:
   url: oppenheimer_back.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: oppenheimer_01.jpg
-  - label: ''
+  - label: ""
     url: oppenheimer_02.png
-  - label: ''
+  - label: ""
     url: oppenheimer_03.jpg
 intro: >-
   科学技術における歓喜と懺悔をテーマにした。ニール・アームストロングとロバート・オッペンハイマーの映像は尺も音量もぴたりと合わせてあり、同じタイミングで再生される。両者の言葉はお互いをかき消すように空間に広がり、永遠にループ再生される。
 ---
-
-
 
 ## クレジット
 
@@ -28,7 +26,7 @@ intro: >-
 
 ## 資料
 
-Video downloaded from NASA APOLLO 11 Video Library (https://history.nasa.gov/alsj/a11/video11.html). Public domain. 
+Video downloaded from NASA APOLLO 11 Video Library (https://history.nasa.gov/alsj/a11/video11.html). Public domain.
 
 Corrected Transcript downloaded from NASA APOLLO 11 LUNAR SURFACE JOURNALS, Copyright (C) 1995 by Eric M. Jones. All rights reserved.
 

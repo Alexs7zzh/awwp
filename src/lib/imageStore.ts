@@ -1,18 +1,18 @@
 // src/lib/imageStore.ts
 import type { ImageMetadata } from "astro";
 
-export type WorkId = string;   // folder name under /works (original case)
-export type ImageId = string;  // filename without extension
+export type WorkId = string; // folder name under /works (original case)
+export type ImageId = string; // filename without extension
 type Lower = string;
 
 export interface ImageRecord {
-  workId: WorkId;           // original case from folder
-  id: ImageId;              // basename without extension
+  workId: WorkId; // original case from folder
+  id: ImageId; // basename without extension
   ext: "png" | "jpg" | "jpeg" | "webp";
-  path: string;             // absolute Vite path, e.g. "/works/momentMAT/momentMAT_02.jpg"
-  relFull: string;          // "momentMAT/momentMAT_02.jpg"
-  relNoExt: string;         // "momentMAT/momentMAT_02"
-  metadata: ImageMetadata;  // feed to <Picture src={...} />
+  path: string; // absolute Vite path, e.g. "/works/momentMAT/momentMAT_02.jpg"
+  relFull: string; // "momentMAT/momentMAT_02.jpg"
+  relNoExt: string; // "momentMAT/momentMAT_02"
+  metadata: ImageMetadata; // feed to <Picture src={...} />
 }
 
 export interface ImageStoreOptions {
@@ -23,7 +23,10 @@ export interface ImageStoreOptions {
 }
 
 function defaultSort(a: ImageRecord, b: ImageRecord) {
-  return a.relFull.localeCompare(b.relFull, undefined, { numeric: true, sensitivity: "base" });
+  return a.relFull.localeCompare(b.relFull, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
 }
 
 function listSample(arr: string[], max = 8) {
@@ -40,18 +43,19 @@ const EXT_RE = /\.(png|jpe?g|webp)$/i;
 
 class ImageStore {
   // ---- indexes (all keys are lowercase) ----
-  private byWork: Map<Lower, ImageRecord[]> = new Map();        // work → sorted records
-  private byFull: Map<Lower, ImageRecord> = new Map();          // "momentmat/m2.jpg"
-  private byNoExt: Map<Lower, ImageRecord> = new Map();         // "momentmat/m2"
-  private byBasename: Map<Lower, ImageRecord[]> = new Map();    // "m2" → many
-  private byCompound: Map<Lower, ImageRecord[]> = new Map();    // "momentmat:m2" → 1..N (nested allowed)
+  private byWork: Map<Lower, ImageRecord[]> = new Map(); // work → sorted records
+  private byFull: Map<Lower, ImageRecord> = new Map(); // "momentmat/m2.jpg"
+  private byNoExt: Map<Lower, ImageRecord> = new Map(); // "momentmat/m2"
+  private byBasename: Map<Lower, ImageRecord[]> = new Map(); // "m2" → many
+  private byCompound: Map<Lower, ImageRecord[]> = new Map(); // "momentmat:m2" → 1..N (nested allowed)
 
   private workNamesOriginalCase: Map<Lower, WorkId> = new Map();
   private options: Required<ImageStoreOptions>;
 
   constructor(opts?: ImageStoreOptions) {
     this.options = {
-      enforceGlobalBasenameUniqueness: opts?.enforceGlobalBasenameUniqueness ?? false,
+      enforceGlobalBasenameUniqueness:
+        opts?.enforceGlobalBasenameUniqueness ?? false,
       sort: opts?.sort ?? defaultSort,
     };
     this.build();
@@ -60,7 +64,7 @@ class ImageStore {
   private build() {
     const mods = import.meta.glob<{ default: ImageMetadata }>(
       "/works/**/*.{png,jpg,jpeg,webp}",
-      { eager: true }
+      { eager: true },
     );
 
     for (const [absPath, mod] of Object.entries(mods)) {
@@ -78,7 +82,7 @@ class ImageStore {
 
       const id = m[1];
       const ext = m[2].toLowerCase() as ImageRecord["ext"];
-      const relFull = after;                  // "work/sub/file.ext"
+      const relFull = after; // "work/sub/file.ext"
       const relNoExt = relFull.replace(EXT_RE, "");
 
       const rec: ImageRecord = {
@@ -128,15 +132,13 @@ class ImageStore {
       const dupes: string[] = [];
       for (const [base, arr] of this.byBasename.entries()) {
         if (arr.length > 1) {
-          dupes.push(
-            `${arr[0].id} → ${arr.map(r => r.relFull).join(", ")}`
-          );
+          dupes.push(`${arr[0].id} → ${arr.map((r) => r.relFull).join(", ")}`);
         }
       }
       if (dupes.length) {
         throw new Error(
           "[ImageStore] Duplicate basenames detected:\n" +
-          dupes.map(d => ` - ${d}`).join("\n")
+            dupes.map((d) => ` - ${d}`).join("\n"),
         );
       }
     }
@@ -166,13 +168,13 @@ class ImageStore {
       if (!arr || arr.length === 0) {
         const known = this.listWorkIds();
         throw new Error(
-          `[ImageStore] Image "${s}" not found. Known works: ${listSample(known)}`
+          `[ImageStore] Image "${s}" not found. Known works: ${listSample(known)}`,
         );
       }
       if (arr.length > 1) {
         throw new Error(
-          `[ImageStore] Ambiguous "${s}" (multiple matches): ${arr.map(r => r.relFull).join(", ")}.\n` +
-          `Use a relative path like "${arr[0].relNoExt}".`
+          `[ImageStore] Ambiguous "${s}" (multiple matches): ${arr.map((r) => r.relFull).join(", ")}.\n` +
+            `Use a relative path like "${arr[0].relNoExt}".`,
         );
       }
       return arr[0];
@@ -184,13 +186,13 @@ class ImageStore {
     if (!arr || arr.length === 0) {
       throw new Error(
         `[ImageStore] Image basename "${s}" not found.\n` +
-        `Tip: reference by path, e.g. "workFolder/${s}".`
+          `Tip: reference by path, e.g. "workFolder/${s}".`,
       );
     }
     if (arr.length > 1) {
       throw new Error(
-        `[ImageStore] Ambiguous basename "${s}" in: ${arr.map(r => r.relFull).join(", ")}.\n` +
-        `Use "work:${s}" or "${arr[0].relNoExt}".`
+        `[ImageStore] Ambiguous basename "${s}" in: ${arr.map((r) => r.relFull).join(", ")}.\n` +
+          `Use "work:${s}" or "${arr[0].relNoExt}".`,
       );
     }
     return arr[0];
@@ -214,14 +216,14 @@ class ImageStore {
     const maybeWork = segs[0]?.toLowerCase();
     const candidates =
       maybeWork && this.byWork.has(maybeWork)
-        ? this.byWork.get(maybeWork)!.map(r => r.relFull)
-        : this.getAll().map(r => r.relFull);
+        ? this.byWork.get(maybeWork)!.map((r) => r.relFull)
+        : this.getAll().map((r) => r.relFull);
 
     throw new Error(
       `[ImageStore] Path "${pathLike}" not found.\n` +
-      (maybeWork && this.byWork.has(maybeWork)
-        ? `Known under "${this.workNamesOriginalCase.get(maybeWork)}": ${listSample(candidates)}`
-        : `Known works: ${listSample(this.listWorkIds())}`)
+        (maybeWork && this.byWork.has(maybeWork)
+          ? `Known under "${this.workNamesOriginalCase.get(maybeWork)}": ${listSample(candidates)}`
+          : `Known works: ${listSample(this.listWorkIds())}`),
     );
   }
 
@@ -237,14 +239,14 @@ class ImageStore {
     if (!list || list.length === 0) {
       const known = this.listWorkIds();
       throw new Error(
-        `[ImageStore] No images found for work "${workId}". Known works: ${listSample(known)}`
+        `[ImageStore] No images found for work "${workId}". Known works: ${listSample(known)}`,
       );
     }
     return list;
   }
 
   requireImagesForWork(workId: WorkId): ImageMetadata[] {
-    return this.requireByWork(workId).map(r => r.metadata);
+    return this.requireByWork(workId).map((r) => r.metadata);
   }
 
   // ---------- helpers ----------
@@ -252,12 +254,12 @@ class ImageStore {
   listWorkIds(): WorkId[] {
     // return original-case folder names
     return [...this.workNamesOriginalCase.values()].sort((a, b) =>
-      a.localeCompare(b, undefined, { sensitivity: "base" })
+      a.localeCompare(b, undefined, { sensitivity: "base" }),
     );
   }
 
   getAll(): ImageRecord[] {
-    return this.listWorkIds().flatMap(w => this.requireByWork(w));
+    return this.listWorkIds().flatMap((w) => this.requireByWork(w));
   }
 }
 

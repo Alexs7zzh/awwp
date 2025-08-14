@@ -6,17 +6,15 @@ keywords:
   - Full HD Realtime Simulation
 background_img:
   url: nonlinear_thumb.jpg
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: nonlinear_1.jpg
   - label: Photo by Takahiro Tsushima
     url: nonlinear_2.jpg
 intro: >-
   本質的に非線形である流体の振る舞いに対して、線形なグラフィックデザイン的要素（グリッドやレイアウト）の適用を試みている。両者の本質的な不調和と時に現れる調和の瞬間は自然と人工の関係に似ている。
 ---
-
-
 
 ## 展示
 

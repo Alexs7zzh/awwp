@@ -1,5 +1,5 @@
 ---
-title: 'Furnished Fluid #3 (2016)'
+title: "Furnished Fluid #3 (2016)"
 thumbnail: ff2_thumb.png
 year: 2016
 keywords:
@@ -8,11 +8,11 @@ keywords:
   - 8ch Full-HD Display
 background_img:
   url: ff2_thumb.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: furnished_2_1.jpg
-  - label: ''
+  - label: ""
     url: furnished_2_2.jpg
 intro: >-
   Furnished
@@ -20,8 +20,6 @@ intro: >-
   La Chaise(Charles & Ray Eames 1948)、Butterfly Stool (Sori Yanagi 1954)
   、Diamond Chair(Harry Bertoia 1952) の3つの椅子をサンプルとしている。
 ---
-
-
 
 ## 展示
 

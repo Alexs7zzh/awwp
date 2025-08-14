@@ -23,28 +23,30 @@ const { header } = Config;
     transition: opacity 0.2s ease-in-out;
     text-transform: uppercase;
   }
-  a:hover { opacity: 0.7; }
+  a:hover {
+    opacity: 0.7;
+  }
 
   /* -------- Header layout -------- */
   .site-header {
     /* Animatable custom props (big state by default) */
-    --pad-top: 2rem;        /* distance from page edge (padding) */
-    --home-size: 1.5rem;    /* site title size */
-    --nav-size: 1rem;       /* nav links size */
-    --gap: 2rem;            /* space between title and nav */
-    --nav-gap: 1.5rem;      /* space between nav items */
+    --pad-top: 2rem; /* distance from page edge (padding) */
+    --home-size: 1.5rem; /* site title size */
+    --nav-size: 1rem; /* nav links size */
+    --gap: 2rem; /* space between title and nav */
+    --nav-gap: 1.5rem; /* space between nav items */
     --letter-spacing: 0.04em;
     --line-color: rgba(128, 128, 128, 0.35);
 
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;               /* full width */
+    right: 0; /* full width */
     display: flex;
-    justify-content: flex-start;   /* was: space-between */
-    align-items: center;     
+    justify-content: flex-start; /* was: space-between */
+    align-items: center;
     gap: var(--gap);
-    padding: var(--pad-top) 2rem .5rem;
+    padding: var(--pad-top) 2rem 0.5rem;
     z-index: 1000;
 
     color: white;
@@ -94,9 +96,9 @@ const { header } = Config;
 
   /* -------- Shrunk state (applied by JS) -------- */
   .site-header.shrunken {
-    --pad-top: 0.9rem;      /* closer to the edge */
-    --home-size: 1.1rem;    /* smaller title */
-    --nav-size: 0.95rem;    /* smaller nav links */
+    --pad-top: 0.9rem; /* closer to the edge */
+    --home-size: 1.1rem; /* smaller title */
+    --nav-size: 0.95rem; /* smaller nav links */
     --gap: 1.25rem;
     --nav-gap: 1rem;
     --letter-spacing: 0.03em;
@@ -128,10 +130,10 @@ const { header } = Config;
 
 <script>
   (() => {
-    const header = document.getElementById('site-header');
+    const header = document.getElementById("site-header");
     if (!header) return;
 
-    const canResize = header.dataset.resize === 'true';
+    const canResize = header.dataset.resize === "true";
     if (!canResize) return;
 
     const SHRINK_OFFSET = 40;
@@ -141,9 +143,9 @@ const { header } = Config;
       const y = window.scrollY;
 
       if (y > SHRINK_OFFSET) {
-        header.classList.add('shrunken');
+        header.classList.add("shrunken");
       } else {
-        header.classList.remove('shrunken');
+        header.classList.remove("shrunken");
       }
 
       lastY = y;
@@ -151,6 +153,6 @@ const { header } = Config;
 
     // Run once and on scroll; passive for perf.
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
   })();
 </script>

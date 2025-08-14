@@ -6,18 +6,16 @@ keywords:
   - Installation
 background_img:
   url: crosssection_back.png
-  label: ''
+  label: ""
 imgs:
-  - label: ''
+  - label: ""
     url: crosssection_02.jpg
-  - label: ''
+  - label: ""
     url: crosssection_01.png
-  - label: ''
+  - label: ""
     url: crosssection_03.jpg
-intro: ''
+intro: ""
 ---
-
-
 
 ## クレジット
 

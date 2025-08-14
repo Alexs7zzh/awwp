@@ -7,15 +7,15 @@ keywords:
   - Original In-car System
 background_img:
   url: fina_thum.jpg
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/135181161
 imgs:
-  - label: ''
+  - label: ""
     url: fina_1.jpg
-  - label: ''
+  - label: ""
     url: fina_2.jpg
-  - label: ''
+  - label: ""
     url: fina_3.jpg
 intro: >-
   FINA (Fluid-HMI Inspired by NAture)
@@ -43,8 +43,6 @@ concept:
 
     脇田玲
 ---
-
-
 
 ## DESIGN AND DEVELOPMENT
 

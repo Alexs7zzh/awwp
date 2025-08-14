@@ -8,16 +8,16 @@ keywords:
   - Custom Fluid Dynamics Software
 background_img:
   url: furnish.png
-  label: ''
+  label: ""
 videos:
   - https://player.vimeo.com/video/121172665
   - https://www.youtube.com/embed/iWWZuxQpkWs
 imgs:
-  - label: 'Photo: Ryuichi Maruo'
+  - label: "Photo: Ryuichi Maruo"
     url: furnished_1.jpg
-  - label: 'Photo: Ryuichi Maruo'
+  - label: "Photo: Ryuichi Maruo"
     url: furnished_2.jpg
-  - label: 'Photo: Ryuichi Maruo'
+  - label: "Photo: Ryuichi Maruo"
     url: furnished_3.jpg
 intro: >-
   Furnished
@@ -47,10 +47,8 @@ concept:
 
 
     デザイン模型とリアルタイム映像を一体化したこのインスタレーションは、20世紀工業デザインの価値と魅力を、科学の力を用いて再解釈する新しい方法論の提案でもあります。流体の映像に身を任せるうちに、鑑賞者の目は、まえから存在していたのであろうが、感覚が捉えきれなかった椅子の細部を拾い始めます。同時に、curve,
-    lattice, surface といった造形的な特徴は、周囲の空間の流れのパターンにも鮮明に伝えられていることに気付くのです。 
+    lattice, surface といった造形的な特徴は、周囲の空間の流れのパターンにも鮮明に伝えられていることに気付くのです。
 ---
-
-
 
 ## クレジット
 
