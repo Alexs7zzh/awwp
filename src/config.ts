@@ -14,6 +14,13 @@ interface ConfigType {
   background: {
     theme: "light" | "dark";
   };
+  detailPage: {
+    theme: 1 | 2 | 3;
+    column: number;
+  };
+  topPage: {
+    theme: 1 | 2
+  };
 }
 
 export const Config: ConfigType = {
@@ -32,4 +39,11 @@ export const Config: ConfigType = {
   background: {
     theme: "light",
   },
+  detailPage: {
+    theme: 1,
+    column: 1,
+  },
+  topPage: {
+    theme: 1
+  }
 };

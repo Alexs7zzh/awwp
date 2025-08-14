@@ -3,6 +3,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import { marked } from "marked";
 import { getCollection, render } from "astro:content";
 import { imageStore } from "@lib/imageStore";
+import { Config } from "@config";
 
 export async function getStaticPaths() {
   const works = await getCollection("work");
@@ -11,6 +12,19 @@ export async function getStaticPaths() {
     props: entry,
   }));
 }
+
+const themes = ['theme-compact-gallery', 'theme-modern-minimal', 'theme-mono-exhibit'] as const;
+
+const rawCols = Number(Config.detailPage.column ?? 1);
+const gridCols = Number.isFinite(rawCols) && rawCols > 0 ? Math.floor(rawCols) : 1;
+
+// Reuse your page spacing from Config (fallbacks keep things resilient)
+const pageVMargin = "2rem";
+const pageHMargin = "2rem";
+
+// Sensible defaults for multi-column gaps (theme can override later)
+const multiRowGap = "clamp(2.5rem, 6vw, 6rem)";
+const multiColGap = "3rem";
 
 const work = Astro.props;
 const { Content } = await render(work);
@@ -29,9 +43,13 @@ const keywords = Array.isArray(keywordsRaw)
 ---
 
 <BaseLayout>
-  <article class="work">
+  {/*
+    SWITCH THEME HERE:
+    Options: theme-compact-gallery | theme-modern-minimal | theme-mono-exhibit
+  */}
+  <article class=`work ${themes[Config.detailPage.theme - 1]}`>
     <!-- Hero -->
-    <header class="work-hero variant-hero" aria-labelledby="work-title">
+    <header class="work-hero" aria-labelledby="work-title">
       <div class="work-hero__left">
         <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
 
@@ -48,13 +66,17 @@ const keywords = Array.isArray(keywordsRaw)
             )
           }
         </div>
+
+        <div class="text-block-content">
+          <Content />
+        </div>
       </div>
 
       <div class="work-hero__right">
         {
           work.data.intro && (
             <div
-              class="text-block-content"
+              class="text-block-content intro"
               set:html={marked.parse(work.data.intro)}
             ></div>
           )
@@ -63,62 +85,60 @@ const keywords = Array.isArray(keywordsRaw)
     </header>
 
     <!-- Image grid -->
-    {
-      images.length > 0 && (
-        <ul class="work-grid" role="list">
-          {images.map((img, i) => {
-            const src = typeof img === "string" ? img : (img?.src ?? "");
-            const alt = `${work.data.title} — image ${i + 1}`;
-            return (
-              <li class="grid-item">
-                <a
-                  href={src}
-                  aria-label={`Open image ${i + 1} for ${work.data.title}`}
-                >
-                  <div class="image-wrapper">
-                    <img
-                      src={src}
-                      alt={alt}
-                      loading="lazy"
-                      class="list-image"
-                      width="1600"
-                      height="1200"
-                    />
-                  </div>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      )
-    }
+{
+  images.length > 0 && (
+    <ul
+      class="work-grid"
+      role="list"
+      data-cols={gridCols}
+      style={`
+        --grid-columns: ${gridCols};
+        --page-vmargin: ${pageVMargin};
+        --page-hmargin: ${pageHMargin};
+        --multi-row-gap: ${multiRowGap};
+        --multi-col-gap: ${multiColGap};
+      `}
+    >
+      {images.map((img, i) => {
+        const src = typeof img === "string" ? img : (img?.src ?? "");
+        const alt = `${work.data.title} — image ${i + 1}`;
+        return (
+          <li class="grid-item">
+            <a href={src} aria-label={`Open image ${i + 1} for ${work.data.title}`}>
+              <div class="image-wrapper">
+                <img
+                  src={src}
+                  alt={alt}
+                  loading="lazy"
+                  class="list-image"
+                  width="1600"
+                  height="1200"
+                />
+              </div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
 
-    <section class="work-notes">
-      {
-        work.data.concept && (
-          <div class="concept">
-            <h2 class="title">Concept</h2>
-            <p class="concept">{work.data.concept}</p>
-          </div>
-        )
-      }
-      <div class="prose">
-        <Content />
-      </div>
-    </section>
   </article>
 </BaseLayout>
 
 <style>
-  /* --- Hero layout (two columns) --- */
+  /* ------------------------------------------------------------
+     Base layout & type (shared across all themes)
+     Keep this lean; themes only override what's necessary.
+  ------------------------------------------------------------ */
   .work-hero {
     display: grid;
     grid-template-columns: 1fr minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 6rem);
-    align-items: end;
+    align-items: start;
     max-width: 1600px;
     margin: 0 auto;
-    padding: clamp(2rem, 6vw, 6rem) 1rem 0;
+    padding: clamp(2rem, 6vw, 6rem) 2rem 0;
     color: var(--font-color-body);
   }
 
@@ -128,23 +148,23 @@ const keywords = Array.isArray(keywordsRaw)
 
   .work-hero__left {
     display: grid;
-    align-content: end;
-    gap: 0.6rem; /* slightly tighter for compact header */
+    align-content: start;
+    gap: 0.9rem;
   }
+
   .meta-stack {
     display: grid;
     gap: 0.4rem;
   }
 
-  /* Thin, quiet meta */
   .meta-item {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 300;
     letter-spacing: 0.08em;
     color: var(--font-color-body);
+    margin: 0;
   }
 
-  /* Clean, pill-less tags with subtle separators */
   .meta-tags {
     display: flex;
     flex-wrap: wrap;
@@ -154,37 +174,48 @@ const keywords = Array.isArray(keywordsRaw)
     padding: 0;
   }
   .meta-tag {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     font-weight: 300;
     color: var(--font-color-body);
-    padding: 0; /* no chip padding */
-    border: none; /* no border */
-    border-radius: 0; /* no rounded corners */
+    padding: 0;
+    border: 0;
   }
-  /* add a mid-dot between items, not before the first */
   .meta-tag + .meta-tag::before {
     content: "•";
     margin: 0 0.45rem 0 0.2rem;
     color: var(--font-color-body);
   }
 
-  /* Ensure hero text spans full width per your variant-hero rules */
-  .work-hero .text-block-title,
-  .work-hero .text-block-content {
-    max-width: none;
-  }
-
   .text-block-content {
     font-weight: 300;
   }
-
   .text-block-content :global(p) {
     line-height: 1.7;
+    margin: 0;
   }
   .text-block-content :global(p + p) {
     margin-block-start: 1.6em;
+  }
+  .text-block-content :global(h2) {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-top: 2rem;
+    color: var(--font-color-title);
+  }
+  .text-block-content :global(h3) {
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-top: 1.5rem;
+    color: var(--font-color-title);
+  }
+  .text-block-content :global(ul, ol, blockquote) {
+    margin-block: 1rem;
   }
 
   @media (max-width: 900px) {
@@ -196,17 +227,30 @@ const keywords = Array.isArray(keywordsRaw)
     }
   }
 
-  /* --- Image grid --- */
-  .work-grid {
-    margin: clamp(4rem, 12vw, 10rem) auto;
-    padding: 0 1rem;
-    max-width: 1600px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: clamp(2.5rem, 6vw, 6rem) 3rem; /* a bit tighter, gallery-like gutters */
-    list-style: none;
-    align-items: end;
-  }
+  /* Image grid */
+.work-grid {
+  margin: clamp(4rem, 12vw, 10rem) auto;
+  padding: 0 1rem;
+  max-width: 1600px;
+  display: grid;
+
+  /* columns from config */
+  grid-template-columns: repeat(var(--grid-columns, 1), minmax(0, 1fr));
+
+  /* default (multi-column) gaps, theme-overridable via vars */
+  row-gap: var(--multi-row-gap, clamp(2.5rem, 6vw, 6rem));
+  column-gap: var(--multi-col-gap, 3rem);
+
+  list-style: none;
+  align-items: end;
+}
+
+/* When the config sets 1 column:
+   reuse your page "heighting" rhythm from Config. */
+.work-grid[data-cols="1"] {
+  row-gap: var(--page-vmargin, 2rem);
+  column-gap: var(--page-hmargin, 2rem);
+}
 
   .grid-item a {
     display: flex;
@@ -215,14 +259,12 @@ const keywords = Array.isArray(keywordsRaw)
     color: inherit;
     transition: opacity 0.2s ease;
   }
-  .grid-item a:hover {
-    opacity: 0.96;
-  }
+  .grid-item a:hover { opacity: 0.96; }
 
   .image-wrapper {
     position: relative;
     overflow: hidden;
-    border-radius: 0; /* square corners for images */
+    border-radius: 0;
   }
   .list-image {
     display: block;
@@ -230,56 +272,102 @@ const keywords = Array.isArray(keywordsRaw)
     height: auto;
   }
 
-  /* --- Notes / placard text --- */
-  .work-notes {
-    max-width: 720px;
-    margin: clamp(4rem, 10vw, 8rem) auto;
-    padding: 0 1rem;
+  /* Optional: narrower text measure on wide screens for readability */
+  @media (min-width: 901px) {
+    .work-hero__left .text-block-content {
+      max-width: 68ch;
+    }
   }
-  .work-notes .title {
-    font-size: 0.8rem; /* matches your small placard size */
-    font-weight: 300; /* thinner */
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 0.6rem;
+
+  /* ------------------------------------------------------------
+     THEME 1 — Compact Gallery (matches your reference)
+     Small font, tight leading, uppercase headings, tracked letters,
+     subtle underline on hover-like behavior for CTA-esque links.
+  ------------------------------------------------------------ */
+  .theme-compact-gallery .text-block-title {
     display: inline-block;
     position: relative;
     padding-bottom: 2px;
-  }
-  .work-notes .title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 1px;
-    background: currentColor;
-    transition: width 0.3s;
-  }
-  /* underline only when the label itself is hovered (quieter) */
-  .work-notes .title:hover::after {
-    width: 100%;
-  }
-
-  .work-notes .description {
-    line-height: 1.7;
-    font-size: 0.85rem; /* thinner, smaller body */
-    color: var(--font-color-body);
-    margin-top: 0.25rem;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Optional: calmer markdown headings to match placards */
-  .prose :where(p, ul, ol, h2, h3, blockquote) {
-    margin-block: 1rem;
-  }
-  .prose h2 {
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    font-weight: 300; /* thinner */
-    margin-top: 2rem;
+    letter-spacing: 0.18em; /* ~3px at 16px */
+    font-weight: 400;
+    margin: 0 0 1rem 0;
+  }
+  .theme-compact-gallery .text-block-content {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .theme-compact-gallery .meta-item   { font-size: 0.8rem; letter-spacing: 0.08em; }
+  .theme-compact-gallery .meta-tag    { font-size: 0.72rem; letter-spacing: 0.14em; }
+  .theme-compact-gallery .text-block-content :global(h2) {
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+  }
+  .theme-compact-gallery .text-block-content :global(h3) {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+  }
+  /* Clamp intro a bit on small screens for a compact hero */
+  @media (max-width: 767px) {
+    .theme-compact-gallery .intro {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      -webkit-line-clamp: 6;
+    }
+  }
+
+  /* ------------------------------------------------------------
+     THEME 2 — Modern Minimal (airier but still gallery-calm)
+     Slightly larger body, lighter tracking, sentence-case titles.
+  ------------------------------------------------------------ */
+  .theme-modern-minimal .text-block-title {
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    margin: 0 0 0.75rem 0;
+  }
+  .theme-modern-minimal .text-block-content {
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+  .theme-modern-minimal .meta-item { font-size: 0.85rem; letter-spacing: 0.06em; }
+  .theme-modern-minimal .meta-tag  { font-size: 0.76rem; letter-spacing: 0.12em; }
+  .theme-modern-minimal .text-block-content :global(h2),
+  .theme-modern-minimal .text-block-content :global(h3) {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 300;
+  }
+
+  /* ------------------------------------------------------------
+     THEME 4 — Mono Exhibit (structured, label-like type)
+     Uses monospaced accents for meta/tags; keeps body readable.
+  ------------------------------------------------------------ */
+  .theme-mono-exhibit .text-block-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+  }
+  .theme-mono-exhibit .meta-item,
+  .theme-mono-exhibit .meta-tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    letter-spacing: 0.1em;
+  }
+  .theme-mono-exhibit .meta-item { font-size: 0.78rem; }
+  .theme-mono-exhibit .meta-tag  { font-size: 0.7rem;  }
+  .theme-mono-exhibit .text-block-content {
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+  .theme-mono-exhibit .text-block-content :global(h2),
+  .theme-mono-exhibit .text-block-content :global(h3) {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 400;
   }
 </style>
