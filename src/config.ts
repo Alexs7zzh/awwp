@@ -37,11 +37,11 @@ export const Config: ConfigType = {
     style: "hero",
   },
   background: {
-    theme: "light",
+    theme: "dark",
   },
   detailPage: {
-    theme: 1,
-    column: 1,
+    theme: 3,
+    column: 2,
   },
   topPage: {
     theme: 1
