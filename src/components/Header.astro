@@ -1,14 +1,4 @@
----
-import { Config } from "@config";
-const { header } = Config;
----
-
-<header
-  id="site-header"
-  data-resize={header.resize}
-  data-line={header.line}
-  class={`site-header${header.resize ? " can-shrink" : ""}`}
->
+<header id="site-header">
   <a href="/" class="home">Akira Wakita</a>
   <nav>
     <a href="/works">Works</a>
@@ -38,9 +28,6 @@ const { header } = Config;
     --letter-spacing: 0.04em;
     --line-color: rgba(128, 128, 128, 0.35);
 
-    /* mix-blend-mode: difference;
-    color: white; */
-    color: #151515;
     position: fixed;
     top: 0;
     left: 0;
@@ -52,10 +39,9 @@ const { header } = Config;
     padding: var(--pad-top) 2rem 0.5rem;
     z-index: 1000;
 
-    background: #f8feff;
-    mix-blend-mode: normal;
-    color: inherit;
-    text-shadow: none;
+    color: white;
+    background: transparent;
+    mix-blend-mode: difference;
 
     /* Smooth transitions for the shrink/grow effect + bg/line changes */
     transition:
@@ -65,15 +51,6 @@ const { header } = Config;
       border-color 200ms ease,
       backdrop-filter 200ms ease,
       -webkit-backdrop-filter 200ms ease;
-  }
-
-  /* Bottom border line controlled by data-line */
-  .site-header[data-line="true"] {
-    border-bottom: 1px solid transparent;
-  }
-
-  .site-header.shrunken[data-line="true"] {
-    border-bottom-color: var(--line-color); /* becomes visible when shrunken */
   }
 
   .home {
@@ -98,27 +75,12 @@ const { header } = Config;
     transition: font-size 200ms ease;
   }
 
-  /* -------- Shrunk state (applied by JS) -------- */
-  .site-header.shrunken {
-    --pad-top: 0.9rem; /* closer to the edge */
-    --home-size: 1.1rem; /* smaller title */
-    --nav-size: 0.95rem; /* smaller nav links */
-    --gap: 1.25rem;
-    --nav-gap: 1rem;
-    --letter-spacing: 0.03em;
-  }
-
   /* -------- Mobile tweaks -------- */
   @media (max-width: 600px) {
     .site-header {
       --pad-top: 1rem;
       --home-size: 1.2rem;
       --nav-gap: 1.25rem;
-    }
-    .site-header.shrunken {
-      --pad-top: 0.75rem;
-      --home-size: 1.05rem;
-      --nav-size: 0.9rem;
     }
   }
 
@@ -131,32 +93,3 @@ const { header } = Config;
     }
   }
 </style>
-
-<script>
-  (() => {
-    const header = document.getElementById("site-header");
-    if (!header) return;
-
-    const canResize = header.dataset.resize === "true";
-    if (!canResize) return;
-
-    const SHRINK_OFFSET = 40;
-    let lastY = window.scrollY;
-
-    const onScroll = () => {
-      const y = window.scrollY;
-
-      if (y > SHRINK_OFFSET) {
-        header.classList.add("shrunken");
-      } else {
-        header.classList.remove("shrunken");
-      }
-
-      lastY = y;
-    };
-
-    // Run once and on scroll; passive for perf.
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-  })();
-</script>

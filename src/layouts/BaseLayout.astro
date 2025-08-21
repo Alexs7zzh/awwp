@@ -1,8 +1,6 @@
 ---
 import { Config } from "@config";
-import Transparent from "@components/headers/Transparent.astro";
-import White from "@components/headers/White.astro";
-import Blur from "@components/headers/Blur.astro";
+import Header from "@components/Header.astro";
 ---
 
 <!doctype html>
@@ -19,17 +17,8 @@ import Blur from "@components/headers/Blur.astro";
     <title>Akira Wakita</title>
     <slot name="head" />
   </head>
-  <body class={Config.background.theme}>
-    {
-      Config.header.background == "transparent" ? (
-        <Transparent />
-      ) : Config.header.background == "white" ? (
-        <White />
-      ) : (
-        <Blur />
-      )
-    }
-
+  <body>
+    <Header />
     <div
       style={`margin-top: 10rem;--text-horizontal-margin: ${Config.description.horizontalMargin}; --text-vertical-margin: ${Config.description.verticalMargin};`}
     >
@@ -51,19 +40,11 @@ import Blur from "@components/headers/Blur.astro";
     width: 100%;
   }
 
-  body.light {
-    --background-color: #f8feff;
-    --font-color-title: black;
-    --font-color-body: #666;
-  }
-
-  body.dark {
+  body {
     --background-color: black;
     --font-color-title: white;
     --font-color-body: white;
-  }
 
-  body {
     width: 100%;
     min-height: 100dvh;
     overflow-x: hidden;
@@ -212,5 +193,9 @@ import Blur from "@components/headers/Blur.astro";
     html {
       interpolate-size: allow-keywords;
     }
+  }
+
+  p + p {
+    margin-bottom: 1rem;
   }
 </style>

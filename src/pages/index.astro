@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import LongImage from "@components/LongImage.astro";
-import MultiImageSide from "@components/MultiImage_Side.astro";
+import MultiImage from "@components/MultiImage.astro";
 import { imageStore } from "@lib/imageStore";
 
 const img = (id: string) => imageStore.requireImage(id);
@@ -13,7 +13,7 @@ const img = (id: string) => imageStore.requireImage(id);
     image={img("dismantle:dismantle_top")}
     mobile={img("dismantle:dismantle_thumb")}
   />
-  <MultiImageSide
+  <MultiImage
     id="clair"
     images={[
       img("clair:clair_01"),
@@ -28,169 +28,69 @@ const img = (id: string) => imageStore.requireImage(id);
 </BaseLayout>
 
 <script>
-  /* -----------------------------------------------------------
-   *  Helpers – read the spacing that was set via CSS variables
-   * --------------------------------------------------------- */
-  const PX_FALLBACK = 32; // ≒ 2 rem – used if nothing is defined
+(() => {
+  const arts = Array.from(document.querySelectorAll('.artwork-content'));
+  if (!arts.length) return;
 
-  /** Convert something like “2rem”, “24px”, “1.5em” → absolute px */
-  function toPx(lengthStr: string, contextPx: number): number {
-    const s = (lengthStr || "").trim().toLowerCase();
-    const v = parseFloat(s);
-    if (!s) return NaN;
-    if (s.endsWith("rem") || s.endsWith("em")) return v * contextPx;
-    // px values arrive as “…px” (parseFloat handles it)
-    return v;
-  }
+  const index = new Map(arts.map((el, i) => [el, i]));
+  // store only data derived from IO entries
+  const state = new Map(arts.map((el) => [el, { coverage: 0, visible: false, center: Infinity }]));
+  let active = null;
 
-  /** Get vertical / horizontal spacing for one `.text-info` */
-  function getMargins(el: HTMLElement): { v: number; h: number } {
-    const rootStyle = getComputedStyle(document.documentElement);
-    const linkStyle = getComputedStyle(el);
+  const EPS = 0.04; // hysteresis
+  // you don’t need many thresholds; ~10 is a good balance
+  const thresholds = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.98, 1];
 
-    const rootFontPx = parseFloat(rootStyle.fontSize) || 16;
+  function pickWinner() {
+    const vh = window.innerHeight || 1;
+    const mid = vh / 2;
 
-    // 1. per-element margin (takes priority)
-    let v = parseFloat(linkStyle.marginTop);
-    let h = parseFloat(linkStyle.marginRight);
+    let best = null, bestCov = 0, bestDist = Infinity;
 
-    // 2. fall back to CSS custom properties (defined on <BaseLayout/>)
-    if (!v)
-      v =
-        toPx(
-          rootStyle.getPropertyValue("--text-vertical-margin") || "",
-          rootFontPx,
-        ) || PX_FALLBACK;
-    if (!h)
-      h =
-        toPx(
-          rootStyle.getPropertyValue("--text-horizontal-margin") || "",
-          rootFontPx,
-        ) || PX_FALLBACK;
+    for (const el of arts) {
+      const s = state.get(el);
+      if (!s.visible || s.coverage <= 0) continue;
 
-    return { v, h };
-  }
-
-  /* -----------------------------------------------------------
-   *  Main routine – unchanged except where noted
-   * --------------------------------------------------------- */
-  function updatePositions(): void {
-    const vh = window.innerHeight;
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    const artworks = document.querySelectorAll<HTMLElement>(".artwork-content");
-
-    /* ---------- 1. opacity section (unchanged) ---------- */
-    let dominantElement: HTMLElement | null = null;
-    let maxVisibleHeight = -1;
-    const visibleElements: HTMLElement[] = [];
-
-    artworks.forEach((art) => {
-      const rect = art.getBoundingClientRect();
-      if (rect.bottom > 0 && rect.top < vh) {
-        const visibleTop = Math.max(0, rect.top);
-        const visibleBottom = Math.min(vh, rect.bottom);
-        const visibleHeight = visibleBottom - visibleTop;
-
-        if (visibleHeight > 0) {
-          visibleElements.push(art);
-          if (visibleHeight > maxVisibleHeight) {
-            maxVisibleHeight = visibleHeight;
-            dominantElement = art;
-          }
-        }
+      const dist = Math.abs(s.center - mid);
+      if (
+        s.coverage > bestCov + 1e-6 ||
+        (Math.abs(s.coverage - bestCov) <= 1e-6 && dist < bestDist - 1) ||
+        (Math.abs(s.coverage - bestCov) <= 1e-6 && Math.abs(dist - bestDist) <= 1 && index.get(el) < index.get(best))
+      ) {
+        best = el; bestCov = s.coverage; bestDist = dist;
       }
-    });
-
-    const areMultipleVisible = visibleElements.length > 1;
-    artworks.forEach((art) => {
-      art.style.transition = "opacity 0.1s ease";
-      const isVisible = visibleElements.includes(art);
-      const isDominant = art === dominantElement;
-
-      art.style.opacity =
-        areMultipleVisible && isVisible && !isDominant ? "0.1" : "1";
-    });
-
-    artworks.forEach((art) => {
-      const text = art.querySelector<HTMLElement>(".text-info");
-      if (!text) return;
-
-      text.style.position = "";
-      text.style.top = "";
-      text.style.right = "";
-      text.style.width = "";
-      text.style.margin = "";
-      text.style.zIndex = "";
-      text.style.transform = "";
-    });
-
-    if (isMobile) return; // no pinning on mobile
-
-    artworks.forEach((art) => {
-      const text = art.querySelector<HTMLElement>(".text-info");
-      if (!text) return;
-
-      /* what part of this artwork should drive the scroll logic? */
-      let scrollableElement: HTMLElement | null = null;
-      if (art.classList.contains("long-image")) {
-        scrollableElement = art.querySelector<HTMLElement>(".artwork-image");
-      } else if (art.classList.contains("multi-image")) {
-        scrollableElement = art.querySelector<HTMLElement>(".images-container");
-      }
-
-      if (!scrollableElement) return;
-
-      const rect = scrollableElement.getBoundingClientRect();
-      if (rect.height <= vh) return; // no need to pin if it fits
-
-      const { v: marginV, h: marginH } = getMargins(text);
-
-      const naturalWidth = text.offsetWidth;
-
-      type Mode = "normal" | "pinned" | "leaving";
-      let mode: Mode = "normal";
-      if (rect.top <= 0 && rect.bottom > vh) mode = "pinned";
-      else if (rect.top <= 0 && rect.bottom <= vh && rect.bottom > 0)
-        mode = "leaving";
-
-      if (mode !== "normal") {
-        text.style.position = "fixed";
-        text.style.right = `${marginH}px`;
-        text.style.width = `${naturalWidth}px`;
-        text.style.margin = "0";
-        text.style.zIndex = "10";
-        if (mode === "pinned") {
-          text.style.top = `${marginV}px`;
-        } else if (mode === "leaving") {
-          const moved = vh - rect.bottom;
-          const newTopPx = marginV - moved;
-          text.style.top = `${newTopPx}px`;
-        }
-      }
-
-      art.dataset.pinned = mode === "normal" ? "false" : "true";
-    });
-  }
-
-  /* ---------- 3. event wiring (unchanged) ---------- */
-  let ticking = false;
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        updatePositions();
-        ticking = false;
-      });
-      ticking = true;
     }
-  });
-  window.addEventListener("resize", updatePositions);
 
-  // run once images are loaded
-  document.querySelectorAll<HTMLElement>(".artwork-content").forEach((art) => {
-    art
-      .querySelectorAll<HTMLImageElement>(".artwork-image")
-      .forEach((img) => img.addEventListener("load", updatePositions));
-  });
+    if (!best) return;
+    if (active && best !== active) {
+      const currCov = state.get(active).coverage;
+      if (bestCov < currCov + EPS) return; // hysteresis: avoid flip-flop
+    }
 
-  updatePositions();
+    if (best !== active) {
+      arts.forEach(a => a.classList.toggle('is-muted', a !== best));
+      active = best;
+    }
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    const vh = (entries[0]?.rootBounds?.height) || window.innerHeight || 1;
+
+    for (const e of entries) {
+      // viewport coverage (not element ratio)
+      const coverage = Math.max(0, Math.min(1, e.intersectionRect.height / vh));
+      // center from IO’s snapshot (no layout read)
+      const center = (e.boundingClientRect.top + e.boundingClientRect.bottom) / 2;
+
+      state.set(e.target, { coverage, visible: e.isIntersecting, center });
+    }
+
+    pickWinner();
+  }, { threshold: thresholds });
+
+  arts.forEach(el => io.observe(el));
+  // on resize, just re-run selection; IO will soon provide fresh entries anyway
+  window.addEventListener('resize', pickWinner, { passive: true });
+  pickWinner();
+})();
 </script>
