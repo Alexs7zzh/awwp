@@ -19,7 +19,7 @@ interface ConfigType {
     column: number;
   };
   topPage: {
-    theme: 1 | 2
+    theme: 1 | 2;
   };
 }
 
@@ -44,6 +44,6 @@ export const Config: ConfigType = {
     column: 2,
   },
   topPage: {
-    theme: 1
-  }
+    theme: 1,
+  },
 };

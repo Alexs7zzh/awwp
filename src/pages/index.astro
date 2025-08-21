@@ -8,7 +8,11 @@ const img = (id: string) => imageStore.requireImage(id);
 ---
 
 <BaseLayout>
-  <LongImage id="dismantle" image={img("dismantle:dismantle_top")} mobile={img("dismantle:dismantle_thumb")} />
+  <LongImage
+    id="dismantle"
+    image={img("dismantle:dismantle_top")}
+    mobile={img("dismantle:dismantle_thumb")}
+  />
   <MultiImageSide
     id="clair"
     images={[

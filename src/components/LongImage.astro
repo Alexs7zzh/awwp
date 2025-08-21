@@ -6,7 +6,7 @@ import TextInfo from "./TextInfo.astro";
 
 interface Props {
   id: string;
-  image: ImageMetadata;   // desktop/tablet
+  image: ImageMetadata; // desktop/tablet
   mobile?: ImageMetadata; // optional mobile art direction
 }
 const { id, image, mobile = null } = Astro.props;
@@ -16,15 +16,19 @@ if (!work) throw new Error(`No work found by id ${id}`);
 const alt = work.data.title;
 
 // Build mobile/desktop variants
-const formats = ['avif','webp'];
-const desktop = await Promise.all(formats.map((format) => getImage({ src: image, format })));
-const desktopFallback = await getImage({ src: image, format: 'png' });
+const formats = ["avif", "webp"];
+const desktop = await Promise.all(
+  formats.map((format) => getImage({ src: image, format })),
+);
+const desktopFallback = await getImage({ src: image, format: "png" });
 
 let mobileSet = null;
 let mobileFallback = null;
 if (mobile) {
-  mobileSet = await Promise.all(formats.map((format) => getImage({ src: mobile, format })));
-  mobileFallback = await getImage({ src: mobile, format: 'png' });
+  mobileSet = await Promise.all(
+    formats.map((format) => getImage({ src: mobile, format })),
+  );
+  mobileFallback = await getImage({ src: mobile, format: "png" });
 }
 ---
 
@@ -33,35 +37,43 @@ if (mobile) {
   aria-labelledby={`work-${work.id}-title`}
 >
   <picture class="artwork-image">
-    {mobile && mobileSet && (
-      <>
-        {mobileSet.map((img) => (
-          <source
-            srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
-            type={`image/${img.options.format}`}
-            media="(max-width: 767px)"
-            sizes="100vw"
-          />
-        ))}
-      </>
-    )}
-    {desktop.map((img) => (
-      <source
-        srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
-        type={`image/${img.options.format}`}
-        media={mobile ? "(min-width: 768px)" : undefined}
-        sizes={mobile ? "70vw" : "70vw"}
-      />
-    ))}
+    {
+      mobile && mobileSet && (
+        <>
+          {mobileSet.map((img) => (
+            <source
+              srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
+              type={`image/${img.options.format}`}
+              media="(max-width: 767px)"
+              sizes="100vw"
+            />
+          ))}
+        </>
+      )
+    }
+    {
+      desktop.map((img) => (
+        <source
+          srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
+          type={`image/${img.options.format}`}
+          media={mobile ? "(min-width: 768px)" : undefined}
+          sizes={mobile ? "70vw" : "70vw"}
+        />
+      ))
+    }
     <img
-      src={(mobile && mobileFallback) ? mobileFallback.src : desktopFallback.src}
+      src={mobile && mobileFallback ? mobileFallback.src : desktopFallback.src}
       alt={alt}
       loading="lazy"
       decoding="async"
     />
   </picture>
 
-  <TextInfo id={work.id} title={work.data.title} description={work.data.intro} />
+  <TextInfo
+    id={work.id}
+    title={work.data.title}
+    description={work.data.intro}
+  />
 </article>
 
 <style>

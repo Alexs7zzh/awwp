@@ -1,12 +1,10 @@
 ---
 import { marked } from "marked";
-
 interface Props {
   id: string;
   title: string;
   description: string;
 }
-
 const { id, title, description } = Astro.props;
 ---
 
@@ -14,31 +12,31 @@ const { id, title, description } = Astro.props;
   <h2 id={`work-${id}-title`} class="title">
     {title}
   </h2>
-  <div class="description" set:html={marked.parse(description)}></div>
-
-  <a
-    href={`/works/${id}/`}
-    aria-labelledby={`work-${id}-title`}
-  >
+  <div class="description" set:html={marked.parse(description)} />
+  <a href={`/works/${id}/`} aria-labelledby={`work-${id}-title`}>
     View work →
   </a>
 </div>
-
 <style>
   .text-info {
-    /* same spacing & color inheritance as your old anchor */
+    /* spacing & color */
     text-decoration: none;
     color: inherit;
     margin: var(--text-vertical-margin, 2rem)
       var(--text-horizontal-margin, 2rem);
     padding: 0;
     flex-grow: 1;
-
-    /* make it easy to pin the CTA at the bottom-right */
+    /* --- CSS pinning (no JS) --- */
+    position: sticky;
+    top: 0; /* distance from top while pinned */
+    align-self: flex-start; /* required for sticky inside flex rows */
+    height: calc(100vh - (var(--text-vertical-margin, 2rem) * 2));
+    /* keep long blurbs from exceeding the viewport while pinned */
+    overflow: auto;
+    /* layout for CTA at bottom-right */
     display: flex;
     flex-direction: column;
   }
-
   .title {
     display: inline-block;
     position: relative;
@@ -50,7 +48,6 @@ const { id, title, description } = Astro.props;
     margin-bottom: 1rem;
     color: var(--font-color-title);
   }
-
   .description {
     line-height: 1.6;
     font-size: 0.8rem;
@@ -59,15 +56,13 @@ const { id, title, description } = Astro.props;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-
   /* bottom-right CTA that feels like your title text */
   a {
-    align-self: flex-end;    /* right align */
-    margin-top: 1rem;        /* push to bottom when there's extra space */
+    align-self: flex-end; /* right align */
+    margin-top: auto; /* push to bottom when there's extra space */
     display: inline-block;
     position: relative;
     padding-bottom: 2px;
-
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -88,10 +83,11 @@ const { id, title, description } = Astro.props;
   a:hover::after {
     width: 100%;
   }
-
   @media (max-width: 767px) {
-    .work-card {
-      margin-top: 0;
+    .text-info {
+      position: static; /* disable sticky on mobile */
+      top: auto;
+      height: auto;
     }
     .description {
       -webkit-line-clamp: 6;
