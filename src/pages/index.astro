@@ -29,87 +29,110 @@ const img = (id: string) => imageStore.requireImage(id);
 
 <style>
   :global(.artwork-content) {
-  transition: opacity 120ms ease;
-  will-change: opacity;
-}
-  :global(.artwork-content.is-muted) { opacity: .2; }
+    transition: opacity 120ms ease;
+    will-change: opacity;
+  }
+  :global(.artwork-content.is-muted) {
+    opacity: 0.2;
+  }
 </style>
 
 <script>
-(() => {
-  const arts: HTMLElement[] = Array.from(document.querySelectorAll('.artwork-content'));
-  if (!arts.length) return;
+  (() => {
+    const arts: HTMLElement[] = Array.from(
+      document.querySelectorAll(".artwork-content"),
+    );
+    if (!arts.length) return;
 
-  const index: Map<HTMLElement, number> = new Map(arts.map((el, i) => [el, i]));
+    const index: Map<HTMLElement, number> = new Map(
+      arts.map((el, i) => [el, i]),
+    );
 
-  interface ArtworkState {
-    coverage: number;
-    visible: boolean;
-    center: number;
-  }
-  const state: Map<HTMLElement, ArtworkState> = new Map(arts.map(el => [el, { coverage: 0, visible: false, center: Infinity }]));
-  let active: HTMLElement | null = null;
+    interface ArtworkState {
+      coverage: number;
+      visible: boolean;
+      center: number;
+    }
+    const state: Map<HTMLElement, ArtworkState> = new Map(
+      arts.map((el) => [el, { coverage: 0, visible: false, center: Infinity }]),
+    );
+    let active: HTMLElement | null = null;
 
-  const EPS = 0.04;
-  const thresholds: number[] = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
+    const EPS = 0.04;
+    const thresholds: number[] = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
 
-  function pickWinner() {
-    const vh = window.innerHeight || 1;
-    const mid = vh / 2;
+    function pickWinner() {
+      const vh = window.innerHeight || 1;
+      const mid = vh / 2;
 
-    let best: HTMLElement | null = null;
-    let bestCov = 0;
-    let bestDist = Infinity;
+      let best: HTMLElement | null = null;
+      let bestCov = 0;
+      let bestDist = Infinity;
 
-    for (const el of arts) {
-      const s = state.get(el)!;
-      if (!s.visible || s.coverage <= 0) continue;
+      for (const el of arts) {
+        const s = state.get(el)!;
+        if (!s.visible || s.coverage <= 0) continue;
 
-      const dist = Math.abs(s.center - mid);
+        const dist = Math.abs(s.center - mid);
 
-      if (
-        s.coverage > bestCov + 1e-6 ||
-        (Math.abs(s.coverage - bestCov) <= 1e-6 && dist < bestDist - 1) ||
-        (Math.abs(s.coverage - bestCov) <= 1e-6 && Math.abs(dist - bestDist) <= 1 && index.get(el)! < index.get(best!)!)
-      ) {
-        best = el; bestCov = s.coverage; bestDist = dist;
+        if (
+          s.coverage > bestCov + 1e-6 ||
+          (Math.abs(s.coverage - bestCov) <= 1e-6 && dist < bestDist - 1) ||
+          (Math.abs(s.coverage - bestCov) <= 1e-6 &&
+            Math.abs(dist - bestDist) <= 1 &&
+            index.get(el)! < index.get(best!)!)
+        ) {
+          best = el;
+          bestCov = s.coverage;
+          bestDist = dist;
+        }
+      }
+
+      if (!best) return;
+      if (active && best !== active) {
+        const currCov = state.get(active)!.coverage;
+        if (bestCov < currCov + EPS) return;
+      }
+
+      if (best !== active) {
+        arts.forEach((a) => a.classList.toggle("is-muted", a !== best));
+        active = best;
       }
     }
 
-    if (!best) return;
-    if (active && best !== active) {
-      const currCov = state.get(active)!.coverage;
-      if (bestCov < currCov + EPS) return;
+    const io = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        const vh = entries[0]?.rootBounds?.height || window.innerHeight || 1;
+
+        for (const e of entries) {
+          const coverage = Math.max(
+            0,
+            Math.min(1, e.intersectionRect.height / vh),
+          );
+          const center =
+            (e.boundingClientRect.top + e.boundingClientRect.bottom) / 2;
+          state.set(e.target as HTMLElement, {
+            coverage,
+            visible: e.isIntersecting,
+            center,
+          });
+        }
+
+        pickWinner();
+      },
+      { threshold: thresholds },
+    );
+
+    arts.forEach((el) => io.observe(el));
+
+    function debounce(fn: () => void, delay: number = 100) {
+      let timeout: number | undefined;
+      return () => {
+        clearTimeout(timeout);
+        timeout = window.setTimeout(fn, delay);
+      };
     }
-
-    if (best !== active) {
-      arts.forEach(a => a.classList.toggle('is-muted', a !== best));
-      active = best;
-    }
-  }
-
-  const io = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-    const vh = (entries[0]?.rootBounds?.height) || window.innerHeight || 1;
-
-    for (const e of entries) {
-      const coverage = Math.max(0, Math.min(1, e.intersectionRect.height / vh));
-      const center = (e.boundingClientRect.top + e.boundingClientRect.bottom) / 2;
-      state.set(e.target as HTMLElement, { coverage, visible: e.isIntersecting, center });
-    }
-
+    window.addEventListener("resize", debounce(pickWinner), { passive: true });
     pickWinner();
-  }, { threshold: thresholds });
-
-  arts.forEach(el => io.observe(el));
-
-  function debounce(fn: () => void, delay: number = 100) {
-    let timeout: number | undefined;
-    return () => {
-      clearTimeout(timeout);
-      timeout = window.setTimeout(fn, delay);
-    };
-  }
-  window.addEventListener('resize', debounce(pickWinner), { passive: true });
-  pickWinner();
-})();
+  })();
 </script>
