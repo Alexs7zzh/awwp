@@ -4,7 +4,6 @@ interface ConfigType {
     verticalMargin: string;
   };
   detailPage: {
-    theme: 1 | 2 | 3;
     column: number;
   };
   topPage: {
@@ -18,7 +17,6 @@ export const Config: ConfigType = {
     verticalMargin: "2rem",
   },
   detailPage: {
-    theme: 3,
     column: 2,
   },
   topPage: {

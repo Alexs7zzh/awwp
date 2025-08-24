@@ -10,6 +10,8 @@ const work = defineCollection({
       keywords: z.array(z.string()),
       description_jp: z.string(),
       meta_jp: z.string(),
+      footer: z.string().optional(),
+      pin: z.array(z.string()).optional(),
     });
   },
 });

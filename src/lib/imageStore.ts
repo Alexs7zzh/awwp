@@ -196,7 +196,7 @@ class ImageStore {
     );
   }
 
-  private requireByWork(workId: WorkId): ImageRecord[] {
+  requireByWork(workId: WorkId): ImageRecord[] {
     const key = toLowerKey(workId);
     const all = this.byWork.get(key);
     if (!all) {
@@ -214,8 +214,6 @@ class ImageStore {
     }
     return visible;
   }
-
-  // ---------- public API ----------
 
   /** Returns ImageMetadata; throws on error. */
   requireImage(ref: string): ImageMetadata {

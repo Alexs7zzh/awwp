@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { marked } from "marked";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
 import { Config } from "@config";
+import { Picture } from "astro:assets";
 
 export async function getStaticPaths() {
   const works = await getCollection("work");
@@ -12,12 +13,6 @@ export async function getStaticPaths() {
     props: entry,
   }));
 }
-
-const themes = [
-  "theme-compact-gallery",
-  "theme-modern-minimal",
-  "theme-mono-exhibit",
-] as const;
 
 const rawCols = Number(Config.detailPage.column ?? 1);
 const gridCols =
@@ -31,10 +26,24 @@ const pageHMargin = "2rem";
 const multiRowGap = "clamp(2.5rem, 6vw, 6rem)";
 const multiColGap = "3rem";
 
+// Define max content width (can be pulled from Config if added there later)
+const maxContentWidth = "1200px";
+
 const work = Astro.props;
 
-// Expecting an array of image paths/objects for this work
-const images = imageStore.requireImagesForWork(work.id) ?? [];
+// Get image records to access IDs for pinning
+const imageRecords = imageStore.requireByWork(work.id);
+
+// Extract pinned IDs
+const pinSet = new Set((work.data.pin ?? []).map((id) => id.trim()));
+
+// Filter pinned and unpinned records
+const pinnedRecords = imageRecords.filter((r) => pinSet.has(r.id));
+const unpinnedRecords = imageRecords.filter((r) => !pinSet.has(r.id));
+
+// Map to metadata for rendering
+const pinnedImages = pinnedRecords.map((r) => r.metadata);
+const unpinnedImages = unpinnedRecords.map((r) => r.metadata);
 
 // Normalize keywords to an array
 const keywordsRaw = work.data.keywords ?? [];
@@ -47,18 +56,12 @@ const keywords = Array.isArray(keywordsRaw)
 ---
 
 <BaseLayout>
-  {
-    /*
-    SWITCH THEME HERE:
-    Options: theme-compact-gallery | theme-modern-minimal | theme-mono-exhibit
-  */
-  }
-  <article class=`work ${themes[Config.detailPage.theme - 1]}`>
+  <article class="work theme-compact-gallery" style={`--max-content-width: ${maxContentWidth};`}>
     <!-- Hero -->
     <header class="work-hero" aria-labelledby="work-title">
-      <div class="work-hero__left">
-        <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
+      <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
 
+      <div class="work-hero__left">
         <div class="meta-stack">
           {work.data.year && <p class="meta-item">{work.data.year}</p>}
 
@@ -91,9 +94,53 @@ const keywords = Array.isArray(keywordsRaw)
       </div>
     </header>
 
-    <!-- Image grid -->
+    <!-- Pinned images grid (always 1 column) -->
     {
-      images.length > 0 && (
+      pinnedImages.length > 0 && (
+        <ul
+          class="work-grid pinned"
+          role="list"
+          data-cols={1}
+          style={`
+        --grid-columns: 1;
+        --page-vmargin: ${pageVMargin};
+        --page-hmargin: ${pageHMargin};
+        --multi-row-gap: ${multiRowGap};
+        --multi-col-gap: ${multiColGap};
+      `}
+        >
+          {pinnedImages.map((img, i) => {
+            const src = typeof img === "string" ? img : (img?.src ?? "");
+            const alt = `${work.data.title} — image ${i + 1}`;
+            return (
+              <li class="grid-item">
+                <a
+                  href={src}
+                  aria-label={`Open image ${i + 1} for ${work.data.title}`}
+                >
+                  <div class="image-wrapper">
+                    <Picture
+                      src={img}
+                      alt={alt}
+                      formats={["avif", "webp"]}
+                      widths={[600, 1200, 1800]}
+                      sizes="(min-width: 1220px) 1200px, 100vw"
+                      class="list-image"
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
+
+    <!-- Unpinned images grid -->
+    {
+      unpinnedImages.length > 0 && (
         <ul
           class="work-grid"
           role="list"
@@ -106,7 +153,7 @@ const keywords = Array.isArray(keywordsRaw)
         --multi-col-gap: ${multiColGap};
       `}
         >
-          {images.map((img, i) => {
+          {unpinnedImages.map((img, i) => {
             const src = typeof img === "string" ? img : (img?.src ?? "");
             const alt = `${work.data.title} — image ${i + 1}`;
             return (
@@ -116,13 +163,15 @@ const keywords = Array.isArray(keywordsRaw)
                   aria-label={`Open image ${i + 1} for ${work.data.title}`}
                 >
                   <div class="image-wrapper">
-                    <img
-                      src={src}
+                    <Picture
+                      src={img}
                       alt={alt}
-                      loading="lazy"
+                      formats={["avif", "webp"]}
+                      widths={[400, 800, 1200]}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       class="list-image"
-                      width="1600"
-                      height="1200"
+                      loading="lazy"
+                      fetchpriority="auto"
                     />
                   </div>
                 </a>
@@ -130,6 +179,15 @@ const keywords = Array.isArray(keywordsRaw)
             );
           })}
         </ul>
+      )
+    }
+
+    {
+      work.data.footer && (
+        <div
+          class="text-block-content footer"
+          set:html={marked.parse(work.data.footer)}
+        />
       )
     }
   </article>
@@ -143,22 +201,39 @@ const keywords = Array.isArray(keywordsRaw)
   .work-hero {
     display: grid;
     grid-template-columns: 1fr minmax(0, 1fr);
-    gap: clamp(2rem, 6vw, 6rem);
+    grid-template-areas: 
+      "title ."
+      "left right";
+    gap: 2rem;
     align-items: start;
-    max-width: 1600px;
+    max-width: var(--max-content-width, 1600px);
     margin: 0 auto;
     padding: clamp(2rem, 6vw, 6rem) 2rem 0;
     color: var(--font-color-body);
   }
 
   .text-block-title {
+    grid-area: title;
     color: var(--font-color-title);
+    display: inline-block;
+    position: relative;
+    padding-bottom: 2px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em; /* ~3px at 16px */
+    font-weight: 400;
+    margin: 0;
   }
 
   .work-hero__left {
+    grid-area: left;
     display: grid;
     align-content: start;
     gap: 0.9rem;
+  }
+
+  .work-hero__right {
+    grid-area: right;
   }
 
   .meta-stack {
@@ -167,8 +242,8 @@ const keywords = Array.isArray(keywordsRaw)
   }
 
   .meta-item {
-    font-size: 0.9rem;
     font-weight: 300;
+    font-size: 0.8rem;
     letter-spacing: 0.08em;
     color: var(--font-color-body);
     margin: 0;
@@ -181,6 +256,8 @@ const keywords = Array.isArray(keywordsRaw)
     list-style: none;
     margin: 0.2rem 0 0;
     padding: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
   }
   .meta-tag {
     font-size: 0.78rem;
@@ -198,7 +275,10 @@ const keywords = Array.isArray(keywordsRaw)
   }
 
   .text-block-content {
+    color: var(--font-color-body);
     font-weight: 300;
+    font-size: 0.8rem;
+    line-height: 1.6;
   }
   .text-block-content :global(p) {
     line-height: 1.7;
@@ -208,16 +288,16 @@ const keywords = Array.isArray(keywordsRaw)
     margin-block-start: 1.6em;
   }
   .text-block-content :global(h2) {
-    font-size: 1rem;
-    letter-spacing: 0.12em;
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     font-weight: 300;
     margin-top: 2rem;
     color: var(--font-color-title);
   }
   .text-block-content :global(h3) {
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 300;
     margin-top: 1.5rem;
@@ -230,9 +310,10 @@ const keywords = Array.isArray(keywordsRaw)
   @media (max-width: 900px) {
     .work-hero {
       grid-template-columns: 1fr;
-    }
-    .work-hero__right {
-      order: 2;
+      grid-template-areas: 
+        "title"
+        "right"
+        "left";
     }
   }
 
@@ -240,7 +321,6 @@ const keywords = Array.isArray(keywordsRaw)
   .work-grid {
     margin: clamp(4rem, 12vw, 10rem) auto;
     padding: 0 1rem;
-    max-width: 1600px;
     display: grid;
 
     /* columns from config */
@@ -259,6 +339,11 @@ const keywords = Array.isArray(keywordsRaw)
   .work-grid[data-cols="1"] {
     row-gap: var(--page-vmargin, 2rem);
     column-gap: var(--page-hmargin, 2rem);
+  }
+
+  /* Reduce margin between pinned and unpinned grids */
+  .work-grid.pinned + .work-grid {
+    margin-top: clamp(2.5rem, 6vw, 6rem);
   }
 
   .grid-item a {
@@ -283,119 +368,33 @@ const keywords = Array.isArray(keywordsRaw)
     height: auto;
   }
 
+  /* Footer section */
+  .text-block-content.footer {
+    margin: 0 auto 20vh;
+    padding: 0 2rem;
+  }
+
   /* Optional: narrower text measure on wide screens for readability */
   @media (min-width: 901px) {
     .work-hero__left .text-block-content {
       max-width: 68ch;
     }
+    .text-block-content.footer {
+      max-width: 68ch;
+    }
   }
 
-  /* ------------------------------------------------------------
-     THEME 1 — Compact Gallery (matches your reference)
-     Small font, tight leading, uppercase headings, tracked letters,
-     subtle underline on hover-like behavior for CTA-esque links.
-  ------------------------------------------------------------ */
-  .theme-compact-gallery .text-block-title {
-    display: inline-block;
-    position: relative;
-    padding-bottom: 2px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em; /* ~3px at 16px */
-    font-weight: 400;
-    margin: 0 0 1rem 0;
-  }
-  .theme-compact-gallery .text-block-content {
-    font-size: 0.8rem;
-    line-height: 1.6;
-  }
-  .theme-compact-gallery .meta-item {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-  }
-  .theme-compact-gallery .meta-tag {
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-  }
-  .theme-compact-gallery .text-block-content :global(h2) {
-    font-size: 0.82rem;
-    letter-spacing: 0.18em;
-  }
-  .theme-compact-gallery .text-block-content :global(h3) {
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-  }
   /* Clamp intro a bit on small screens for a compact hero */
   @media (max-width: 767px) {
-    .theme-compact-gallery .intro {
+    .intro {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
   }
-
-  /* ------------------------------------------------------------
-     THEME 2 — Modern Minimal (airier but still gallery-calm)
-     Slightly larger body, lighter tracking, sentence-case titles.
-  ------------------------------------------------------------ */
-  .theme-modern-minimal .text-block-title {
-    font-size: clamp(1rem, 1.2vw, 1.15rem);
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    text-transform: none;
-    margin: 0 0 0.75rem 0;
-  }
-  .theme-modern-minimal .text-block-content {
-    font-size: 0.92rem;
-    line-height: 1.75;
-  }
-  .theme-modern-minimal .meta-item {
-    font-size: 0.85rem;
-    letter-spacing: 0.06em;
-  }
-  .theme-modern-minimal .meta-tag {
-    font-size: 0.76rem;
-    letter-spacing: 0.12em;
-  }
-  .theme-modern-minimal .text-block-content :global(h2),
-  .theme-modern-minimal .text-block-content :global(h3) {
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-weight: 300;
-  }
-
-  /* ------------------------------------------------------------
-     THEME 4 — Mono Exhibit (structured, label-like type)
-     Uses monospaced accents for meta/tags; keeps body readable.
-  ------------------------------------------------------------ */
-  .theme-mono-exhibit .text-block-title {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-weight: 500;
-    margin: 0 0 0.75rem 0;
-  }
-  .theme-mono-exhibit .meta-item,
-  .theme-mono-exhibit .meta-tag {
-    font-family:
-      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
-    letter-spacing: 0.1em;
-  }
-  .theme-mono-exhibit .meta-item {
-    font-size: 0.78rem;
-  }
-  .theme-mono-exhibit .meta-tag {
-    font-size: 0.7rem;
-  }
-  .theme-mono-exhibit .text-block-content {
-    font-size: 0.9rem;
-    line-height: 1.65;
-  }
-  .theme-mono-exhibit .text-block-content :global(h2),
-  .theme-mono-exhibit .text-block-content :global(h3) {
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 400;
-  }
 </style>
+
+<script>
+  import {Pane} from 'tweakpane';
+
+</script>
