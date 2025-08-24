@@ -27,35 +27,50 @@ const img = (id: string) => imageStore.requireImage(id);
   <LongImage id="triplet" image={img("triplet:triplet_top")} />
 </BaseLayout>
 
+<style>
+  :global(.artwork-content) {
+  transition: opacity 120ms ease;
+  will-change: opacity;
+}
+  :global(.artwork-content.is-muted) { opacity: .2; }
+</style>
+
 <script>
 (() => {
-  const arts = Array.from(document.querySelectorAll('.artwork-content'));
+  const arts: HTMLElement[] = Array.from(document.querySelectorAll('.artwork-content'));
   if (!arts.length) return;
 
-  const index = new Map(arts.map((el, i) => [el, i]));
-  // store only data derived from IO entries
-  const state = new Map(arts.map((el) => [el, { coverage: 0, visible: false, center: Infinity }]));
-  let active = null;
+  const index: Map<HTMLElement, number> = new Map(arts.map((el, i) => [el, i]));
 
-  const EPS = 0.04; // hysteresis
-  // you don’t need many thresholds; ~10 is a good balance
-  const thresholds = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.98, 1];
+  interface ArtworkState {
+    coverage: number;
+    visible: boolean;
+    center: number;
+  }
+  const state: Map<HTMLElement, ArtworkState> = new Map(arts.map(el => [el, { coverage: 0, visible: false, center: Infinity }]));
+  let active: HTMLElement | null = null;
+
+  const EPS = 0.04;
+  const thresholds: number[] = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
 
   function pickWinner() {
     const vh = window.innerHeight || 1;
     const mid = vh / 2;
 
-    let best = null, bestCov = 0, bestDist = Infinity;
+    let best: HTMLElement | null = null;
+    let bestCov = 0;
+    let bestDist = Infinity;
 
     for (const el of arts) {
-      const s = state.get(el);
+      const s = state.get(el)!;
       if (!s.visible || s.coverage <= 0) continue;
 
       const dist = Math.abs(s.center - mid);
+
       if (
         s.coverage > bestCov + 1e-6 ||
         (Math.abs(s.coverage - bestCov) <= 1e-6 && dist < bestDist - 1) ||
-        (Math.abs(s.coverage - bestCov) <= 1e-6 && Math.abs(dist - bestDist) <= 1 && index.get(el) < index.get(best))
+        (Math.abs(s.coverage - bestCov) <= 1e-6 && Math.abs(dist - bestDist) <= 1 && index.get(el)! < index.get(best!)!)
       ) {
         best = el; bestCov = s.coverage; bestDist = dist;
       }
@@ -63,8 +78,8 @@ const img = (id: string) => imageStore.requireImage(id);
 
     if (!best) return;
     if (active && best !== active) {
-      const currCov = state.get(active).coverage;
-      if (bestCov < currCov + EPS) return; // hysteresis: avoid flip-flop
+      const currCov = state.get(active)!.coverage;
+      if (bestCov < currCov + EPS) return;
     }
 
     if (best !== active) {
@@ -73,24 +88,28 @@ const img = (id: string) => imageStore.requireImage(id);
     }
   }
 
-  const io = new IntersectionObserver((entries) => {
+  const io = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
     const vh = (entries[0]?.rootBounds?.height) || window.innerHeight || 1;
 
     for (const e of entries) {
-      // viewport coverage (not element ratio)
       const coverage = Math.max(0, Math.min(1, e.intersectionRect.height / vh));
-      // center from IO’s snapshot (no layout read)
       const center = (e.boundingClientRect.top + e.boundingClientRect.bottom) / 2;
-
-      state.set(e.target, { coverage, visible: e.isIntersecting, center });
+      state.set(e.target as HTMLElement, { coverage, visible: e.isIntersecting, center });
     }
 
     pickWinner();
   }, { threshold: thresholds });
 
   arts.forEach(el => io.observe(el));
-  // on resize, just re-run selection; IO will soon provide fresh entries anyway
-  window.addEventListener('resize', pickWinner, { passive: true });
+
+  function debounce(fn: () => void, delay: number = 100) {
+    let timeout: number | undefined;
+    return () => {
+      clearTimeout(timeout);
+      timeout = window.setTimeout(fn, delay);
+    };
+  }
+  window.addEventListener('resize', debounce(pickWinner), { passive: true });
   pickWinner();
 })();
 </script>
