@@ -7,35 +7,38 @@ interface Props {
 }
 const { id, title, description } = Astro.props;
 ---
-
 <div class="text-info">
   <h2 id={`work-${id}-title`} class="title">
     {title}
   </h2>
-  <div class="description" set:html={marked.parse(description)} />
-  <a href={`/works/${id}/`} aria-labelledby={`work-${id}-title`}>
+  <div class="description" set:html={marked.parse(description)}></div>
+  <a
+    href={`/works/${id}/`}
+    aria-labelledby={`work-${id}-title`}
+  >
     View work →
   </a>
 </div>
 <style>
   .text-info {
-    /* spacing & color */
-    text-decoration: none;
-    color: inherit;
-    margin: var(--text-vertical-margin, 2rem)
-      var(--text-horizontal-margin, 2rem);
-    padding: 0;
-    flex-grow: 1;
-    /* --- CSS pinning (no JS) --- */
-    position: sticky;
-    top: 0; /* distance from top while pinned */
-    align-self: flex-start; /* required for sticky inside flex rows */
-    height: calc(100vh - (var(--text-vertical-margin, 2rem) * 2));
-    /* keep long blurbs from exceeding the viewport while pinned */
-    overflow: auto;
-    /* layout for CTA at bottom-right */
-    display: flex;
-    flex-direction: column;
+  /* spacing & color */
+  text-decoration: none;
+  color: inherit;
+  margin: var(--text-vertical-margin, 2rem)
+          var(--text-horizontal-margin, 2rem);
+  padding: 0;
+  flex-grow: 1;
+  /* --- CSS pinning (no JS) --- */
+  position: sticky;
+  top: 0; /* distance from top while pinned */
+  align-self: flex-start; /* required for sticky inside flex rows */
+  height: calc(100vh - (var(--text-vertical-margin, 2rem) * 2));
+  /* keep long blurbs from exceeding the viewport while pinned */
+  overflow: auto;
+
+  /* layout for CTA at bottom-right */
+  display: flex;
+  flex-direction: column;
   }
   .title {
     display: inline-block;
@@ -84,11 +87,11 @@ const { id, title, description } = Astro.props;
     width: 100%;
   }
   @media (max-width: 767px) {
-    .text-info {
-      position: static; /* disable sticky on mobile */
-      top: auto;
-      height: auto;
-    }
+  .text-info {
+    position: static; /* disable sticky on mobile */
+    top: auto;
+    height: auto;
+  }
     .description {
       -webkit-line-clamp: 6;
     }

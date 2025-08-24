@@ -3,34 +3,28 @@ import { getEntry } from "astro:content";
 import { Picture } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import TextInfo from "./TextInfo.astro";
-
 interface Props {
   id: string;
   images: ImageMetadata[];
   positions?: number[]; // values in [0,1]
 }
-
 const { id, images, positions = [] } = Astro.props as Props;
-
 const work = await getEntry("work", id);
 if (!work) {
   throw new Error(`No work found by id ${id}`);
 }
-
 function calculateWidthPercentage(image: ImageMetadata): number {
   const aspectRatio = image.width / image.height;
   if (aspectRatio <= 1.1) return 40;
   const scaledWidth = 40 + (aspectRatio - 1.1) * 35;
   return Math.max(48, Math.min(100, scaledWidth));
 }
-
 function calculateLeftOffset(widthPercent: number, position: number): number {
   const p = Math.min(1, Math.max(0, position)); // clamp 0-1
   const maxLeft = 100 - widthPercent; // can’t overflow right edge
   return p * maxLeft;
 }
 ---
-
 <article
   class="artwork-content multi-image"
   aria-labelledby={`work-${work.id}-title`}
@@ -43,36 +37,33 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
           widthPercent,
           positions[index] ?? 0.5, // default – centred
         );
-
         return (
           <Picture
             src={image}
             alt={`${work.data.title} - Image ${index + 1}`}
             class="artwork-image"
             loading="lazy"
-            formats={["avif", "webp"]}
+            formats={['avif', 'webp']}
             style={`width:${widthPercent}%; margin-left:${leftPercent}%`}
           />
         );
       })
     }
   </div>
-
   <TextInfo
     id={work.id}
     title={work.data.title}
     description={work.data.intro}
   />
 </article>
-
 <style>
   .artwork-content {
     display: flex;
     align-items: flex-start;
     width: 100%;
     margin-bottom: 30vh;
+    overflow: visible;
   }
-
   .images-container {
     position: relative; /* keeps margin-left pooled inside block */
     width: 70%;
@@ -83,13 +74,11 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
     align-items: flex-start;
     gap: 8rem;
   }
-
   .artwork-image {
     height: auto;
     display: block;
     margin-right: auto; /* keeps image block from collapsing */
   }
-
   @media (max-width: 767px) {
     .artwork-content {
       flex-direction: column;
