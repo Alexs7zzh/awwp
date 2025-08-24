@@ -1,4 +1,4 @@
-<header id="site-header">
+<header>
   <a href="/" class="home">Akira Wakita</a>
   <nav>
     <a href="/works">Works</a>
@@ -18,7 +18,7 @@
   }
 
   /* -------- Header layout -------- */
-  .site-header {
+  header {
     /* Animatable custom props (big state by default) */
     --pad-top: 2rem; /* distance from page edge (padding) */
     --home-size: 1.5rem; /* site title size */
@@ -62,14 +62,14 @@
       letter-spacing 200ms ease;
   }
 
-  .site-header nav {
+  nav {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: var(--nav-gap);
   }
 
-  .site-header nav a {
+  nav a {
     font-size: var(--nav-size);
     font-weight: 300;
     transition: font-size 200ms ease;
@@ -77,7 +77,7 @@
 
   /* -------- Mobile tweaks -------- */
   @media (max-width: 600px) {
-    .site-header {
+    header {
       --pad-top: 1rem;
       --home-size: 1.2rem;
       --nav-gap: 1.25rem;
@@ -86,9 +86,9 @@
 
   /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .site-header,
+    header,
     .home,
-    .site-header nav a {
+    nav a {
       transition: none !important;
     }
   }
