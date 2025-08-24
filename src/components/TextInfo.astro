@@ -17,6 +17,7 @@ const { id, title, description } = Astro.props;
     View work →
   </a>
 </div>
+
 <style>
   .text-info {
     /* spacing & color */
@@ -58,7 +59,7 @@ const { id, title, description } = Astro.props;
   /* bottom-right CTA that feels like your title text */
   a {
     align-self: flex-end; /* right align */
-    margin-top: 1rem; /* push to bottom when there's extra space */
+    margin-top: auto; /* push to bottom when there's extra space */
     display: inline-block;
     position: relative;
     padding-bottom: 2px;
