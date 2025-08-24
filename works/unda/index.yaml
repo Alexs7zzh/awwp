@@ -1,0 +1,36 @@
+title: UNDA
+keywords:
+  - Automotive UI Concept
+  - Soft Robotics / Operation Language
+  - Material Computing
+year: 2013
+description_en: 'UNDA (Latin for "wave") is an organic interface that was born through collaboration between Toyota InfoTechnology Center and Keio University’s Wakita Lab. As a result of the serious pursuit of intuitiveness for an in-car interface, we have envisioned a sensuous operation surface that organically combines life-like transformation and elastic property. UNDA has been prototyped as one example of this concept. The biggest challenge in this project was the realization of the "undulating concept" for a next-generation operation surface that synchronizes the wavelengths of the user and the machine. '
+description_jp: "ラテン語で「波」を意味する名前が付けられたこの有機的なインターフェイスは、トヨタIT開発センターと慶應義塾大学脇田研究室との共同研究の中から生まれました。我々は、自動車インターフェイスの直感性を真摯に追求した結果、生物的な変形としなやかな素材性が有機的に連動したセンシュアスな操作曲面というビジョンに逢着しました。その一事例としてプロトタイピングされたのがUNDAです。このプロジェクトで我々が目指したのは、ユーザの波長とマシンの波長がシンクロする次世代のオペレーション -Undulating Concept- の具現化です。 "
+meta_en: |-
+  ## CREDIT
+
+  - Concept and Direction: AKIRA WAKITA
+  - Art Direction: KOHEI TSUJI
+  - Technical Direction: HISAKAZU HADA
+  - Hardware Development: TATSUYA KAIHO
+  - Project Management : SAYAKA YOSHIZU
+  - Technical Advisor : CHIHIRO SANNOMIYA
+
+  ## PRESS
+
+  - [WIRED JAPAN, UNDA , 2014/2/25](http://wired.jp/2014/02/25/keio-wakita-unda/)
+meta_jp: |-
+  ## クレジット
+
+  - コンセプト / ディレクション : 脇田 玲
+  - アートディレクション : 辻 航平
+  - 技術ディレクション : 羽田久一
+  - ハードウェア開発 : 海宝竜也
+  - プロジェクトマネジメント : 吉津沙耶香
+  - 技術アドバイザ : 三宮千尋
+
+  ## 記事掲載
+
+  - [WIRED JAPAN, 「クルマのUI」を考える時代へ：慶応大学脇田研究室のプロトタイプ「UNDA」, 2014/2/25](http://wired.jp/2014/02/25/keio-wakita-unda/)
+videos:
+  - https://player.vimeo.com/video/79174492

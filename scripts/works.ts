@@ -1,8 +1,6 @@
 import { z, ZodSchema } from "zod";
 import { dump } from "js-yaml";
-import { rm, mkdir } from "node:fs/promises";
-import { basename } from "node:path";
-import tempo, { TempoText } from "@joggr/tempo";
+import { mkdir } from "node:fs/promises";
 
 const topContents = [
   {
@@ -4133,34 +4131,51 @@ const worksContents = {
   //-------------------------------------------------------------------
 };
 
-type OptionType = {
+interface ITitle {
   title: string;
-  content: string[];
-};
+  keys: string[];
+  span: string;
+  bg_src: string;
+}
 
-type Link = {
+interface IImage {
+  src: string;
+  caption?: string;
+}
+
+interface IOption {
+  title_en: string;
+  title_jp: string;
+  ps_en: string[];
+  ps_jp: string[];
+}
+
+interface ILinkUrl {
   label: string;
-  url: string;
-};
+  href: string;
+}
 
-type Work = {
-  id: string;
-  thumbnail: string;
+interface ILink {
+  label_en: string;
+  label_jp: string;
+  urls_en: ILinkUrl[];
+  urls_jp: ILinkUrl[];
+}
 
-  title: string | undefined;
-  year: number | undefined;
-  keywords: string[];
-  background_img: Link | undefined;
-  intro: string | undefined;
-  videos: string[];
-  concept_title: string | undefined;
-  concept_content: string | undefined;
-  imgs: Link[];
-  options: OptionType[];
-  links: Link[];
-};
+interface IProject {
+  title: ITitle;
+  intro_en: string[];
+  intro_jp: string[];
+  videos?: string[];
+  conceptTitle?: string;
+  concept_ps_en?: string[];
+  concept_ps_jp?: string[];
+  imgs?: IImage[];
+  options?: IOption[];
+  link?: ILink;
+}
 
-const works = new Map<string, Work>();
+type ProjectsJson = Record<string, IProject>;
 
 function extractYears(str: string): { start: number; end: number } | null {
   const pattern = /(\(\s*(\d{4})(?:\s*-\s*(\d{4}))?\s*\))$/;
@@ -4177,65 +4192,14 @@ function extractYears(str: string): { start: number; end: number } | null {
   return null;
 }
 
-try {
-  await rm("./works", { recursive: true });
-} catch (err) {
-  // nothing
-}
-
-topContents.forEach(async (item) => {
-  if (!item.href.startsWith("#works/") || !item.src.startsWith("./img")) {
-    console.warn(
-      `Found work in topContents list that does not conform to expected type:\n${JSON.stringify(item)}`,
-    );
-    return;
-  }
-
-  const id = item.href.slice(7);
-  const years = extractYears(item.title);
-  const thumbnail = item.src.slice(5);
-
-  // if (!(await Bun.file(`./public${thumbnail}`).exists())) {
-  //   console.warn(`Thumbnail file ${thumbnail} does not exist for ${id}`);
-  // }
-
-  works.set(id, {
-    id,
-    thumbnail,
-    year: years ? years.start : undefined,
-
-    title: undefined,
-    keywords: [],
-    background_img: undefined,
-    intro: undefined,
-    videos: [],
-    concept_title: undefined,
-    concept_content: undefined,
-    imgs: [],
-    options: [],
-    links: [],
-  });
-});
-
-if (works.size != Object.keys(worksContents).length) {
-  console.warn(
-    `Sizes of top and workContents do not match. works: ${works.size} content: ${Object.keys(worksContents).length}`,
-  );
-}
-
 function getNestedValue(
   obj: unknown,
   keys: string[],
 ): { exists: boolean; value: unknown } {
   let current: any = obj;
-  const showDebug = keys[keys.length - 1] == "bg_src";
 
   for (const key of keys) {
     if (!current[key]) {
-      if (showDebug) {
-        console.log(`debug: ${Object.keys(current)} ${key} does not exist`);
-      }
-
       return { exists: false, value: undefined };
     }
     current = current[key];
@@ -4268,188 +4232,115 @@ function tryGetField<T>(
 }
 
 const writes: Promise<void>[] = [];
-works.forEach((work, key) => {
-  // @ts-ignore
-  if (!worksContents[key]) {
-    console.warn(`Cannot find work ${key} in workContents`);
-    return;
-  }
+for (const [key, data] of Object.entries(worksContents)) {
+  const project: {
+    title: string;
+    keywords: string[];
+    year: number;
+    description_en: string;
+    description_jp: string;
+    meta_en: string;
+    meta_jp: string;
+    videos?: string[];
+  } = {
+    title: "",
+    keywords: [],
+    year: 0,
+    description_en: "",
+    description_jp: "",
+    meta_en: "",
+    meta_jp: "",
+  };
 
-  // @ts-ignore
-  const data: unknown = worksContents[key];
   tryGetField(data, z.string(), "title", "title").onExists((value) => {
-    work.title = value;
-  });
-  tryGetField(data, z.string().array(), "title", "keys").onExists((value) => {
-    work.keywords = value;
-  });
-  tryGetField(data, z.string(), "title", "span").onExists((value) => {
-    if (!work.year) {
-      work.year = parseInt(value, 10);
-    }
-    if (work.year != parseInt(value, 10)) {
-      console.warn(`Span does not match: ${work.title}: ${work.year} ${value}`);
-    }
-  });
-  tryGetField(data, z.string(), "title", "bg_src").onExists((value) => {
-    if (value.startsWith("./img")) {
-      work.background_img = { url: value.slice(5), label: "" };
+    const years = extractYears(value);
+    if (years) {
+      project.year = years.end;
+      project.title = value
+        .replace(/(\(\s*\d{4}(?:\s*-\s*\d{4})?\s*\))$/, "")
+        .trim();
     } else {
-      console.warn(`'bg_src' link not valid. key: ${key} link: ${value}`);
+      project.title = value;
     }
   });
+
+  tryGetField(data, z.string().array(), "title", "keys").onExists((value) => {
+    project.keywords = value;
+  });
+
+  tryGetField(data, z.string(), "title", "span").onExists((value) => {
+    const parsed = parseInt(value, 10);
+    if (project.year && project.year !== parsed) {
+      console.warn(
+        `Span does not match: ${project.title}: ${project.year} ${value}`,
+      );
+    } else if (!project.year) {
+      project.year = parsed;
+    }
+  });
+
+  tryGetField(data, z.string().array(), "intro_en").onExists((value) => {
+    project.description_en = value.join("\n\n");
+  });
+
   tryGetField(data, z.string().array(), "intro_jp").onExists((value) => {
-    work.intro = value.join(`\n\n`);
+    project.description_jp = value.join("\n\n");
   });
+
   tryGetField(data, z.string().array(), "videos").onExists((value) => {
-    work.videos = value;
-  });
-  tryGetField(data, z.string(), "conceptTitle").onExists((value) => {
-    work.concept_title = value;
-  });
-  tryGetField(data, z.string().array(), "concept_ps_jp").onExists((value) => {
-    work.concept_content = value.join(`\n\n`);
+    project.videos = value;
   });
 
-  const image = z.object({
-    src: z.string(),
-    caption: z.string().optional(),
-  });
-  tryGetField(data, image.array(), "imgs").onExists((value) => {
-    work.imgs = value.map((i) => {
-      if (i.src.startsWith("./img")) {
-        i.src = i.src.slice(5);
-      } else {
-        console.warn(`'imgs' link not valid. key: ${key} link: ${i.src}`);
-      }
-      return {
-        label: i.caption ?? "",
-        url: i.src,
-      };
-    });
-  });
+  let meta_en = "";
+  let meta_jp = "";
 
-  const link = z.object({
-    label: z.string(),
-    href: z.string(),
-  });
-  tryGetField(data, link.array(), "link", "urls_jp").onExists((value) => {
-    work.links = value.map((i) => ({
-      label: i.label.startsWith("- ") ? i.label.slice(2) : i.label,
-      url: i.href,
-    }));
-  });
-
-  const option = z.object({
+  const optionSchema = z.object({
+    title_en: z.string(),
     title_jp: z.string(),
+    ps_en: z.string().array(),
     ps_jp: z.string().array(),
   });
-  tryGetField(data, option.array(), "options").onExists((value) => {
-    work.options = value.map((i) => ({
-      title: i.title_jp,
-      content: i.ps_jp,
-    }));
+
+  tryGetField(data, optionSchema.array(), "options").onExists((options) => {
+    for (const opt of options) {
+      meta_en += `## ${opt.title_en}\n\n${opt.ps_en.join("\n\n")}\n\n`;
+      meta_jp += `## ${opt.title_jp}\n\n${opt.ps_jp.join("\n\n")}\n\n`;
+    }
   });
+
+  const linkSchema = z.object({
+    label_en: z.string(),
+    label_jp: z.string(),
+    urls_en: z.array(z.object({ label: z.string(), href: z.string() })),
+    urls_jp: z.array(z.object({ label: z.string(), href: z.string() })),
+  });
+
+  tryGetField(data, linkSchema, "link").onExists((link) => {
+    meta_en += `## ${link.label_en}\n\n`;
+    for (const url of link.urls_en) {
+      let lbl = url.label.startsWith("- ") ? url.label.slice(2) : url.label;
+      meta_en += `- [${lbl}](${url.href})\n`;
+    }
+    meta_en += "\n";
+
+    meta_jp += `## ${link.label_jp}\n\n`;
+    for (const url of link.urls_jp) {
+      let lbl = url.label.startsWith("- ") ? url.label.slice(2) : url.label;
+      meta_jp += `- [${lbl}](${url.href})\n`;
+    }
+    meta_jp += "\n";
+  });
+
+  project.meta_en = meta_en.trim();
+  project.meta_jp = meta_jp.trim();
 
   writes.push(
     (async () => {
-      await mkdir(`./works/${work.id}`, { recursive: true });
-
-      const moveImageFile = async (imageUrl: string) => {
-        const file = Bun.file(`./public${imageUrl}`);
-        if (await file.exists()) {
-          await Bun.write(`./works/${work.id}/${basename(imageUrl)}`, file);
-        } else {
-          console.warn(`File ${imageUrl} does not exist`);
-        }
-      };
-
-      if (work["background_img"]) {
-        await moveImageFile(work["background_img"].url);
-        work["background_img"].url = basename(work["background_img"].url);
-      }
-
-      if (work["imgs"]) {
-        for (const img of work["imgs"]) {
-          await moveImageFile(img.url);
-          img.url = basename(img.url);
-        }
-      }
-
-      await moveImageFile(work.thumbnail);
-      work.thumbnail = basename(work.thumbnail);
-
-      let content: string = "";
-      content += `---\n`;
-
-      let frontmatter: Record<string, any> = {
-        title: work.title,
-        thumbnail: work.thumbnail,
-        year: work.year,
-      };
-
-      const pushPropertyIfExists = (name: keyof Work) => {
-        if (work[name] == undefined) {
-          console.log(`${work.id} ${name} is undefined`);
-          return;
-        }
-
-        if (typeof work[name] === "object" && Array.isArray(work[name])) {
-          // @ts-ignore
-          if (work[name].length > 0) {
-            frontmatter[name] = work[name];
-          }
-        } else {
-          frontmatter[name] = work[name];
-        }
-      };
-
-      pushPropertyIfExists("keywords");
-      pushPropertyIfExists("background_img");
-      pushPropertyIfExists("videos");
-      pushPropertyIfExists("imgs");
-      pushPropertyIfExists("intro");
-
-      if (work.concept_title || work.concept_content) {
-        frontmatter.concept = {};
-        if (work.concept_title) {
-          frontmatter.concept.title = work.concept_title;
-        }
-        if (work.concept_content) {
-          frontmatter.concept.content = work.concept_content;
-        }
-      }
-
-      content += dump(frontmatter);
-      content += `---\n\n`;
-
-      let markdown = tempo();
-      work.options.forEach((item) => {
-        markdown.h2(item.title);
-        item.content.forEach((p) => {
-          markdown.paragraph(p);
-        });
-      });
-
-      if (work.links.length > 0) {
-        markdown.h2("関連リンク");
-
-        markdown.bulletList(
-          work.links.map((link) => {
-            return new TempoText().link(link.label, link.url);
-          }),
-        );
-      }
-
-      const markdownStr = markdown.toString();
-      if (markdownStr.length > 0) {
-        content += "\n\n";
-        content += markdownStr;
-      }
-
-      await Bun.write(`./works/${work.id}/index.md`, content);
+      await mkdir(`./works/${key}`, { recursive: true });
+      const content = dump(project, { lineWidth: -1 }); // lineWidth -1 to avoid wrapping long lines
+      await Bun.write(`./works/${key}/index.yaml`, content);
     })(),
   );
-});
+}
 
 await Promise.all(writes);

@@ -1,0 +1,33 @@
+title: FABCELL
+keywords:
+  - Material Installation
+  - Custom Materials / Wearable Computing / Interior Design / Fashion Design
+year: 2006
+description_en: "A wearable ambient display using non-emissive color-changing textiles. The system consists of textile modules, their controllers and substrate fabric. The textile module is called ”Fabcell” (fabric pixel) and is composed of conductive yarns and liquid crystal ink. Combining fabcells, as if they are used as pixels, produces real-space ambient display. Different from emissive flexible display such as organic EL, dynamic graphics using non-emissive color-changing textiles actualizes hospitable and aesthetic information display, blending in with environment. Our method will be expected to design brand-new communication media intended for fabric artificial materials, used for fashion and interior decoration. "
+description_jp: Fabcell(Fabric Element)は非発光の変色テキスタイルです。導電性繊維と示温インキによって構成される布型モジュールはピクセルのように組み合わせることで実空間におけるアンビエントディスプレイとして機能します。有機ELなどの発光性のフレキシブルディスプレイと異なり、非発光の変色テキスタイルによる動的なグラフィックスは、環境にとけ込んだ快適で美的な情報呈示を実現します。ファッションやインテリアに用いられる布製の人工物を対象とした新しいコミュニケーションメディアのデザインが期待できます。
+meta_en: |-
+  ## CREDIT
+
+  - Midori Shibutani, Kohei Tsuji, Mariko Higaki, Hisakazu Hada, Akira Wakita
+
+  ## EXHIBITION / AWARD
+
+  - SIGGRAPH 2006, Emerging Technologies, Boston, 2006.
+
+  - Interactive Tokyo, Miraikan, 2006.
+
+  - INTERIOR LIFESTYLE TOKYO, 2009.
+meta_jp: |-
+  ## クレジット
+
+  - 渋谷 みどり, 辻 航平, 檜垣 万里子, 羽田 久一, 脇田 玲
+
+  ## 展示 / 受賞
+
+  - SIGGRAPH 2006, Emerging Technologies, ボストン, 2006
+
+  - インタラクティブ東京, 日本科学未来館, 2006
+
+  - INTERIOR LIFESTYLE TOKYO, 2009
+videos:
+  - https://www.youtube.com/embed/kEWdqSsE88s

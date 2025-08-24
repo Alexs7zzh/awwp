@@ -1,0 +1,26 @@
+title: Ocean Current Visualization
+keywords:
+  - Augmented Reality Visualization
+year: 2016
+description_en: We have developed Ocean Current Visualization for the Geo-Prism system of Mirakan. Geo-prism is the new augmented reality system for Geo-Cosmos which is the symbol exhibit of Miraikan, produces high precision images on its sphere surface. Geo-Prism, developed by Rhizomatiks, is a framework to which new contents can be embedded. Keio SFC Wakita Lab has developed a super high resolution visualization of ocean behavior by using a set of simulation data that is calculated by JAMSTEC with their super computer, Earth Simulator.
+description_jp: 脇田研究室は日本科学未来館のジオ・プリズムに流体ビジュアライゼーションを提供しました。 ジオ・プリズムは、AR（拡張現実感）技術を用いて、全球型ディスプレイ「ジオ･コスモス」にデータやシミュレーションを重ねて表示できるシステムです。 このビジュアライゼーションでは、海洋研究開発機構（JAMSTEC）のスーパーコンピュータ「地球シミュレータ」によって計算された超高解像度海洋大循環モデルOFESのデータを使い、地球上の波の動きを3つの詳細度で可視化しています。
+meta_en: |-
+  ## EXHIBITION
+
+  - Miraikan, Geo-Prism, permanent exhibition, from March 2016, Tokyo.
+
+  ## CREDIT
+
+  - Visualization: Keio University SFC, Akira Wakita Laboratory
+  - Data provided by: Japan Agency for Marine-Earth Science and Technology (JAMSTEC)
+  - Geo-Prism System Development: Rhizomatiks Research
+meta_jp: |-
+  ## 展示
+
+  - 日本科学未来館, Geo-Prism, 常設展示, 2016年3月〜.
+
+  ## クレジット
+
+  - ビジュアライゼーション開発：慶応大学脇田研究室（山辺真幸、中野亜希人、脇田玲）
+  - データ提供：海洋研究開発機構（JAMSTEC）
+  - ジオ・プリズム システム開発：ライゾマティクスリサーチ

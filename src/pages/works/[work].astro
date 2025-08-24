@@ -32,7 +32,6 @@ const multiRowGap = "clamp(2.5rem, 6vw, 6rem)";
 const multiColGap = "3rem";
 
 const work = Astro.props;
-const { Content } = await render(work);
 
 // Expecting an array of image paths/objects for this work
 const images = imageStore.requireImagesForWork(work.id) ?? [];
@@ -74,17 +73,18 @@ const keywords = Array.isArray(keywordsRaw)
           }
         </div>
 
-        <div class="text-block-content">
-          <Content />
-        </div>
+        <div
+          class="text-block-content"
+          set:html={marked.parse(work.data.meta_jp)}
+        />
       </div>
 
       <div class="work-hero__right">
         {
-          work.data.intro && (
+          work.data.description_jp && (
             <div
               class="text-block-content intro"
-              set:html={marked.parse(work.data.intro)}
+              set:html={marked.parse(work.data.description_jp)}
             />
           )
         }

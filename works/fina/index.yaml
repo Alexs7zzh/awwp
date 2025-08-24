@@ -1,0 +1,27 @@
+title: FINA
+keywords:
+  - Automotive UI
+  - Original In-car System
+year: 2015
+description_en: FINA (Fluid-HMI Inspired by Nature) is aimed to intuitively transfer the environmental information which “the car is sensing”. FINA maps the information on the driver’s body especially on the upper limb where it is directly associated with steering gear.
+description_jp: FINA (Fluid-HMI Inspired by NAture) は、ドライバーの身体、特にステアリングと直結する上肢に対して情報をマッピングすることで「クルマが感じているであろう」環境情報をドライバーに直感的に伝えることを目指したHMI(Human Machine Interface)です。
+meta_en: |-
+  ## DESIGN AND DEVELOPMENT
+
+  - TOYOTA INFOTECHNOLOGY CENTER
+
+  - KEIO UNIVERSITY SFC AKIRA WAKITA LAB.
+
+  ## Links
+
+  - [FINA - Fluid HMI Inspired by Nature](https://vimeo.com/135181161)
+meta_jp: |-
+  ## DESIGN AND DEVELOPMENT
+
+  トヨタIT開発センター + 慶應義塾大学SFC 脇田玲研究室
+
+  ## 関連リンク
+
+  - [FINA - Fluid HMI Inspired by Nature](https://vimeo.com/135181161)
+videos:
+  - https://player.vimeo.com/video/135181161

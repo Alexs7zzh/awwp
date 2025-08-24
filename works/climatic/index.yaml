@@ -1,0 +1,51 @@
+title: Climatic Reflector
+keywords:
+  - Audio Visual Installation
+year: 2024
+description_en: |-
+  This work is an immersive signage using big data on climate change. By capturing point cloud data of the viewer into the video, the work exposes the recursive relationship between climate and the viewer. The concept is: see yourself looking at the visualization of climate change. What viewers see is not only the visualization of climate change using big data, but also themselves looking at the visualization. This is inspired by the “middle voice” that existed in Proto-Indo-European language. This voice is intermediate between the active and the passive. It is a voice that deals with cases where one’s action (verb) affects not only to the object of the action but also to oneself (subject). The viewers themselves are also captured as point cloud data. The viewer who watches this will be reenacting climate change and their own middle voice state for themselves.
+
+  Various open big data on climate change are used in this work: 66 years of phenological observation data from the Japan Meteorological Agency, specific CFCs accumulated in the ocean over the past 60 years from Applied Physics Laboratory of University of Washington, NASA Ozone Watch’s 42 years of Antarctic ozone hole observations, and MERIT DEM’s revised Copernicus sentinel data.
+
+  This work was exhibited in a shopping district in Sapporo, Japan, in February 2024. Using public signage that normally displays advertisements, immersive audiovisual experience was installed. Through this practice, a cultural infrastructure that triggers educational and introspective behaviors was examined.
+
+  This work is the result of a four-year collaboration between Mitsubishi Electric Corporation Integrated Design Center and Keio University Akira Wakita Laboratory. Mitsubishi Electric is a company that builds highly public infrastructure. The collaboration between the two is an experiment in building a new cultural infrastructure using visualization based on art and science.
+description_jp: "本作は「人々の気候変動への態度」を可視化する装置です。コンセプトは、気候変動の可視化を見ている自分自身を見る。鑑賞者が見ているのは、ビッグデータを用いた気候変動の可視化だけではなく、その可視化を見ている自分自身です。これはインド・ヨーロッパ祖語に存在した「中動態」にインスピレーションを受けています。これは能動態と受動態の中間的な態度を指します。自分の行為（動詞）が、行為の対象のみならず自分自身に及ぶ場合を扱う態のことです。このデータアートの中には鑑賞者自身も点群データとして取り込まれます。そして、それをみている鑑賞者は、気候変動の問題が自分たち自身にも影響を及ぼすものであるという擬似状態、つまり人々の環境に対する中動態的な状態を自ら再現することになります。\n\n本作には様々な気候変動に関するオープンなビッグデータが用いられています。Japan Meteorological Agency Website, Phenological Observation Dataによる66年分の風物詩のデータ、Applied Physics Laboratory, University of Washingtonによる過去70年間の海面シミュレーションのデータおよび過去60年で海中に蓄積された特定フロンのデータ、NASA Ozone Watch\_による南極オゾンホールの42年間の観測データ、MERIT DEMによるコペルニクスのセンチネルデータの修正版、IPCC（気候変動に関する政府間パネル）の2300年のシナリオ、などです。これらの科学的なオープンなビッグデータに対して、アーティストの言語や操作が適用され、その結果が可聴/可視化されています。作品はすべてリアルタイムのソフトウェアとして制作されており、FullHDのLEDパネルを横3面に展開した没入型の環境に投影されます。\n\nClimatic Reflectorは2024年の2月に日本の札幌市の商店街で展示されました。普段は消費行動を促す企業広告が表示されている公共のサイネージを利用し、対話的で没入型の視聴覚体験をインストールしました。鑑賞者は美しく心地の良い視聴覚作品を体験しているうちに、徐々にそれが気候変動のデータを可視化しており、その一部に自分自身が取り込まれていることを理解し始め、周囲の人々と様々な対話をし始める様が観察されました。この実践を通して購買活動とは異なる文化的、教育的、内省的行動を誘発する文化インフラのあり方が検討されました。\n\n本作は三菱電機統合デザイン研究所と慶應義塾大学脇田玲研究室の4年間の共同研究の成果として制作されました。三菱電機はエレベータ、発電機、人工衛星などの公共性の高いインフラを構築する世界的企業であり、脇田研究室は可視化の新しい可能性をアートとサイエンスの融合により開拓しています。両者のコラボレーションは、アートとサイエンスに裏打ちされた可視化を用いた新しい社会インフラ構築の実験であり、街中に次々にと組み込まれているLEDサイネージを用いた新たな公共性のデザインの実験でもあります。"
+meta_en: |-
+  ## EXHIBITION
+
+  - Sapporo International Art Festival, Sapporo, 2024
+
+  ## CREDIT
+
+  - Mitsubishi Electric Corporation Integrated Design Center + Keio University Akira Wakita Laboratory
+
+  - Direction : Akira Wakita, Shusuke Sekino
+
+  - Visualization : Maki Ito, Misaki Yamao, Shodai Kayama, Yuta Morofuji, Yuki Yoshida
+
+  - System Development : Yuta Morofuji, Yuki Ikeda
+
+  - Display Layout : Momone Matsumura
+
+  - Sound Design : Misaki Yamao, Momoha Anayama
+meta_jp: |-
+  ## 展示
+
+  - 札幌国際芸術祭, 札幌地下歩道 オーロラプラザ, 2024
+
+  ## クレジット
+
+  - 三菱電機統合デザイン研究所 + 慶應義塾大学脇田玲研究室
+
+  - Direction : Akira Wakita, Shusuke Sekino
+
+  - Visualization : Maki Ito, Misaki Yamao, Shodai Kayama, Yuta Morofuji, Yuki Yoshida
+
+  - System Development : Yuta Morofuji, Yuki Ikeda
+
+  - Display Layout : Momone Matsumura
+
+  - Sound Design : Misaki Yamao, Momoha Anayama
+videos:
+  - https://player.vimeo.com/video/994357022
