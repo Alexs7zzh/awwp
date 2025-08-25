@@ -18,8 +18,6 @@ meta_en: |-
 
   Akira Wakita in collaboration with NHK Science & Technology Research Laboratories, with the support of Astrodesign Inc.
 
-  ----
-
   - Concept / Direction : AKIRA WAKITA 
   - Visual Software Development : YUKI KUWASHIMA
   - Sound Composition : HANANOSUKE TAKIMOTO, KAIRI HARUNA
@@ -47,3 +45,10 @@ meta_jp: |-
   - Technical Coordinator : KOTOMI WATANABE (NHK TECHNOLOGIES, Inc.)
   - 8K Direction : JIN SATO, KOHEI HAYAKAWA
   - Special Thanks to : MASARU MIYAZAKI, IKUKO SAWAYA
+# footer: |-
+#   撮影クレジット
+#   - Concept / Direction : AKIRA WAKITA 
+#   - Visual Software Development : YUKI KUWASHIMA
+pin:
+  - overbillions_01
+  - overbillions_02

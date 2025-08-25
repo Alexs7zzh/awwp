@@ -11,7 +11,7 @@ const img = (id: string) => imageStore.requireImage(id);
   <LongImage
     id="dismantle"
     image={img("dismantle:dismantle_top")}
-    mobile={img("dismantle:dismantle_thumb")}
+    mobile={[img("dismantle:dismantle_thumb"), img("dismantle:dismantle_02")]}
   />
   <MultiImage
     id="clair"

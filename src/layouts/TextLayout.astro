@@ -77,7 +77,19 @@ import { Config } from "@config";
     color: var(--font-color-title);
   }
 
-  .text-content :global(ul, ol, blockquote) {
+  .text-content :global(ul) {
+    margin-block: 1rem;
+    list-style-position: outside;
+    padding-inline-start: 1.25rem;
+  }
+
+  .text-content :global(ol) {
+    margin-block: 1rem;
+    list-style-position: outside;
+    padding-inline-start: 1.25rem;
+  }
+
+  .text-content :global(blockquote) {
     margin-block: 1rem;
     list-style-position: outside;
     padding-inline-start: 1.25rem;
