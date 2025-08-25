@@ -23,7 +23,6 @@ const worksWithImages = sortedWorks.map((work) => ({
     data-min-item-width="260"
     data-gap-col="16"
     data-gap-row="80"
-    data-full-bleed="true"
     data-outer-gutter="24"
   >
     {
@@ -70,7 +69,6 @@ const worksWithImages = sortedWorks.map((work) => ({
     --gap-row: 8rem;
     --outer-gutter: 16px;
 
-    /* Fill the parent by default */
     inline-size: 100%;
     margin-block: 10rem; /* keep your vertical rhythm */
     margin-inline: 0; /* never create extra outer margins */
@@ -81,19 +79,7 @@ const worksWithImages = sortedWorks.map((work) => ({
     gap: var(--gap-row) var(--gap-col);
     list-style: none;
     align-items: end;
-  }
-
-  /* FULL-BLEED MODE
-   Break out of any centered content wrapper and stretch to the viewport width,
-   while preserving a minimal inner gutter. No “outside margins”.
-*/
-  .work-grid[data-full-bleed="true"] {
-    inline-size: 100dvw;
-    margin-inline: calc(50% - 50dvw); /* center while bleeding to edges */
-    /* inner gutters that scale a touch with the screen and respect safe areas */
-    --_gutter: clamp(12px, 2vw, var(--outer-gutter));
-    padding-left: max(var(--_gutter), env(safe-area-inset-left));
-    padding-right: max(var(--_gutter), env(safe-area-inset-right));
+    padding: 0 var(--page-padding);
   }
 
   .grid-item a {

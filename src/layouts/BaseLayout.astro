@@ -1,5 +1,4 @@
 ---
-import { Config } from "@config";
 import Header from "@components/Header.astro";
 ---
 
@@ -19,9 +18,7 @@ import Header from "@components/Header.astro";
   </head>
   <body>
     <Header />
-    <div
-      style={`margin-top: 10rem;--text-horizontal-margin: ${Config.description.horizontalMargin}; --text-vertical-margin: ${Config.description.verticalMargin};`}
-    >
+    <div style="margin-top: 10rem;">
       <slot />
     </div>
   </body>
@@ -44,6 +41,8 @@ import Header from "@components/Header.astro";
     --background-color: black;
     --font-color-title: white;
     --font-color-body: white;
+
+    --page-padding: clamp(1rem, 2vw, 2rem);
 
     width: 100%;
     min-height: 100dvh;
@@ -130,52 +129,43 @@ import Header from "@components/Header.astro";
 
   h2 {
     font-size: clamp(0.95rem, 1.4vw, 1.1rem);
-    margin-block: 2rem 0.4rem;
+    margin-block: 2rem 1rem;
   }
 
   h3 {
     font-size: clamp(0.9rem, 1.2vw, 1rem);
-    margin-block: 1.6rem 0.3rem;
+    margin-block: 1.6rem 0.8rem;
   }
 
   h4 {
     font-size: clamp(0.85rem, 1vw, 0.95rem);
-    margin-block: 1.2rem 0.2rem;
+    margin-block: 1.2rem 0.6rem;
   }
 
-  /* ---------- Lists (tight items, outside markers, small markers) ---------- */
-  /* Container spacing kept modest; no extra gap between list items */
   ul,
   ol {
     list-style-position: outside; /* decorators on the left, outside text box */
-    margin-block: 1rem; /* space around the whole list, not items */
-    padding-inline-start: 1.25rem; /* room for outside markers */
   }
 
-  /* Unordered lists: standard filled dots */
   ul {
     list-style-type: disc;
   }
 
-  /* Ordered lists: small circle dot (replace numbers) */
   ol {
     list-style-type: circle; /* hollow bullet instead of decimals */
   }
 
-  /* Remove spacing between list items */
   li {
     margin: 0;
     padding: 0;
   }
 
-  /* Ensure paragraphs inside list items don’t add extra space */
   li > p {
     margin: 0;
   }
 
-  /* Slightly smaller, quieter markers to match intro’s subtlety */
   li::marker {
-    font-size: 0.7em;
+    font-size: 1em;
     line-height: 1;
     color: var(--font-color-body);
   }

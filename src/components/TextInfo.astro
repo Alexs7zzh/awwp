@@ -23,14 +23,14 @@ const { id, title, description } = Astro.props;
     /* spacing & color */
     text-decoration: none;
     color: inherit;
-    margin: 0 var(--text-horizontal-margin, 2rem);
+    margin: 0 2rem;
     padding: 0;
     flex-grow: 1;
     /* --- CSS pinning (no JS) --- */
     position: sticky;
-    top: var(--text-vertical-margin, 2rem); /* distance from top while pinned */
+    top: 2rem; /* distance from top while pinned */
     align-self: flex-start; /* required for sticky inside flex rows */
-    height: calc(100vh - 2 * var(--text-vertical-margin, 2rem));
+    height: calc(100vh - 2 * 2rem);
     box-sizing: border-box;
     overflow: auto;
     /* layout for CTA at bottom-right */

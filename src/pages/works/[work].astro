@@ -3,7 +3,6 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import { marked } from "marked";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
-import { Config } from "@config";
 import { Picture } from "astro:assets";
 
 export async function getStaticPaths() {
@@ -14,9 +13,7 @@ export async function getStaticPaths() {
   }));
 }
 
-const rawCols = Number(Config.detailPage.column ?? 1);
-const gridCols =
-  Number.isFinite(rawCols) && rawCols > 0 ? Math.floor(rawCols) : 1;
+const gridCols = 2;
 
 // Reuse your page spacing from Config (fallbacks keep things resilient)
 const pageVMargin = "2rem";
@@ -27,7 +24,7 @@ const multiRowGap = "clamp(2.5rem, 6vw, 6rem)";
 const multiColGap = "3rem";
 
 // Define max content width (can be pulled from Config if added there later)
-const maxContentWidth = "1200px";
+const maxContentWidth = "800px";
 
 const work = Astro.props;
 
@@ -53,57 +50,31 @@ const keywords = Array.isArray(keywordsRaw)
       .split(",")
       .map((k) => k.trim())
       .filter(Boolean);
+
+const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
+const remainingPinned = pinnedImages.slice(1);
 ---
 
 <BaseLayout>
-  <article
-    class="work theme-compact-gallery"
-    style={`--max-content-width: ${maxContentWidth};`}
-  >
-    <!-- Hero -->
+  <article>
     <header class="work-hero" aria-labelledby="work-title">
       <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
 
-      <div class="work-hero__left">
-        <div class="meta-stack">
-          {work.data.year && <p class="meta-item">{work.data.year}</p>}
+      <div class="meta-stack">
+        {work.data.year && <p class="meta-year meta-item">{work.data.year}</p>}
 
-          {
-            keywords.length > 0 && (
-              <ul class="meta-tags" role="list">
-                {keywords.map((k) => (
-                  <li class="meta-tag">{k}</li>
-                ))}
-              </ul>
-            )
-          }
-        </div>
-
-        <div
-          class="text-block-content"
-          set:html={marked.parse(work.data.meta_jp)}
-        />
-      </div>
-
-      <div class="work-hero__right">
         {
-          work.data.description_jp && (
-            <div
-              class="text-block-content intro"
-              set:html={marked.parse(work.data.description_jp)}
-            />
+          keywords.length > 0 && (
+            <p class="meta-keywords meta-item">{keywords.join(", ")}</p>
           )
         }
       </div>
     </header>
-
-    <!-- Pinned images grid (always 1 column) -->
+    <!-- First pinned image before header -->
     {
-      pinnedImages.length > 0 && (
-        <ul
-          class="work-grid pinned"
-          role="list"
-          data-cols={1}
+      firstPinned && (
+        <div
+          class="work-grid pinned hero"
           style={`
         --grid-columns: 1;
         --page-vmargin: ${pageVMargin};
@@ -112,14 +83,73 @@ const keywords = Array.isArray(keywordsRaw)
         --multi-col-gap: ${multiColGap};
       `}
         >
-          {pinnedImages.map((img, i) => {
-            const src = typeof img === "string" ? img : (img?.src ?? "");
-            const alt = `${work.data.title} — image ${i + 1}`;
+          {(() => {
+            const src =
+              typeof firstPinned === "string"
+                ? firstPinned
+                : (firstPinned?.src ?? "");
+            const alt = `${work.data.title} — image 1`;
             return (
-              <li class="grid-item">
+              <div class="grid-item">
                 <a
                   href={src}
-                  aria-label={`Open image ${i + 1} for ${work.data.title}`}
+                  aria-label={`Open image 1 for ${work.data.title}`}
+                >
+                  <div class="image-wrapper">
+                    <Picture
+                      src={firstPinned}
+                      alt={alt}
+                      formats={["avif", "webp"]}
+                      widths={[600, 1200, 1800]}
+                      sizes="(min-width: 1220px) 1200px, 100vw"
+                      class="list-image"
+                      loading="lazy"
+                      fetchpriority="auto"
+                    />
+                  </div>
+                </a>
+              </div>
+            );
+          })()}
+        </div>
+      )
+    }
+
+    {
+      work.data.description_jp && (
+        <div
+          class="text-block-content intro"
+          set:html={marked.parse(work.data.description_jp)}
+        />
+      )
+    }
+
+    <div
+      class="text-block-content"
+      set:html={marked.parse(work.data.meta_jp)}
+    />
+
+    <!-- Remaining pinned images grid (always 1 column) -->
+    {
+      remainingPinned.length > 0 && (
+        <div
+          class="work-grid pinned"
+          style={`
+        --grid-columns: 1;
+        --page-vmargin: ${pageVMargin};
+        --page-hmargin: ${pageHMargin};
+        --multi-row-gap: ${multiRowGap};
+        --multi-col-gap: ${multiColGap};
+      `}
+        >
+          {remainingPinned.map((img, i) => {
+            const src = typeof img === "string" ? img : (img?.src ?? "");
+            const alt = `${work.data.title} — image ${i + 2}`;
+            return (
+              <div class="grid-item">
+                <a
+                  href={src}
+                  aria-label={`Open image ${i + 2} for ${work.data.title}`}
                 >
                   <div class="image-wrapper">
                     <Picture
@@ -134,20 +164,18 @@ const keywords = Array.isArray(keywordsRaw)
                     />
                   </div>
                 </a>
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )
     }
 
     <!-- Unpinned images grid -->
     {
       unpinnedImages.length > 0 && (
-        <ul
+        <div
           class="work-grid"
-          role="list"
-          data-cols={gridCols}
           style={`
         --grid-columns: ${gridCols};
         --page-vmargin: ${pageVMargin};
@@ -160,7 +188,7 @@ const keywords = Array.isArray(keywordsRaw)
             const src = typeof img === "string" ? img : (img?.src ?? "");
             const alt = `${work.data.title} — image ${i + 1}`;
             return (
-              <li class="grid-item">
+              <div class="grid-item">
                 <a
                   href={src}
                   aria-label={`Open image ${i + 1} for ${work.data.title}`}
@@ -178,10 +206,10 @@ const keywords = Array.isArray(keywordsRaw)
                     />
                   </div>
                 </a>
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )
     }
 
@@ -197,84 +225,47 @@ const keywords = Array.isArray(keywordsRaw)
 </BaseLayout>
 
 <style>
-  /* ------------------------------------------------------------
-     Base layout & type (shared across all themes)
-     Keep this lean; themes only override what's necessary.
-  ------------------------------------------------------------ */
+  article {
+    padding: 0 var(--page-padding);
+  }
+
   .work-hero {
-    display: grid;
-    grid-template-columns: 1fr minmax(0, 1fr);
-    grid-template-areas:
-      "title ."
-      "left right";
-    gap: 2rem;
-    align-items: start;
-    max-width: var(--max-content-width, 1600px);
-    margin: 0 auto;
-    padding: clamp(2rem, 6vw, 6rem) 2rem 0;
+    padding-top: clamp(2rem, 6vw, 6rem);
     color: var(--font-color-body);
   }
 
   .text-block-title {
-    grid-area: title;
     color: var(--font-color-title);
     display: inline-block;
     position: relative;
     padding-bottom: 2px;
     font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.18em; /* ~3px at 16px */
+    letter-spacing: 0.18em;
     font-weight: 400;
     margin: 0;
   }
 
-  .work-hero__left {
-    grid-area: left;
-    display: grid;
-    align-content: start;
-    gap: 0.9rem;
-  }
-
-  .work-hero__right {
-    grid-area: right;
-  }
-
   .meta-stack {
-    display: grid;
-    gap: 0.4rem;
+    margin-top: 0.5rem;
+    margin-bottom: 2.4rem;
+    font-size: 0.7rem;
   }
 
   .meta-item {
-    font-weight: 300;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    color: var(--font-color-body);
     margin: 0;
+    font-weight: 300;
+    color: var(--font-color-body);
   }
 
-  .meta-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 0.6rem;
-    list-style: none;
-    margin: 0.2rem 0 0;
-    padding: 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
+  .meta-year {
+    letter-spacing: 0.08em;
   }
-  .meta-tag {
-    font-size: 0.78rem;
+
+  .meta-keywords {
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 300;
-    color: var(--font-color-body);
-    padding: 0;
-    border: 0;
-  }
-  .meta-tag + .meta-tag::before {
-    content: "•";
-    margin: 0 0.45rem 0 0.2rem;
-    color: var(--font-color-body);
+    margin-top: 0.2rem;
   }
 
   .text-block-content {
@@ -310,38 +301,25 @@ const keywords = Array.isArray(keywordsRaw)
     margin-block: 1rem;
   }
 
-  @media (max-width: 900px) {
-    .work-hero {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "right"
-        "left";
-    }
-  }
-
   /* Image grid */
   .work-grid {
     margin: clamp(4rem, 12vw, 10rem) auto;
-    padding: 0 1rem;
     display: grid;
-
-    /* columns from config */
     grid-template-columns: repeat(var(--grid-columns, 1), minmax(0, 1fr));
-
-    /* default (multi-column) gaps, theme-overridable via vars */
     row-gap: var(--multi-row-gap, clamp(2.5rem, 6vw, 6rem));
     column-gap: var(--multi-col-gap, 3rem);
-
-    list-style: none;
     align-items: end;
   }
 
-  /* When the config sets 1 column:
-   reuse your page "heighting" rhythm from Config. */
-  .work-grid[data-cols="1"] {
+  /* When pinned (1 column): reuse your page "heighting" rhythm from Config. */
+  .work-grid.pinned {
     row-gap: var(--page-vmargin, 2rem);
     column-gap: var(--page-hmargin, 2rem);
+  }
+
+  /* Hero pinned image adjustments */
+  .work-grid.pinned.hero {
+    margin: 0 auto clamp(2rem, 6vw, 6rem) auto;
   }
 
   /* Reduce margin between pinned and unpinned grids */
@@ -375,24 +353,5 @@ const keywords = Array.isArray(keywordsRaw)
   .text-block-content.footer {
     margin: 0 auto 20vh;
     padding: 0 2rem;
-  }
-
-  /* Optional: narrower text measure on wide screens for readability */
-  @media (min-width: 901px) {
-    .work-hero__left .text-block-content {
-      max-width: 68ch;
-    }
-    .text-block-content.footer {
-      max-width: 68ch;
-    }
-  }
-
-  /* Clamp intro a bit on small screens for a compact hero */
-  @media (max-width: 767px) {
-    .intro {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
   }
 </style>

@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "format": "pnpm exec prettier . --write \"!**/*.{jpg,jpeg,png}\""
+    "format": "pnpm exec prettier . --write \"!**/*.{jpg,jpeg,png}\" \"!pnpm-lock.yaml\""
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.5.1",
