@@ -21,7 +21,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
     color: var(--font-color-body);
     max-width: var(--max-content-width, 800px);
     margin: 0 auto;
-    padding: clamp(2rem, 6vw, 6rem) 2rem;
+    padding: clamp(2rem, 6vw, 6rem) var(--page-padding);
     line-height: 1.6;
   }
 
@@ -78,19 +78,16 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 
   .text-content :global(ul) {
     margin-block: 1rem;
-    list-style-position: outside;
     padding-inline-start: 1.25rem;
   }
 
   .text-content :global(ol) {
     margin-block: 1rem;
-    list-style-position: outside;
     padding-inline-start: 1.25rem;
   }
 
   .text-content :global(blockquote) {
     margin-block: 1rem;
-    list-style-position: outside;
     padding-inline-start: 1.25rem;
   }
 
@@ -133,7 +130,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
   /* Mimic gallery compactness on smaller screens */
   @media (max-width: 767px) {
     .text-page {
-      padding: clamp(1.5rem, 4vw, 4rem) 1.5rem;
+      padding: clamp(1.5rem, 4vw, 4rem) var(--page-padding);
     }
   }
 </style>
