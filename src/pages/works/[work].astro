@@ -56,7 +56,10 @@ const keywords = Array.isArray(keywordsRaw)
 ---
 
 <BaseLayout>
-  <article class="work theme-compact-gallery" style={`--max-content-width: ${maxContentWidth};`}>
+  <article
+    class="work theme-compact-gallery"
+    style={`--max-content-width: ${maxContentWidth};`}
+  >
     <!-- Hero -->
     <header class="work-hero" aria-labelledby="work-title">
       <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
@@ -201,7 +204,7 @@ const keywords = Array.isArray(keywordsRaw)
   .work-hero {
     display: grid;
     grid-template-columns: 1fr minmax(0, 1fr);
-    grid-template-areas: 
+    grid-template-areas:
       "title ."
       "left right";
     gap: 2rem;
@@ -310,7 +313,7 @@ const keywords = Array.isArray(keywordsRaw)
   @media (max-width: 900px) {
     .work-hero {
       grid-template-columns: 1fr;
-      grid-template-areas: 
+      grid-template-areas:
         "title"
         "right"
         "left";

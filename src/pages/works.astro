@@ -16,7 +16,16 @@ const worksWithImages = sortedWorks.map((work) => ({
 ---
 
 <BaseLayout>
-  <ul class="work-grid">
+  <ul
+    class="work-grid"
+    data-min-cols="2"
+    data-max-cols="5"
+    data-min-item-width="260"
+    data-gap-col="16"
+    data-gap-row="80"
+    data-full-bleed="true"
+    data-outer-gutter="24"
+  >
     {
       worksWithImages.map((work) =>
         work.images.map((img) => (
@@ -31,7 +40,7 @@ const worksWithImages = sortedWorks.map((work) => ({
                   alt={work.workId}
                   formats={["avif", "webp"]}
                   widths={[400, 800]}
-                  sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 33vw"
+                  sizes="(max-width: 767px) 50vw, (max-width: 1199px) 33vw, 25vw"
                   class="list-image"
                   loading="lazy"
                   fetchpriority="auto"
@@ -46,6 +55,7 @@ const worksWithImages = sortedWorks.map((work) => ({
 </BaseLayout>
 
 <style>
+  /* Base type the same as yours */
   h1 {
     padding: 0;
     margin: 0;
@@ -54,14 +64,36 @@ const worksWithImages = sortedWorks.map((work) => ({
   }
 
   .work-grid {
-    margin: 10rem auto;
-    padding: 0 1rem;
-    max-width: 1600px;
+    /* configurable via JS / data-attrs */
+    --grid-cols: 2;
+    --gap-col: 16px;
+    --gap-row: 8rem;
+    --outer-gutter: 16px;
+
+    /* Fill the parent by default */
+    inline-size: 100%;
+    margin-block: 10rem; /* keep your vertical rhythm */
+    margin-inline: 0; /* never create extra outer margins */
+    padding-inline: var(--outer-gutter);
+
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10rem 4rem;
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+    gap: var(--gap-row) var(--gap-col);
     list-style: none;
     align-items: end;
+  }
+
+  /* FULL-BLEED MODE
+   Break out of any centered content wrapper and stretch to the viewport width,
+   while preserving a minimal inner gutter. No “outside margins”.
+*/
+  .work-grid[data-full-bleed="true"] {
+    inline-size: 100dvw;
+    margin-inline: calc(50% - 50dvw); /* center while bleeding to edges */
+    /* inner gutters that scale a touch with the screen and respect safe areas */
+    --_gutter: clamp(12px, 2vw, var(--outer-gutter));
+    padding-left: max(var(--_gutter), env(safe-area-inset-left));
+    padding-right: max(var(--_gutter), env(safe-area-inset-right));
   }
 
   .grid-item a {
@@ -71,29 +103,23 @@ const worksWithImages = sortedWorks.map((work) => ({
     color: inherit;
     transition: opacity 0.2s ease;
   }
-
   .grid-item a:hover {
     opacity: 0.8;
   }
-
   .image-wrapper {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
     margin-bottom: 0.75rem;
-    /* background-color: #f0f0f0; */
   }
-
   .list-image {
     display: block;
     width: 100%;
     height: auto;
   }
-
   .text-content {
     flex-shrink: 0;
   }
-
   .text-content h3 {
     font-size: 1rem;
     font-weight: 400;
@@ -101,21 +127,125 @@ const worksWithImages = sortedWorks.map((work) => ({
     color: var(--font-color-title);
     letter-spacing: 0.2px;
   }
-
   .text-content .meta {
     font-size: 0.85rem;
     color: var(--font-color-body);
     margin: 0;
   }
 
-  @media (min-width: 767px) {
+  /* Optional: a basic no-JS fallback so it doesn’t look broken if JS is off */
+  @media (min-width: 768px) {
     .work-grid {
-      padding: 0 2rem;
+      --grid-cols: 3;
     }
+  }
+  @media (min-width: 1200px) {
+    .work-grid {
+      --grid-cols: 5;
+    }
+  }
 
+  @media (min-width: 767px) {
     .text-content h3 {
       font-weight: 500;
       letter-spacing: 0.4px;
     }
   }
 </style>
+
+<script>
+  interface GridConfig {
+    minCols: number;
+    maxCols: number;
+    minItemWidth: number;
+    gapCol: number;
+    gapRow: number;
+    fullBleed: boolean;
+    outerGutter: number;
+    updateSizesAttr: boolean;
+  }
+
+  function initGridSizer(
+    selector: string = ".work-grid",
+    baseConfig: Partial<GridConfig> = {},
+  ) {
+    const els = Array.from(
+      document.querySelectorAll(selector),
+    ) as HTMLElement[];
+    if (!("ResizeObserver" in window)) return;
+
+    els.forEach((grid) => {
+      const cfg: GridConfig = {
+        minCols: 2,
+        maxCols: 5,
+        minItemWidth: 260,
+        gapCol: 16,
+        gapRow: 80,
+        fullBleed: readBool(grid.dataset.fullBleed, true),
+        outerGutter: num(grid.dataset.outerGutter, 16),
+        updateSizesAttr: true, // update <img sizes> for optimal srcset choice
+        ...readDataset(grid),
+        ...baseConfig,
+      };
+
+      grid.style.setProperty("--gap-col", `${cfg.gapCol}px`);
+      grid.style.setProperty("--gap-row", `${cfg.gapRow}px`);
+      grid.style.setProperty("--outer-gutter", `${cfg.outerGutter}px`);
+      grid.dataset.fullBleed = String(!!cfg.fullBleed);
+
+      const ro = new ResizeObserver(() => {
+        // clientWidth includes padding; perfect for track calculation.
+        const width = grid.clientWidth;
+        if (!width) return;
+
+        // How many columns fit at the *minimum* tile width?
+        const colsByMin = Math.floor(
+          (width + cfg.gapCol) / (cfg.minItemWidth + cfg.gapCol),
+        );
+        const cols = clamp(colsByMin, cfg.minCols, cfg.maxCols);
+
+        grid.style.setProperty("--grid-cols", String(cols));
+
+        // Optional: keep browser picking correct src from your <Picture> srcset.
+        if (cfg.updateSizesAttr) {
+          const trackWidth = (width - cfg.gapCol * (cols - 1)) / cols;
+          // Update every img with .list-image inside the grid (works for <picture> too)
+          grid
+            .querySelectorAll("img.list-image")
+            .forEach((img: HTMLImageElement) => {
+              const px = Math.max(1, Math.round(trackWidth));
+              if (img.sizes !== `${px}px`) img.sizes = `${px}px`;
+            });
+        }
+      });
+
+      ro.observe(grid);
+      const parent = grid.parentElement;
+      if (parent) ro.observe(parent);
+    });
+
+    function clamp(v: number, lo: number, hi: number): number {
+      return Math.max(lo, Math.min(hi, v));
+    }
+    function num(v: string | undefined, fallback: number): number {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    function readBool(v: string | undefined, fallback: boolean): boolean {
+      if (v == null) return fallback;
+      return String(v).toLowerCase() === "true";
+    }
+    function readDataset(el: HTMLElement): Partial<GridConfig> {
+      const d = el.dataset;
+      const n = (x: string | undefined) => (x == null ? undefined : Number(x));
+      return {
+        minCols: n(d.minCols),
+        maxCols: n(d.maxCols),
+        minItemWidth: n(d.minItemWidth),
+        gapCol: n(d.gapCol),
+        gapRow: n(d.gapRow),
+      };
+    }
+  }
+  initGridSizer(".work-grid");
+</script>
