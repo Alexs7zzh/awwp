@@ -62,6 +62,7 @@ const { id, title, description } = Astro.props;
     margin-top: auto; /* push to bottom when there's extra space */
     display: inline-block;
     position: relative;
+    padding-top: 1rem;
     padding-bottom: 2px;
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -84,13 +85,18 @@ const { id, title, description } = Astro.props;
     width: 100%;
   }
   @media (max-width: 767px) {
+    a {
+      padding-top: 0.5rem;
+    }
     .text-info {
-      position: static; /* disable sticky on mobile */
+      position: static;
       top: auto;
       height: auto;
+      margin: 0 1rem;
     }
     .description {
       -webkit-line-clamp: 6;
+      overflow: hidden;
     }
   }
 </style>

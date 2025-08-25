@@ -20,11 +20,11 @@
   /* -------- Header layout -------- */
   header {
     /* Animatable custom props (big state by default) */
-    --pad-top: 2rem; /* distance from page edge (padding) */
-    --home-size: 1.5rem; /* site title size */
-    --nav-size: 1rem; /* nav links size */
-    --gap: 2rem; /* space between title and nav */
-    --nav-gap: 1.5rem; /* space between nav items */
+    --pad-top: 2em; /* distance from page edge (padding) */
+    --home-size: 1.5em; /* site title size */
+    --nav-size: 1em; /* nav links size */
+    --gap: 2em; /* space between title and nav */
+    --nav-gap: 1.5em; /* space between nav items */
     --letter-spacing: 0.04em;
     --line-color: rgba(128, 128, 128, 0.35);
 
@@ -36,8 +36,9 @@
     justify-content: flex-start; /* was: space-between */
     align-items: center;
     gap: var(--gap);
-    padding: var(--pad-top) 2rem 0.5rem;
+    padding: var(--pad-top) 2em 0.5em;
     z-index: 1000;
+    font-size: 1rem;
 
     color: white;
     background: transparent;
@@ -78,9 +79,10 @@
   /* -------- Mobile tweaks -------- */
   @media (max-width: 600px) {
     header {
-      --pad-top: 1rem;
-      --home-size: 1.2rem;
-      --nav-gap: 1.25rem;
+      --pad-top: 1em;
+      --home-size: 1.2em;
+      --nav-gap: 1.25em;
+      font-size: 0.8rem;
     }
   }
 
