@@ -1,0 +1,128 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Config } from "@config";
+---
+
+<BaseLayout>
+  <main class="text-page" style={`--max-content-width: 800px;`}>
+    <article class="text-content">
+      <slot />
+    </article>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  /* Reuse base variables for colors */
+  .text-page {
+    --font-color-body: white;
+    --font-color-title: white;
+    --background-color: black;
+
+    background-color: var(--background-color);
+    color: var(--font-color-body);
+    max-width: var(--max-content-width, 800px);
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 6rem) 2rem;
+  }
+
+  .text-content {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+    max-width: 68ch; /* Reusable readable measure from reference */
+    margin: 0 auto;
+  }
+
+  /* Reuse text-block-content styles for markdown rendering */
+  .text-content :global(*) {
+    color: var(--font-color-body);
+    font-weight: 300;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .text-content :global(p) {
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .text-content :global(p + p) {
+    margin-block-start: 1.6em;
+  }
+
+  .text-content :global(h1) {
+    color: var(--font-color-title);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin-block: 0 0.75rem;
+  }
+
+  .text-content :global(h2) {
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-top: 2rem;
+    color: var(--font-color-title);
+  }
+
+  .text-content :global(h3) {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-top: 1.5rem;
+    color: var(--font-color-title);
+  }
+
+  .text-content :global(ul, ol, blockquote) {
+    margin-block: 1rem;
+    list-style-position: outside;
+    padding-inline-start: 1.25rem;
+  }
+
+  .text-content :global(ul) {
+    list-style-type: disc;
+  }
+
+  .text-content :global(ol) {
+    list-style-type: circle;
+  }
+
+  .text-content :global(li) {
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-content :global(li > p) {
+    margin: 0;
+  }
+
+  .text-content :global(li::marker) {
+    font-size: 0.7em;
+    line-height: 1;
+    color: var(--font-color-body);
+  }
+
+  .text-content :global(li > ul),
+  .text-content :global(li > ol) {
+    margin-block: 0.25rem;
+    padding-inline-start: 1.25rem;
+  }
+
+  /* Ensure links inherit color */
+  .text-content :global(a) {
+    color: inherit;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+  }
+
+  /* Mimic gallery compactness on smaller screens */
+  @media (max-width: 767px) {
+    .text-page {
+      padding: clamp(1.5rem, 4vw, 4rem) 1.5rem;
+    }
+  }
+</style>
