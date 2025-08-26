@@ -13,19 +13,6 @@ export async function getStaticPaths() {
   }));
 }
 
-const gridCols = 2;
-
-// Reuse your page spacing from Config (fallbacks keep things resilient)
-const pageVMargin = "2rem";
-const pageHMargin = "2rem";
-
-// Sensible defaults for multi-column gaps (theme can override later)
-const multiRowGap = "clamp(2.5rem, 6vw, 6rem)";
-const multiColGap = "3rem";
-
-// Define max content width (can be pulled from Config if added there later)
-const maxContentWidth = "800px";
-
 const work = Astro.props;
 
 // Get image records to access IDs for pinning
@@ -57,58 +44,39 @@ const remainingPinned = pinnedImages.slice(1);
 
 <BaseLayout title=`Akira Wakita - ${work.data.title}`>
   <article>
-    <header class="work-hero" aria-labelledby="work-title">
-      <h1 id="work-title" class="text-block-title">{work.data.title}</h1>
+    <header aria-labelledby="work-title">
+      <h1 id="work-title">{work.data.title}</h1>
 
       <div class="meta-stack">
-        {work.data.year && <p class="meta-year meta-item">{work.data.year}</p>}
+        {work.data.year && <p class="meta-year">{work.data.year}</p>}
 
         {
           keywords.length > 0 && (
-            <p class="meta-keywords meta-item">{keywords.join(", ")}</p>
+            <p class="meta-keywords">{keywords.join(", ")}</p>
           )
         }
       </div>
     </header>
-    <!-- First pinned image before header -->
+    <!-- First pinned image before description -->
     {
       firstPinned && (
-        <div
-          class="work-grid pinned hero"
-          style={`
-        --grid-columns: 1;
-        --page-vmargin: ${pageVMargin};
-        --page-hmargin: ${pageHMargin};
-        --multi-row-gap: ${multiRowGap};
-        --multi-col-gap: ${multiColGap};
-      `}
-        >
+        <div class="work-grid pinned hero">
           {(() => {
-            const src =
-              typeof firstPinned === "string"
-                ? firstPinned
-                : (firstPinned?.src ?? "");
+            const src = firstPinned?.src ?? "";
             const alt = `${work.data.title} — image 1`;
             return (
-              <div class="grid-item">
-                <a
-                  href={src}
-                  aria-label={`Open image 1 for ${work.data.title}`}
-                >
-                  <div class="image-wrapper">
-                    <Picture
-                      src={firstPinned}
-                      alt={alt}
-                      formats={["avif", "webp"]}
-                      widths={[600, 1200, 1800]}
-                      sizes="(min-width: 1220px) 1200px, 100vw"
-                      class="list-image"
-                      loading="lazy"
-                      fetchpriority="auto"
-                    />
-                  </div>
-                </a>
-              </div>
+              <a href={src} aria-label={`Open image 1 for ${work.data.title}`}>
+                <Picture
+                  src={firstPinned}
+                  alt={alt}
+                  formats={["avif", "webp"]}
+                  widths={[600, 1200, 1800]}
+                  sizes="(min-width: 1220px) 1200px, 100vw"
+                  class="list-image"
+                  loading="lazy"
+                  fetchpriority="auto"
+                />
+              </a>
             );
           })()}
         </div>
@@ -132,39 +100,26 @@ const remainingPinned = pinnedImages.slice(1);
     <!-- Remaining pinned images grid (always 1 column) -->
     {
       remainingPinned.length > 0 && (
-        <div
-          class="work-grid pinned"
-          style={`
-        --grid-columns: 1;
-        --page-vmargin: ${pageVMargin};
-        --page-hmargin: ${pageHMargin};
-        --multi-row-gap: ${multiRowGap};
-        --multi-col-gap: ${multiColGap};
-      `}
-        >
+        <div class="work-grid pinned">
           {remainingPinned.map((img, i) => {
-            const src = typeof img === "string" ? img : (img?.src ?? "");
+            const src = img?.src ?? "";
             const alt = `${work.data.title} — image ${i + 2}`;
             return (
-              <div class="grid-item">
-                <a
-                  href={src}
-                  aria-label={`Open image ${i + 2} for ${work.data.title}`}
-                >
-                  <div class="image-wrapper">
-                    <Picture
-                      src={img}
-                      alt={alt}
-                      formats={["avif", "webp"]}
-                      widths={[600, 1200, 1800]}
-                      sizes="(min-width: 1220px) 1200px, 100vw"
-                      class="list-image"
-                      loading="lazy"
-                      fetchpriority="auto"
-                    />
-                  </div>
-                </a>
-              </div>
+              <a
+                href={src}
+                aria-label={`Open image ${i + 2} for ${work.data.title}`}
+              >
+                <Picture
+                  src={img}
+                  alt={alt}
+                  formats={["avif", "webp"]}
+                  widths={[600, 1200, 1800]}
+                  sizes="(min-width: 1220px) 1200px, 100vw"
+                  class="list-image"
+                  loading="lazy"
+                  fetchpriority="auto"
+                />
+              </a>
             );
           })}
         </div>
@@ -174,39 +129,26 @@ const remainingPinned = pinnedImages.slice(1);
     <!-- Unpinned images grid -->
     {
       unpinnedImages.length > 0 && (
-        <div
-          class="work-grid"
-          style={`
-        --grid-columns: ${gridCols};
-        --page-vmargin: ${pageVMargin};
-        --page-hmargin: ${pageHMargin};
-        --multi-row-gap: ${multiRowGap};
-        --multi-col-gap: ${multiColGap};
-      `}
-        >
+        <div class="work-grid">
           {unpinnedImages.map((img, i) => {
-            const src = typeof img === "string" ? img : (img?.src ?? "");
+            const src = img?.src ?? "";
             const alt = `${work.data.title} — image ${i + 1}`;
             return (
-              <div class="grid-item">
-                <a
-                  href={src}
-                  aria-label={`Open image ${i + 1} for ${work.data.title}`}
-                >
-                  <div class="image-wrapper">
-                    <Picture
-                      src={img}
-                      alt={alt}
-                      formats={["avif", "webp"]}
-                      widths={[400, 800, 1200]}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      class="list-image"
-                      loading="lazy"
-                      fetchpriority="auto"
-                    />
-                  </div>
-                </a>
-              </div>
+              <a
+                href={src}
+                aria-label={`Open image ${i + 1} for ${work.data.title}`}
+              >
+                <Picture
+                  src={img}
+                  alt={alt}
+                  formats={["avif", "webp"]}
+                  widths={[400, 800, 1200]}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  class="list-image"
+                  loading="lazy"
+                  fetchpriority="auto"
+                />
+              </a>
             );
           })}
         </div>
@@ -229,12 +171,12 @@ const remainingPinned = pinnedImages.slice(1);
     padding: 0 var(--page-padding);
   }
 
-  .work-hero {
+  article > header {
     padding-top: clamp(2rem, 6vw, 6rem);
     color: var(--font-color-body);
   }
 
-  .text-block-title {
+  h1 {
     color: var(--font-color-title);
     display: inline-block;
     position: relative;
@@ -252,7 +194,7 @@ const remainingPinned = pinnedImages.slice(1);
     font-size: 0.8rem;
   }
 
-  .meta-item {
+  .meta-stack p {
     margin: 0;
     font-weight: 300;
     color: var(--font-color-body);
@@ -305,16 +247,22 @@ const remainingPinned = pinnedImages.slice(1);
   .work-grid {
     margin: clamp(4rem, 12vw, 10rem) auto;
     display: grid;
-    grid-template-columns: repeat(var(--grid-columns, 1), minmax(0, 1fr));
-    row-gap: var(--multi-row-gap, clamp(2.5rem, 6vw, 6rem));
-    column-gap: var(--multi-col-gap, 3rem);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    row-gap: clamp(2.5rem, 6vw, 6rem);
+    column-gap: 2rem;
     align-items: end;
   }
 
-  /* When pinned (1 column): reuse your page "heighting" rhythm from Config. */
+  @media (min-width: 768px) {
+    .work-grid:not(.pinned) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* When pinned (1 column): reuse page rhythm */
   .work-grid.pinned {
-    row-gap: var(--page-vmargin, 2rem);
-    column-gap: var(--page-hmargin, 2rem);
+    row-gap: 2rem;
+    column-gap: 2rem;
   }
 
   /* Hero pinned image adjustments */
@@ -327,18 +275,18 @@ const remainingPinned = pinnedImages.slice(1);
     margin-top: clamp(2.5rem, 6vw, 6rem);
   }
 
-  .grid-item a {
+  .work-grid a {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     color: inherit;
     transition: opacity 0.2s ease;
   }
-  .grid-item a:hover {
+  .work-grid a:hover {
     opacity: 0.96;
   }
 
-  .image-wrapper {
+  .work-grid a > picture {
     position: relative;
     overflow: hidden;
     border-radius: 0;
