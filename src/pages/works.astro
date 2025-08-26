@@ -16,7 +16,7 @@ const worksWithImages = sortedWorks.map((work) => ({
 ---
 
 <BaseLayout>
-  <ul
+  <div
     class="work-grid"
     data-min-cols="2"
     data-max-cols="5"
@@ -28,44 +28,31 @@ const worksWithImages = sortedWorks.map((work) => ({
     {
       worksWithImages.map((work) =>
         work.images.map((img) => (
-          <li class="grid-item">
-            <a
-              href={`/works/${work.workId}`}
-              aria-labelledby={`work-title-${work.workId}`}
-            >
-              <div class="image-wrapper">
-                <Picture
-                  src={img}
-                  alt={work.workId}
-                  formats={["avif", "webp"]}
-                  widths={[400, 800]}
-                  sizes="(max-width: 767px) 50vw, (max-width: 1199px) 33vw, 25vw"
-                  class="list-image"
-                  loading="lazy"
-                  fetchpriority="auto"
-                />
-              </div>
-            </a>
-          </li>
+          <a
+            href={`/works/${work.workId}`}
+            aria-labelledby={`work-title-${work.workId}`}
+          >
+            <Picture
+              src={img}
+              alt={work.workId}
+              formats={["avif", "webp"]}
+              widths={[400, 800]}
+              sizes="(max-width: 767px) 50vw, (max-width: 1199px) 33vw, 25vw"
+              loading="lazy"
+              fetchpriority="auto"
+            />
+          </a>
         )),
       )
     }
-  </ul>
+  </div>
 </BaseLayout>
 
 <style>
-  /* Base type the same as yours */
-  h1 {
-    padding: 0;
-    margin: 0;
-    font-weight: normal;
-    font-size: 1.5rem;
-  }
-
   .work-grid {
     /* configurable via JS / data-attrs */
     --grid-cols: 2;
-    --gap-col: 16px;
+    --gap-col: 1rem;
     --gap-row: 8rem;
     --outer-gutter: 16px;
 
@@ -77,46 +64,29 @@ const worksWithImages = sortedWorks.map((work) => ({
     display: grid;
     grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
     gap: var(--gap-row) var(--gap-col);
-    list-style: none;
     align-items: end;
-    padding: 0 var(--page-padding);
   }
 
-  .grid-item a {
+  .work-grid > a {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     color: inherit;
     transition: opacity 0.2s ease;
   }
-  .grid-item a:hover {
+  .work-grid > a:hover {
     opacity: 0.8;
   }
-  .image-wrapper {
+  .work-grid picture {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
     margin-bottom: 0.75rem;
   }
-  .list-image {
+  .work-grid img {
     display: block;
     width: 100%;
     height: auto;
-  }
-  .text-content {
-    flex-shrink: 0;
-  }
-  .text-content h3 {
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 0 0 0.5rem 0;
-    color: var(--font-color-title);
-    letter-spacing: 0.2px;
-  }
-  .text-content .meta {
-    font-size: 0.85rem;
-    color: var(--font-color-body);
-    margin: 0;
   }
 
   /* Optional: a basic no-JS fallback so it doesn’t look broken if JS is off */
@@ -130,13 +100,6 @@ const worksWithImages = sortedWorks.map((work) => ({
       --grid-cols: 5;
     }
   }
-
-  @media (min-width: 767px) {
-    .text-content h3 {
-      font-weight: 500;
-      letter-spacing: 0.4px;
-    }
-  }
 </style>
 
 <script>
@@ -146,7 +109,6 @@ const worksWithImages = sortedWorks.map((work) => ({
     minItemWidth: number;
     gapCol: number;
     gapRow: number;
-    fullBleed: boolean;
     outerGutter: number;
     updateSizesAttr: boolean;
   }
@@ -167,7 +129,6 @@ const worksWithImages = sortedWorks.map((work) => ({
         minItemWidth: 260,
         gapCol: 16,
         gapRow: 80,
-        fullBleed: readBool(grid.dataset.fullBleed, true),
         outerGutter: num(grid.dataset.outerGutter, 16),
         updateSizesAttr: true, // update <img sizes> for optimal srcset choice
         ...readDataset(grid),
@@ -177,7 +138,6 @@ const worksWithImages = sortedWorks.map((work) => ({
       grid.style.setProperty("--gap-col", `${cfg.gapCol}px`);
       grid.style.setProperty("--gap-row", `${cfg.gapRow}px`);
       grid.style.setProperty("--outer-gutter", `${cfg.outerGutter}px`);
-      grid.dataset.fullBleed = String(!!cfg.fullBleed);
 
       const ro = new ResizeObserver(() => {
         // clientWidth includes padding; perfect for track calculation.
@@ -195,13 +155,11 @@ const worksWithImages = sortedWorks.map((work) => ({
         // Optional: keep browser picking correct src from your <Picture> srcset.
         if (cfg.updateSizesAttr) {
           const trackWidth = (width - cfg.gapCol * (cols - 1)) / cols;
-          // Update every img with .list-image inside the grid (works for <picture> too)
-          grid
-            .querySelectorAll("img.list-image")
-            .forEach((img: HTMLImageElement) => {
-              const px = Math.max(1, Math.round(trackWidth));
-              if (img.sizes !== `${px}px`) img.sizes = `${px}px`;
-            });
+          // Update every img inside the grid
+          grid.querySelectorAll("img").forEach((img: HTMLImageElement) => {
+            const px = Math.max(1, Math.round(trackWidth));
+            if (img.sizes !== `${px}px`) img.sizes = `${px}px`;
+          });
         }
       });
 
@@ -216,10 +174,6 @@ const worksWithImages = sortedWorks.map((work) => ({
     function num(v: string | undefined, fallback: number): number {
       const n = Number(v);
       return Number.isFinite(n) ? n : fallback;
-    }
-    function readBool(v: string | undefined, fallback: boolean): boolean {
-      if (v == null) return fallback;
-      return String(v).toLowerCase() === "true";
     }
     function readDataset(el: HTMLElement): Partial<GridConfig> {
       const d = el.dataset;
