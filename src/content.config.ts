@@ -9,7 +9,9 @@ const work = defineCollection({
       year: z.number(),
       keywords: z.array(z.string()),
       description_jp: z.string(),
+      description_en: z.string(),
       meta_jp: z.string(),
+      meta_en: z.string(),
       footer: z.string().optional(),
       pin: z.array(z.string()).optional(),
     });

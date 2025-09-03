@@ -1,59 +1,79 @@
-## TODO:
+# AWWP
 
-- High res images
-- Home description
-- Home content
-- Works description
-- About description
-- Pin image
+## TODO
 
-## Usage
+* 高解像度の画像を使用するよう切り替える
+* ホームの説明文を調整する
+* ホームのコンテンツを調整する
+* 作品の説明文を調整する
+* About の説明文を調整する
+* 各作品にピン留め画像を設定する
 
-### Environment Setup
+---
 
-This project requires Bun to run. Install Bun from below:
-https://bun.com
+## 使い方
 
-For content adjustment locally, run the following command:
-```
-bun dev
-```
+### 環境構築
 
-Website will automatically be built and updated on Vercel once changes are committed to GitHub. Changes usually takes 30s ~ 6mins depending on if images are regenerated. If changes are not reflected, it can be:
-- changes are not pushed to GitHub
-- There is an error in the build process
+このプロジェクトを実行するには [Bun](https://bun.com) が必要です。
 
-To verify if there was any build error, either check the build log on Vercel, or try building locally with the following command and see how it goes:
-```
-bun build
+まず Bun をインストールし、その後ローカルでコンテンツを調整する場合は以下を実行します：
+
+```bash
+bun run dev
 ```
 
-Some common errors:
-- Artwork data is saved in yaml format. Make sure yaml is valid. Common issue can be 全角 in where it should be 半角
+変更が GitHub にコミットされると、ウェブサイトは自動的に Vercel 上でビルド・デプロイされます。
+ビルド時間は通常 30 秒から 6 分程度で、画像が再生成されるかどうかによって異なります。
 
-## Features
+更新が反映されない場合、考えられる原因は以下の通りです：
 
-### Artwork
+* 変更が GitHub にプッシュされていない
+* ビルドプロセス中にエラーが発生した
 
-Each artwork should be in its own folder, with `index.yaml` as its data. Images related to artwork can be put in the folder.
+ビルドエラーを確認するには：
 
-For image names, ideally keep it to alphabet and underscore, and avoid characters like space to keep it safe. The site generator will automatically generate multiple resolutions of images so it has the optimal resolution on different screen sizes while avoiding loading unnecessary file sizes. Original images should be high res if possible. Up to 4K should be sufficient though.
+* Vercel のビルドログを確認する
+* またはローカルで以下を実行する
 
-Just to avoid unnecessary file size, it is recommended to run image compression once for all original images. On mac the following application is recommended. It has lossless option for compression.
-https://imageoptim.com/mac
+```bash
+bun run build
+```
 
-For `index.yaml`, it supports the following fields:
+#### よくある問題
 
-title: z.string(),
-year: z.number(),
-keywords: z.array(z.string()),
-description_jp: z.string(),
-meta_jp: z.string(),
-footer: z.string().optional(),
-pin: z.array(z.string()).optional()
+* 作品データは YAML で管理されています。必ず YAML が正しい形式であることを確認してください。
+* よくあるエラーは、半角文字ではなく全角文字を使用してしまうことです。
 
+---
 
-Sample:
+## 機能
+
+### 作品 (Artwork)
+
+各作品は専用のフォルダに保存されます。フォルダ内には `index.yaml` ファイルがあり、メタデータを記述します。また、作品画像ファイルもここに置きます。
+
+* **フォルダ名**: 作品 ID になります（トップページや `https://akirawakita.com/works/[WORK_ID]` の URL に使用）。
+* **画像ファイル名**: 英字とアンダースコアのみを使用し、スペースや特殊文字は避けてください。
+* **解像度**: サイト生成時に自動的に複数解像度を生成し、デバイスごとの読み込みを最適化します。オリジナル画像は高解像度（最大 4K 程度で十分）を用意してください。
+* **非表示画像**: ファイル名を `_` で始めると作品詳細ページには表示されません。ただしトップページからは参照できます。
+* **圧縮**: コミット前にオリジナル画像を圧縮してください。macOS では [ImageOptim](https://imageoptim.com/mac) の使用を推奨します（可逆圧縮対応）。
+
+#### `index.yaml` のフィールド
+
+作品のメタデータは以下のフィールドをサポートします：
+
+* **title**: 作品タイトル（文字列）
+* **year**: 制作年（数値）
+* **keywords**: キーワードのリスト（文字列の配列）
+* **description\_jp**: 日本語での作品説明（文字列、複数行対応）
+* **description\_en**: 英語での作品説明（文字列、複数行対応）
+* **meta\_jp**: 日本語でのメタデータ（展示情報やクレジット等、複数行対応）
+* **meta\_en**: 英語でのメタデータ（展示情報やクレジット等、複数行対応）
+* **footer**: 任意のフッターテキスト（文字列、複数行対応）
+* **pin**: ピン留め画像のリスト。拡張子を除いたファイル名で指定（文字列の配列）
+
+#### `index.yaml` のサンプル
 
 ```yaml
 title: Over Billions of Years
@@ -63,25 +83,16 @@ year: 2024
 description_en: ""
 description_jp: |-
   果てなく続く大地の変遷。そのダイナミクスを8K映像と音場合成技術により体感する
-
-  「人間が10億年生きることができたら、大地が流体のように振る舞う様子に立ち会えるのではないだろうか」。悠久の時間の中で展開される大地の脈動や呼吸を聞き、大地のその新陳代謝に立ち合いたい。本作はそんな思いに端を発しています。作家は氷河期、間氷期、大地の砂漠化、森林化、河川の生成、島の生成、人工物の生成など、数千年から億年単位で推移するさまざまな段階を、1つの数理モデルを用いてシミュレーションし、高精細な映像表現と音像表現で可視聴化します。大地はどのように生まれ、変化していくのか。文明が生まれて衰退していく過程はどのようなものか。自然と人工はどのように接続されるのか−。8K映像と音場合成技術による新たな音響表現がもたらす空間のなかに、根源的な問いが浮かび上がります。
-
-  （札幌国際芸術祭 解説より）
+  ...
 meta_en: |-
   ## EXHIBITION
-
   - Sapporo International Art Festival, Moerenuma Park, Sapporo, 2024
-
   ## CREDIT
-
   Akira Wakita in collaboration with NHK Science & Technology Research Laboratories, with the support of Astrodesign Inc.
 meta_jp: |-
   ## 展示
-
   - 札幌国際芸術祭, モエレ沼公園, 2024
-
   ## クレジット
-
   Akira Wakita in collaboration with NHK Science & Technology Research Laboratories, with the support of Astrodesign Inc.
 footer: |-
   撮影クレジット
@@ -92,6 +103,49 @@ pin:
   - overbillions_02
 ```
 
-`|-` is for multi-line text in yaml. For `pin`, it requires image file name without file extension.
+*注意*: YAML で複数行テキストを扱う場合は `|-` を使用します。
 
-###
+---
+
+### トップページ
+
+* ファイル: `src/pages/index.astro`
+* HTML に似た形式で記述されています。
+* 使用できるコンポーネントは **`LongImage`** と **`MultiImage`** の 2 種類です。
+
+**LongImage**
+
+* 作品 ID と画像（`WORK_ID:IMAGE_NAME`）が必要です。
+* 任意でモバイル用画像の配列を追加できます。
+
+**MultiImage**
+
+* 作品 ID と画像の配列が必要です。
+* 任意で `positions` 配列（0–1 の数値）を指定して配置を決められます。配列の数が画像より少ない場合、余った画像は中央に配置されます。
+
+例:
+
+```html
+  <LongImage
+    id="dismantle"
+    image={img("dismantle:dismantle_top")}
+    mobile={[img("dismantle:dismantle_thumb"), img("dismantle:dismantle_02")]}
+  />
+  <MultiImage
+    id="clair"
+    images={[
+      img("clair:clair_01"),
+      img("clair:clair_02"),
+      img("clair:ikebukuro_thumb"),
+      img("clair:clair_back"),
+    ]}
+    positions={[0.5, 1, 0.1]}
+  />
+```
+
+---
+
+### About ページ
+
+* ファイル: `src/pages/about.md`
+* Markdown 形式で記述されています。
