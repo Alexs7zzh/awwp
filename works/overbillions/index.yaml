@@ -45,10 +45,10 @@ meta_jp: |-
   - Technical Coordinator : KOTOMI WATANABE (NHK TECHNOLOGIES, Inc.)
   - 8K Direction : JIN SATO, KOHEI HAYAKAWA
   - Special Thanks to : MASARU MIYAZAKI, IKUKO SAWAYA
-# footer: |-
-#   撮影クレジット
-#   - Concept / Direction : AKIRA WAKITA
-#   - Visual Software Development : YUKI KUWASHIMA
+footer: |-
+  撮影クレジット
+  - Concept / Direction : AKIRA WAKITA
+  - Visual Software Development : YUKI KUWASHIMA
 pin:
   - overbillions_01
   - overbillions_02
