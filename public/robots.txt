@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://akirawakita.com/sitemap-index.xml

@@ -6,5 +6,6 @@ export default defineConfig({
   prefetch: {
     defaultStrategy: "viewport",
   },
+  site: "https://akirawakita.com",
   integrations: [sitemap()],
 });
