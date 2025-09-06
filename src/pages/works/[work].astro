@@ -42,7 +42,7 @@ const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
 const remainingPinned = pinnedImages.slice(1);
 ---
 
-<BaseLayout title=`Akira Wakita - ${work.data.title}`>
+<BaseLayout title=`Akira Wakita - ${work.data.title}` description={work.data.description_jp} image={pinnedImages.length > 0 ? pinnedImages[0] : unpinnedImages[0]}>
   <article>
     <header aria-labelledby="work-title">
       <h1 id="work-title">{work.data.title}</h1>

@@ -1,23 +1,50 @@
 ---
 import Header from "@components/Header.astro";
 
-const { title = "Akira Wakita" } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  image?: ImageMetadata | null;
+}
+const { title = "Akira Wakita", description = "", image = null } = Astro.props as Props;
+
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+
     <title>{title}</title>
-    <slot name="head" />
+    <meta name="description" content={description}>
+    <link rel="canonical" href={canonicalURL}>
+
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:url" content={canonicalURL}>
+
+    {
+      image && (
+        <>
+          <meta property="og:image" content={image.src}>
+          <meta name="twitter:card" content="summary_large_image">
+        </>
+      )
+    }
+
+    <!-- <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"> -->
   </head>
   <body>
     <Header />
