@@ -246,7 +246,8 @@ class ImageStore {
 let _instance: ImageStore | undefined;
 
 export function getImageStore(): ImageStore {
-  if (!_instance) _instance = new ImageStore();
+  if (import.meta.env.DEV) return new ImageStore(); // rebuild on each import in dev
+  if (!_instance) _instance = new ImageStore();     // cache in prod/build
   return _instance;
 }
 export const imageStore = getImageStore();

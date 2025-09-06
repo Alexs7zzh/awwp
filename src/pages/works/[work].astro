@@ -18,6 +18,16 @@ const work = Astro.props;
 // Get image records to access IDs for pinning
 const imageRecords = imageStore.requireByWork(work.id);
 
+// Build a case-insensitive set of available basenames
+const available = new Set(imageRecords.map(r => r.id.toLowerCase()));
+const missingPins = (work.data.pin ?? []).filter(id => !available.has(id.toLowerCase()));
+if (missingPins.length > 0) {
+  const known = imageRecords.map(r => r.id).join(", ");
+  throw new Error(
+    `[work:${work.id}] Unknown pinned id(s): ${missingPins.join(", ")}. Known ids: ${known}`
+  );
+}
+
 // Extract pinned IDs
 const pinSet = new Set((work.data.pin ?? []).map((id) => id.trim()));
 
