@@ -50,9 +50,12 @@ const keywords = Array.isArray(keywordsRaw)
 
 const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
 const remainingPinned = pinnedImages.slice(1);
+
+const firstParagraph = work.data.description_jp.split(/\n\s*\n/)[0].trim();
+const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
 ---
 
-<BaseLayout title=`Akira Wakita - ${work.data.title}` description={work.data.description_jp} image={pinnedImages.length > 0 ? pinnedImages[0] : unpinnedImages[0]}>
+<BaseLayout title=`Akira Wakita - ${work.data.title}` description={firstParagraph} image={firstImage}>
   <article>
     <header aria-labelledby="work-title">
       <h1 id="work-title">{work.data.title}</h1>
