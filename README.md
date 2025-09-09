@@ -2,11 +2,12 @@
 
 ## TODO
 
-* 高解像度画像を使用するように切り替える
-* Home、Works、About の説明文を調整する
-* Home のコンテンツを調整する
-* 各作品にピン画像を設定する
-* 一部の作品に英語または日本語の説明が不足している（async、cognition、crosssection、gem、insect、jomonverse、moment、overbillions、raydrawing、religion、science、sfos）
+* ウェブサイトのアイコンを追加する
+* 高解像度の画像に切り替える
+* トップページ、作品ページ、Aboutページの説明文を調整する
+* トップページのコンテンツを調整する
+* 各作品にピン留め画像を設定する
+* 一部の作品に英語または日本語の説明が未入力（対象作品：async、cognition、crosssection、gem、insect、jomonverse、moment、overbillions、raydrawing、religion、science、sfos）
 
 ---
 
