@@ -1,0 +1,32 @@
+---
+export interface Props {
+  src: string;
+  index?: number;
+}
+
+const { src, index } = Astro.props;
+
+const u = new URL(src);
+const isYouTube = u.hostname.includes("youtube.com") && u.pathname.startsWith("/embed/");
+const isVimeo = u.hostname === "player.vimeo.com" && u.pathname.startsWith("/video/");
+
+if (!isYouTube && !isVimeo) {
+  throw new Error(`Unsupported video URL: ${src}`);
+}
+
+const title =
+  (isYouTube ? "YouTube video" : "Vimeo video") + (index != null ? ` #${index + 1}` : "");
+const allow = isYouTube
+  ? "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  : "autoplay; fullscreen; picture-in-picture; clipboard-write";
+---
+
+<iframe
+  src={src}
+  title={title}
+  loading="lazy"
+  allow={allow}
+  referrerpolicy={isYouTube ? "strict-origin-when-cross-origin" : undefined}
+  allowfullscreen
+  style="width:100%; aspect-ratio:16/9; border:0;">
+</iframe>

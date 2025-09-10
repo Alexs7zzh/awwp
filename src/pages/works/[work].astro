@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import VideoEmbed from "@components/Video.astro";
 import { marked } from "marked";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
@@ -70,6 +71,7 @@ const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0]
         }
       </div>
     </header>
+
     <!-- First pinned image before description -->
     {
       firstPinned && (
@@ -109,6 +111,12 @@ const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0]
       class="text-block-content"
       set:html={marked.parse(work.data.meta_jp)}
     />
+
+    {work.data.videos && work.data.videos.length > 0 && (
+      <section aria-label="Videos" class="space-y-8">
+        {work.data.videos.map((url, i) => <VideoEmbed src={url} index={i} />)}
+      </section>
+    )}
 
     <!-- Remaining pinned images grid (always 1 column) -->
     {

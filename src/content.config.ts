@@ -14,6 +14,7 @@ const work = defineCollection({
       meta_en: z.string(),
       footer: z.string().optional(),
       pin: z.array(z.string()).optional(),
+      videos: z.array(z.string()).optional(),
     });
   },
 });
