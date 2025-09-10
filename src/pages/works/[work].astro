@@ -20,12 +20,14 @@ const work = Astro.props;
 const imageRecords = imageStore.requireByWork(work.id);
 
 // Build a case-insensitive set of available basenames
-const available = new Set(imageRecords.map(r => r.id.toLowerCase()));
-const missingPins = (work.data.pin ?? []).filter(id => !available.has(id.toLowerCase()));
+const available = new Set(imageRecords.map((r) => r.id.toLowerCase()));
+const missingPins = (work.data.pin ?? []).filter(
+  (id) => !available.has(id.toLowerCase()),
+);
 if (missingPins.length > 0) {
-  const known = imageRecords.map(r => r.id).join(", ");
+  const known = imageRecords.map((r) => r.id).join(", ");
   throw new Error(
-    `[work:${work.id}] Unknown pinned id(s): ${missingPins.join(", ")}. Known ids: ${known}`
+    `[work:${work.id}] Unknown pinned id(s): ${missingPins.join(", ")}. Known ids: ${known}`,
   );
 }
 
@@ -53,10 +55,31 @@ const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
 const remainingPinned = pinnedImages.slice(1);
 
 const firstParagraph = work.data.description_jp.split(/\n\s*\n/)[0].trim();
-const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
+const firstImage =
+  firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
 ---
 
-<BaseLayout title=`Akira Wakita - ${work.data.title}` description={firstParagraph} image={firstImage}>
+<BaseLayout
+  title=`Akira Wakita - ${work.data.title}`
+  description={firstParagraph}
+>
+  <Fragment slot="meta">
+    {
+      firstImage != null && (
+        <>
+          <meta property="og:image" content={firstImage.src} />
+          <meta name="twitter:card" content="summary_large_image" />
+        </>
+      )
+    }
+
+    {
+      work.data.videos && work.data.videos.length > 0 && (
+        <meta property="og:video" content={work.data.videos[0]} />
+      )
+    }
+  </Fragment>
+
   <article>
     <header aria-labelledby="work-title">
       <h1 id="work-title">{work.data.title}</h1>
@@ -112,11 +135,15 @@ const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0]
       set:html={marked.parse(work.data.meta_jp)}
     />
 
-    {work.data.videos && work.data.videos.length > 0 && (
-      <section aria-label="Videos" class="space-y-8">
-        {work.data.videos.map((url, i) => <VideoEmbed src={url} index={i} />)}
-      </section>
-    )}
+    {
+      work.data.videos && work.data.videos.length > 0 && (
+        <section aria-label="Videos" class="space-y-8">
+          {work.data.videos.map((url, i) => (
+            <VideoEmbed src={url} index={i} />
+          ))}
+        </section>
+      )
+    }
 
     <!-- Remaining pinned images grid (always 1 column) -->
     {
