@@ -5,16 +5,22 @@ import { marked } from "marked";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
 import { Picture } from "astro:assets";
+import { LOCALES } from "@lib/i18n";
 
 export async function getStaticPaths() {
   const works = await getCollection("work");
-  return works.map((entry) => ({
-    params: { work: entry.id },
-    props: entry,
-  }));
+
+  return LOCALES.flatMap((lang) =>
+    works.map((entry) => ({
+      params: { lang, work: entry.id },
+      props: { lang, ...entry },
+    }))
+  );
 }
 
 const work = Astro.props;
+const description = Astro.currentLocale == 'en' ? work.data.description_en : work.data.description_jp;
+const meta = Astro.currentLocale == 'en' ? work.data.meta_en : work.data.meta_jp;
 
 // Get image records to access IDs for pinning
 const imageRecords = imageStore.requireByWork(work.id);
@@ -54,9 +60,8 @@ const keywords = Array.isArray(keywordsRaw)
 const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
 const remainingPinned = pinnedImages.slice(1);
 
-const firstParagraph = work.data.description_jp.split(/\n\s*\n/)[0].trim();
-const firstImage =
-  firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
+const firstParagraph = description.split(/\n\s*\n/)[0].trim();
+const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
 ---
 
 <BaseLayout
@@ -122,17 +127,17 @@ const firstImage =
     }
 
     {
-      work.data.description_jp && (
+      description && (
         <div
           class="text-block-content intro"
-          set:html={marked.parse(work.data.description_jp)}
+          set:html={marked.parse(description)}
         />
       )
     }
 
     <div
       class="text-block-content"
-      set:html={marked.parse(work.data.meta_jp)}
+      set:html={marked.parse(meta)}
     />
 
     {

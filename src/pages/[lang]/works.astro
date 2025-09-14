@@ -3,6 +3,11 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
+import { LOCALES } from "@lib/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }));
+}
 
 const sortedWorks = await getCollection("work").then((entries) =>
   entries.sort((a, b) => b.data.year - a.data.year),

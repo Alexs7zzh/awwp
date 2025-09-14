@@ -3,6 +3,11 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import LongImage from "@components/LongImage.astro";
 import MultiImage from "@components/MultiImage.astro";
 import { imageStore } from "@lib/imageStore";
+import { LOCALES } from "@lib/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }));
+}
 
 const img = (id: string) => imageStore.requireImage(id);
 ---

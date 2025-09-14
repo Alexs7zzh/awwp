@@ -1,0 +1,14 @@
+---
+import { getRelativeLocaleUrl, getLocaleByPath } from "astro:i18n";
+import type { Locale } from "@lib/i18n";
+
+const current = (getLocaleByPath(Astro.url.pathname) || "en") as Locale;
+const other: Locale = current === "en" ? "ja" : "en";
+
+const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|ja)(?=\/|$)/, "");
+const target = getRelativeLocaleUrl(other, pathWithoutLang || "") + Astro.url.search;
+---
+
+<nav aria-label="Language">
+  <a href={target}>{current === "ja" ? "English" : "日本語"}</a>
+</nav>
