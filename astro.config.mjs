@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://akirawakita.com",
+  site: "https://awwp.vercel.com",
   i18n: {
     locales: ["en", "ja"],
     defaultLocale: "en",
@@ -18,7 +18,7 @@ export default defineConfig({
           ja: "ja-JP",
         },
       },
-      filter: (page) => page !== "https://akirawakita.com/",
+      filter: (page) => page !== "https://awwp.vercel.com/",
       serialize(item) {
         const u = new URL(item.url);
         const unlocalized =
