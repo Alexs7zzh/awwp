@@ -103,11 +103,7 @@ if (!isMobileArray && mobile) {
       </>
     )
   }
-  <TextInfo
-    id={work.id}
-    title={work.data.title}
-    description={work.data.description_jp}
-  />
+  <TextInfo id={work.id} work={work} />
 </article>
 
 <style>

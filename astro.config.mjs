@@ -21,10 +21,13 @@ export default defineConfig({
       filter: (page) => page !== "https://akirawakita.com/",
       serialize(item) {
         const u = new URL(item.url);
-        const unlocalized = u.pathname.replace(/^\/(?:en|ja)(?=\/|$)/, "") || "/";
+        const unlocalized =
+          u.pathname.replace(/^\/(?:en|ja)(?=\/|$)/, "") || "/";
         const xDefault = new URL(`/en${unlocalized}`, u.origin).toString();
 
-        const existing = new Map((item.links ?? []).map((l) => [l.lang, l.url]));
+        const existing = new Map(
+          (item.links ?? []).map((l) => [l.lang, l.url]),
+        );
         existing.set("x-default", xDefault);
 
         item.links = Array.from(existing, ([lang, url]) => ({ lang, url }));

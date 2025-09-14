@@ -67,15 +67,17 @@ const currentOgLocale =
         .map((l) => <meta property="og:locale:alternate" content={ogLocaleMap[l]} />)
     }
 
-    <script type="application/ld+json">
-      {JSON.stringify({
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebPage",
         inLanguage: Astro.currentLocale,
         name: title,
         description,
         url: canonicalURL.toString(),
-      })}
+      })}>
     </script>
 
     <slot name="meta" />

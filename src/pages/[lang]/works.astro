@@ -4,6 +4,7 @@ import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
 import { LOCALES } from "@lib/i18n";
+import L from "@components/LocalizedLink.astro";
 
 export function getStaticPaths() {
   return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }));
@@ -33,7 +34,7 @@ const worksWithImages = sortedWorks.map((work) => ({
     {
       worksWithImages.map((work) =>
         work.images.map((img) => (
-          <a
+          <L
             href={`/works/${work.workId}`}
             aria-labelledby={`work-title-${work.workId}`}
           >
@@ -46,7 +47,7 @@ const worksWithImages = sortedWorks.map((work) => ({
               loading="lazy"
               fetchpriority="auto"
             />
-          </a>
+          </L>
         )),
       )
     }

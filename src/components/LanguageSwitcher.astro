@@ -6,7 +6,8 @@ const current = (getLocaleByPath(Astro.url.pathname) || "en") as Locale;
 const other: Locale = current === "en" ? "ja" : "en";
 
 const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|ja)(?=\/|$)/, "");
-const target = getRelativeLocaleUrl(other, pathWithoutLang || "") + Astro.url.search;
+const target =
+  getRelativeLocaleUrl(other, pathWithoutLang || "") + Astro.url.search;
 ---
 
 <nav aria-label="Language">

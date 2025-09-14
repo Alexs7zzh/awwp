@@ -1,28 +1,25 @@
 import { defineMiddleware, sequence } from "astro:middleware";
 import { middleware as astroI18n } from "astro:i18n";
 import type { AstroCookies } from "astro";
-import { LOCALES, DEFAULT_LOCALE, type Locale } from "@lib/i18n";
+import {
+  isSupportedLocale,
+  withLang,
+  DEFAULT_LOCALE,
+  type Locale,
+} from "@lib/i18n";
 
 const LANG_COOKIE = "lang";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
-function isSupportedLocale(x?: string | null): x is Locale {
-  return !!x && (LOCALES as readonly string[]).includes(x as Locale);
-}
 function isSkippablePath(pathname: string) {
   if (pathname.startsWith("/_astro/")) return true;
   if (/\.[a-z0-9]+$/i.test(pathname)) return true;
   return false;
 }
-function withLang(pathname: string, lang: Locale) {
-  const segs = pathname.split("/");
-  if (isSupportedLocale(segs[1])) {
-    segs[1] = lang;
-    return segs.join("/");
-  }
-  return pathname === "/" ? `/${lang}/` : `/${lang}${pathname}`;
-}
-function pickFromAcceptLanguage(header: string | null | undefined): Locale | null {
+
+function pickFromAcceptLanguage(
+  header: string | null | undefined,
+): Locale | null {
   if (!header) return null;
   const candidates = header
     .split(",")
@@ -33,9 +30,11 @@ function pickFromAcceptLanguage(header: string | null | undefined): Locale | nul
       return { base, q: Number.isFinite(q) ? q : 1 };
     })
     .sort((a, b) => b.q - a.q);
-  for (const c of candidates) if (isSupportedLocale(c.base)) return c.base as Locale;
+  for (const c of candidates)
+    if (isSupportedLocale(c.base)) return c.base as Locale;
   return null;
 }
+
 function setLangCookie(cookies: AstroCookies, lang: Locale) {
   cookies.set(LANG_COOKIE, lang, {
     path: "/",
@@ -53,7 +52,9 @@ const languageRouter = defineMiddleware(async (ctx, next) => {
   if (isSkippablePath(pathname)) return next();
 
   const [, maybeLang] = pathname.split("/");
-  const explicitLocale = isSupportedLocale(maybeLang) ? (maybeLang as Locale) : null;
+  const explicitLocale = isSupportedLocale(maybeLang)
+    ? (maybeLang as Locale)
+    : null;
 
   // 1) explicit URL wins (+ remember)
   if (explicitLocale) {
@@ -65,11 +66,16 @@ const languageRouter = defineMiddleware(async (ctx, next) => {
   // 2) cookie
   const cookieLocale = cookies.get(LANG_COOKIE)?.value;
   if (isSupportedLocale(cookieLocale)) {
-    return ctx.redirect(withLang(pathname, cookieLocale as Locale) + (search || ""), 307);
+    return ctx.redirect(
+      withLang(pathname, cookieLocale as Locale) + (search || ""),
+      307,
+    );
   }
 
   // 3) browser preference
-  const headerLocale = pickFromAcceptLanguage(request.headers.get("accept-language"));
+  const headerLocale = pickFromAcceptLanguage(
+    request.headers.get("accept-language"),
+  );
   if (headerLocale) {
     setLangCookie(cookies, headerLocale);
     return ctx.redirect(withLang(pathname, headerLocale) + (search || ""), 307);
@@ -86,5 +92,5 @@ export const onRequest = sequence(
     prefixDefaultLocale: true,
     redirectToDefaultLocale: false,
     fallbackType: "redirect",
-  })
+  }),
 );

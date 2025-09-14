@@ -1,21 +1,30 @@
 ---
 import { marked } from "marked";
+import type { CollectionEntry } from "astro:content";
+import L from "./LocalizedLink.astro";
+
 interface Props {
   id: string;
-  title: string;
-  description: string;
+  work: CollectionEntry<"work">;
 }
-const { id, title, description } = Astro.props;
+const { id, work } = Astro.props;
 ---
 
 <div class="text-info">
   <h2 id={`work-${id}-title`} class="title">
-    {title}
+    {work.data.title}
   </h2>
-  <div class="description" set:html={marked.parse(description)} />
-  <a href={`/works/${id}/`} aria-labelledby={`work-${id}-title}`}>
+  <div
+    class="description"
+    set:html={marked.parse(
+      Astro.currentLocale == "en"
+        ? work.data.description_en
+        : work.data.description_jp,
+    )}
+  />
+  <L href={`/works/${id}/`} aria-labelledby={`work-${id}-title}`}>
     View work →
-  </a>
+  </L>
 </div>
 
 <style>

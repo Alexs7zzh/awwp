@@ -59,8 +59,8 @@ Akira Wakita creates works that update the way we see the world by visualizing/s
 - Media Ambition Tokyo, Tokyo, 2019
 - School of the Future Festival - TOKYO MIDTOWN X ARS ELECTRONICA, Tokyo, 2019
 - ARIGATO SAKURAGAOKA Produced by Art Photo Tokyo, Shibuya, 2018
-- VENT,  Oya Histroy Museum, Tochigi, 2018
-- MUTEK,  Miraikan, Tokyo, 2018
+- VENT, Oya Histroy Museum, Tochigi, 2018
+- MUTEK, Miraikan, Tokyo, 2018
 - Seia Lee Soprano Recital - Grace Note 2018, Suntory Hall, Tokyo, 2018
 - Ars Electronica Festival, Gallery Spaces, Linz, 2018
 - Scalar Field of Cosmetics, Kanebo Cosmetics "LUNASOL" 2018 Autumn Collection, Tokyo, 2018
@@ -109,7 +109,6 @@ Akira Wakita creates works that update the way we see the world by visualizing/s
 - Entrance Examination Issues for the Year 2050, Nihon Keizai Shimbun Publishing, 2022
 - Access to Materials - Material Computing for Design, Art and Architecture, BNN, 2013
 - x-DESIGN, Keio University Press, 2013
-
 
 ## CONTACT
 

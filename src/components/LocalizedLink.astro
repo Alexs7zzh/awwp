@@ -1,0 +1,8 @@
+---
+import { withLang, type Locale } from "@lib/i18n";
+const lang = Astro.currentLocale as Locale;
+const { href, ...rest } = Astro.props as { href: string } & Record<string, any>;
+const localized = withLang(href, lang);
+---
+
+<a href={localized} {...rest}><slot /></a>

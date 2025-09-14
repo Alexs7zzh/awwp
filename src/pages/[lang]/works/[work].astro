@@ -14,13 +14,17 @@ export async function getStaticPaths() {
     works.map((entry) => ({
       params: { lang, work: entry.id },
       props: { lang, ...entry },
-    }))
+    })),
   );
 }
 
 const work = Astro.props;
-const description = Astro.currentLocale == 'en' ? work.data.description_en : work.data.description_jp;
-const meta = Astro.currentLocale == 'en' ? work.data.meta_en : work.data.meta_jp;
+const description =
+  Astro.currentLocale == "en"
+    ? work.data.description_en
+    : work.data.description_jp;
+const meta =
+  Astro.currentLocale == "en" ? work.data.meta_en : work.data.meta_jp;
 
 // Get image records to access IDs for pinning
 const imageRecords = imageStore.requireByWork(work.id);
@@ -61,7 +65,8 @@ const firstPinned = pinnedImages.length > 0 ? pinnedImages[0] : null;
 const remainingPinned = pinnedImages.slice(1);
 
 const firstParagraph = description.split(/\n\s*\n/)[0].trim();
-const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
+const firstImage =
+  firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
 ---
 
 <BaseLayout
@@ -135,10 +140,7 @@ const firstImage = firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0]
       )
     }
 
-    <div
-      class="text-block-content"
-      set:html={marked.parse(meta)}
-    />
+    <div class="text-block-content" set:html={marked.parse(meta)} />
 
     {
       work.data.videos && work.data.videos.length > 0 && (
