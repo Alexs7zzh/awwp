@@ -8,6 +8,7 @@ export default defineConfig({
     defaultLocale: "en",
     routing: "manual",
   },
+  trailingSlash: "always",
   integrations: [
     sitemap({
       i18n: {

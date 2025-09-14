@@ -90,6 +90,16 @@ const currentOgLocale =
     <div style="margin-top: 10rem;">
       <slot />
     </div>
+    <script>
+    (function () {
+      var seg = location.pathname.split('/')[1];
+      if (seg === 'en' || seg === 'ja') {
+        var attrs = 'Max-Age=31536000; Path=/; SameSite=Lax';
+        if (location.protocol === 'https:') attrs += '; Secure';
+        document.cookie = 'lang=' + seg + '; ' + attrs;
+      }
+    })();
+    </script>
   </body>
 </html>
 
