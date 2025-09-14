@@ -128,7 +128,7 @@ const target =
   /* -------- Language switcher -------- */
   .lang-switch {
     position: absolute; /* scrolls with the document */
-    top: var(--pad-top);
+    top: calc(var(--pad-top) + (var(--home-size) - 1em) / 2);
     right: var(--page-padding);
     z-index: 1001; /* stay above header for clickability */
     line-height: 1;
