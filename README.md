@@ -110,7 +110,7 @@ _注意_: YAML で複数行テキストを扱う場合は `|-` を使用しま�
 
 ### トップページ
 
-- ファイル: `src/pages/index.astro`
+- ファイル: `src/pages/[lang]/index.astro`
 - HTML に似た形式で記述されています。
 - 使用できるコンポーネントは **`LongImage`** と **`MultiImage`** の 2 種類です。
 
@@ -148,5 +148,5 @@ _注意_: YAML で複数行テキストを扱う場合は `|-` を使用しま�
 
 ### About ページ
 
-- ファイル: `src/pages/about.md`
+- ファイル: `src/pages/en/about.md`, `src/pages/ja/about.md`
 - Markdown 形式で記述されています。
