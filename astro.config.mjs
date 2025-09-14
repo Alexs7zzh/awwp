@@ -4,9 +4,13 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://awwp.vercel.com",
   i18n: {
-    locales: ["en", "ja"],
-    defaultLocale: "en",
-    routing: "manual",
+    locales: ['en', 'ja'],
+    defaultLocale: 'en',
+    routing: {
+      prefixDefaultLocale: true,
+      redirectToDefaultLocale: false,
+      fallbackType: 'redirect'
+    }
   },
   trailingSlash: "always",
   integrations: [
