@@ -1,6 +1,6 @@
 ---
 import L from "./LocalizedLink.astro";
-import { getRelativeLocaleUrl, getLocaleByPath } from "astro:i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import type { Locale } from "@lib/i18n";
 
 // Prefer Astro.currentLocale; fall back to path parsing; default to "en"
@@ -89,6 +89,7 @@ const target =
     padding: var(--pad-top) var(--page-padding) 0.5em;
     z-index: 1000;
     font-size: 1rem;
+    line-height: 1;
 
     color: white;
     background: transparent;
@@ -125,18 +126,16 @@ const target =
     transition: font-size 200ms ease;
   }
 
-  /* -------- Language switcher -------- */
   .lang-switch {
-    position: absolute; /* scrolls with the document */
+    position: absolute;
     top: calc(var(--pad-top) + (var(--home-size) - 1em) / 2);
     right: var(--page-padding);
-    z-index: 1001; /* stay above header for clickability */
+    z-index: 1001;
     line-height: 1;
     color: white;
     mix-blend-mode: difference;
   }
 
-  /* Make the non-link label match the link typography */
   .lang-switch span {
     text-transform: uppercase;
     font-size: var(--nav-size);
@@ -148,7 +147,6 @@ const target =
     margin: 0 0.25em;
   }
 
-  /* Visually de-emphasize current locale and prevent clicks/tab stops */
   .lang-switch [aria-current="true"] {
     opacity: 0.6;
     pointer-events: none;
@@ -161,7 +159,8 @@ const target =
       --home-size: 1.2em;
       --nav-gap: 1.25em;
     }
-    header {
+    header,
+    .lang-switch {
       font-size: 0.8rem;
     }
   }

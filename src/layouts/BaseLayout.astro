@@ -11,7 +11,7 @@ const { title = "Akira Wakita", description = "" } = Astro.props as Props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const ogLocaleMap: Record<(typeof LOCALES)[number], string> = {
+const ogLocaleMap: Record<typeof LOCALES[number], string> = {
   en: "en_US",
   ja: "ja_JP",
 };
