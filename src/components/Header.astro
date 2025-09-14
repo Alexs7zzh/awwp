@@ -1,14 +1,58 @@
 ---
 import L from "./LocalizedLink.astro";
+import { getRelativeLocaleUrl, getLocaleByPath } from "astro:i18n";
+import type { Locale } from "@lib/i18n";
+
+// Prefer Astro.currentLocale; fall back to path parsing; default to "en"
+const current = Astro.currentLocale as Locale;
+const other: Locale = current === "en" ? "ja" : "en";
+
+// Same path, other locale, preserve query string
+const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|ja)(?=\/|$)/, "");
+const target =
+  getRelativeLocaleUrl(other, pathWithoutLang || "") + Astro.url.search;
 ---
 
 <header>
   <L href="/" class="home">Akira Wakita</L>
-  <nav>
+  <nav class="site-nav">
     <L href="/works">Works</L>
     <L href="/about">About</L>
   </nav>
 </header>
+
+<!-- EN / JA — current locale is plain text, other is a link -->
+<nav class="lang-switch" aria-label="Language">
+  {
+    current === "en" ? (
+      <>
+        <span aria-current="true" lang="en">
+          EN
+        </span>
+        <span class="sep" aria-hidden="true">
+          {" "}
+          /{" "}
+        </span>
+        <a href={target} lang="ja" hreflang="ja">
+          JA
+        </a>
+      </>
+    ) : (
+      <>
+        <a href={target} lang="en" hreflang="en">
+          EN
+        </a>
+        <span class="sep" aria-hidden="true">
+          {" "}
+          /{" "}
+        </span>
+        <span aria-current="true" lang="ja">
+          JA
+        </span>
+      </>
+    )
+  }
+</nav>
 
 <style>
   /* -------- Base link styles -------- */
@@ -21,23 +65,25 @@ import L from "./LocalizedLink.astro";
     opacity: 0.7;
   }
 
-  /* -------- Header layout -------- */
-  header {
-    /* Animatable custom props (big state by default) */
-    --pad-top: 2em; /* distance from page edge (padding) */
-    --home-size: 1.5em; /* site title size */
-    --nav-size: 1em; /* nav links size */
-    --gap: 2em; /* space between title and nav */
-    --nav-gap: 1.5em; /* space between nav items */
+  /* Share custom props between header and language switcher */
+  :where(header, .lang-switch) {
+    --pad-top: 2em;
+    --home-size: 1.5em;
+    --nav-size: 1em;
+    --gap: 2em;
+    --nav-gap: 1.5em;
     --letter-spacing: 0.04em;
     --line-color: rgba(128, 128, 128, 0.35);
+  }
 
+  /* -------- Header layout (fixed) -------- */
+  header {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0; /* full width */
+    right: 0;
     display: flex;
-    justify-content: flex-start; /* was: space-between */
+    justify-content: flex-start;
     align-items: center;
     gap: var(--gap);
     padding: var(--pad-top) var(--page-padding) 0.5em;
@@ -48,7 +94,6 @@ import L from "./LocalizedLink.astro";
     background: transparent;
     mix-blend-mode: difference;
 
-    /* Smooth transitions for the shrink/grow effect + bg/line changes */
     transition:
       padding 200ms ease,
       gap 200ms ease,
@@ -67,25 +112,56 @@ import L from "./LocalizedLink.astro";
       letter-spacing 200ms ease;
   }
 
-  nav {
+  .site-nav {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: var(--nav-gap);
   }
 
-  nav a {
+  .site-nav a {
     font-size: var(--nav-size);
     font-weight: 300;
     transition: font-size 200ms ease;
   }
 
+  /* -------- Language switcher -------- */
+  .lang-switch {
+    position: absolute; /* scrolls with the document */
+    top: var(--pad-top);
+    right: var(--page-padding);
+    z-index: 1001; /* stay above header for clickability */
+    line-height: 1;
+    color: white;
+    mix-blend-mode: difference;
+  }
+
+  /* Make the non-link label match the link typography */
+  .lang-switch span {
+    text-transform: uppercase;
+    font-size: var(--nav-size);
+    font-weight: 300;
+    letter-spacing: var(--letter-spacing);
+  }
+
+  .lang-switch .sep {
+    margin: 0 0.25em;
+  }
+
+  /* Visually de-emphasize current locale and prevent clicks/tab stops */
+  .lang-switch [aria-current="true"] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
   /* -------- Mobile tweaks -------- */
   @media (max-width: 600px) {
-    header {
+    :where(header, .lang-switch) {
       --pad-top: 1em;
       --home-size: 1.2em;
       --nav-gap: 1.25em;
+    }
+    header {
       font-size: 0.8rem;
     }
   }
@@ -94,7 +170,8 @@ import L from "./LocalizedLink.astro";
   @media (prefers-reduced-motion: reduce) {
     header,
     .home,
-    nav a {
+    .site-nav a,
+    .lang-switch a {
       transition: none !important;
     }
   }

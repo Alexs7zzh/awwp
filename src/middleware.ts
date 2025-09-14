@@ -12,7 +12,8 @@ const LANG_COOKIE = "lang";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
 function isSkippablePath(pathname: string) {
-  if (pathname.startsWith("/_astro/")) return true;
+  if (pathname.startsWith("/_astro/") || pathname.startsWith("/_image"))
+    return true;
   if (/\.[a-z0-9]+$/i.test(pathname)) return true;
   return false;
 }
