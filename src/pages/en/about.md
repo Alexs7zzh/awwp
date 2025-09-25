@@ -5,7 +5,7 @@ title: About
 
 # PROFILE
 
-Wakita creates works that update the way we see the world by visualizing/sonifying/materializing forces that exist in front of us but cannot be perceived. His works have been exhibited at Kenninji Zen Temple, Ars Electronica Center, RedBull Music Festival, Mutek, WRO Art Center, SIGGRAPH, Kiyoharu Art Colony, Japan Media Arts Festival, Miraikan, Any Tokyo, Sapporo International Art Festival, etc. He is a professor at the Faculty of Environment and Information Studies, Keio University. Ph.D.(Media and Governance).
+Pursuing a new kind of expression where art and science coexist, aiming to “approach the essence of existence through form.” His works have been exhibited at Kenninji Zen Temple, Ars Electronica Center, RedBull Music Festival, Mutek, WRO Art Center, SIGGRAPH, Kiyoharu Art Colony, Japan Media Arts Festival, Miraikan, Any Tokyo, Sapporo International Art Festival, etc. He is a professor at the Faculty of Environment and Information Studies, Keio University. Ph.D.(Media and Governance).
 
 ## SOLO EXHIBITION
 

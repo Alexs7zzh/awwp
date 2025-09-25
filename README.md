@@ -82,7 +82,7 @@ bun run build
 ```yaml
 title: Over Billions of Years
 keywords:
-  - Audio Visual Installation with 128ch Line Array Speakers & 8K Movie
+  - Audio Visual Installation with 128ch Line Array Speakers and 8K Movie
 year: 2024
 description_en: ""
 description_jp: |-
