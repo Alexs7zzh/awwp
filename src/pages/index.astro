@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <noscript><meta http-equiv="refresh" content="0;url=/en/" /></noscript>
+  </head>
+  <body>
+    <script is:inline>
+      (function () {
+        var locales = { en: true, ja: true };
+
+        function cookie(name) {
+          var m = document.cookie.match(
+            new RegExp("(?:^|;\\s*)" + name + "=([^;]+)"),
+          );
+          return m ? decodeURIComponent(m[1]) : null;
+        }
+
+        function pickLang() {
+          var c = cookie("lang");
+          if (c && locales[c]) return c;
+          var langs = (navigator.languages || [navigator.language || ""])
+            .join(",")
+            .toLowerCase();
+          if (/\bja\b/.test(langs)) return "ja";
+          if (/\ben\b/.test(langs)) return "en";
+          return "en";
+        }
+
+        var path = location.pathname;
+        var hasPrefix = /^\/(en|ja)(?:\/|$)/.test(path);
+        var isFile = /\.\w+$/.test(path);
+        var isAsset =
+          path.startsWith("/_astro/") || path.startsWith("/_image/");
+
+        if (!hasPrefix && !isFile && !isAsset) {
+          if (!path.endsWith("/")) path += "/";
+          var lang = pickLang();
+          location.replace("/" + lang + path);
+        }
+      })();
+    </script>
+  </body>
+</html>

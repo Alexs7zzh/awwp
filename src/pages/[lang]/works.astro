@@ -35,7 +35,7 @@ const worksWithImages = sortedWorks.map((work) => ({
       worksWithImages.map((work) =>
         work.images.map((img) => (
           <L
-            href={`/works/${work.workId}`}
+            href={`/works/${work.workId}/`}
             aria-labelledby={`work-title-${work.workId}`}
           >
             <Picture
