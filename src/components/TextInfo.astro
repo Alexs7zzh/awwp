@@ -64,7 +64,14 @@ const { id, work } = Astro.props;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: scroll;
+    scrollbar-gutter: stable;
   }
+
+  .description::-webkit-scrollbar-track,
+  .description::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
   /* bottom-right CTA that feels like your title text */
   a {
     align-self: flex-end; /* right align */
