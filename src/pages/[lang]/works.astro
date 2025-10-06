@@ -56,15 +56,13 @@ const worksWithImages = sortedWorks.map((work) => ({
 
 <style>
   .work-grid {
-    /* configurable via JS / data-attrs */
     --grid-cols: 2;
     --gap-col: 1rem;
     --gap-row: 8rem;
     --outer-gutter: 16px;
 
     inline-size: 100%;
-    margin-block: 10rem; /* keep your vertical rhythm */
-    margin-inline: 0; /* never create extra outer margins */
+    margin-inline: 0;
     padding-inline: var(--outer-gutter);
 
     display: grid;
