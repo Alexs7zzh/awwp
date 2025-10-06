@@ -3,22 +3,24 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "bun install",
     "dev": "astro dev",
+    "prebuild": "bun install",
     "build": "astro build",
     "preview": "astro preview",
     "format": "bunx prettier . --write \"!**/*.{jpg,jpeg,png}\" \"!bun.lock\""
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.5.1",
+    "@astrojs/sitemap": "^3.6.0",
     "@astrojs/ts-plugin": "^1.10.4",
-    "astro": "^5.13.7",
+    "astro": "^5.14.1",
     "marked": "^16.3.0",
-    "sharp": "^0.34.3",
-    "zod": "^4.1.8"
+    "sharp": "^0.34.4",
+    "zod": "^4.1.11"
   },
   "packageManager": "bun@1.2.21",
   "devDependencies": {
-    "@types/bun": "^1.2.22",
+    "@types/bun": "^1.2.23",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1"
   }
