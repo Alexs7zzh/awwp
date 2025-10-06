@@ -22,7 +22,7 @@ const { id, work } = Astro.props;
         : work.data.description_jp,
     )}
   />
-  <L href={`/works/${id}/`} aria-labelledby={`work-${id}-title}`}>
+  <L href={`/works/${id}/`} aria-labelledby={`work-${id}-title`}>
     View work →
   </L>
 </div>
@@ -119,7 +119,6 @@ const { id, work } = Astro.props;
     }
     .description {
       overflow: hidden;
-
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 6;
