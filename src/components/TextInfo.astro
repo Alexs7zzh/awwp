@@ -29,20 +29,17 @@ const { id, work } = Astro.props;
 
 <style>
   .text-info {
-    /* spacing & color */
     text-decoration: none;
     color: inherit;
     margin: 0 2rem;
     padding: 0;
     flex-grow: 1;
-    /* --- CSS pinning (no JS) --- */
     position: sticky;
-    top: 2rem; /* distance from top while pinned */
-    align-self: flex-start; /* required for sticky inside flex rows */
+    top: 2rem;
+    align-self: flex-start;
     height: calc(100vh - 2 * 2rem);
     box-sizing: border-box;
-    overflow: auto;
-    /* layout for CTA at bottom-right */
+    overflow: visible;
     display: flex;
     flex-direction: column;
   }
@@ -61,10 +58,14 @@ const { id, work } = Astro.props;
     line-height: 1.6;
     font-size: 0.8rem;
     color: var(--font-color-body);
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: scroll;
-    scrollbar-gutter: stable;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: auto;
   }
 
   .description::-webkit-scrollbar-track,
@@ -72,10 +73,9 @@ const { id, work } = Astro.props;
     background: transparent;
   }
 
-  /* bottom-right CTA that feels like your title text */
   a {
-    align-self: flex-end; /* right align */
-    margin-top: auto; /* push to bottom when there's extra space */
+    align-self: flex-end;
+    margin-top: auto;
     display: inline-block;
     position: relative;
     padding-top: 1rem;
@@ -100,6 +100,13 @@ const { id, work } = Astro.props;
   a:hover::after {
     width: 100%;
   }
+
+  @media (min-width: 768px) {
+    .description {
+      display: block;
+    }
+  }
+
   @media (max-width: 767px) {
     a {
       padding-top: 0.5rem;
@@ -111,8 +118,11 @@ const { id, work } = Astro.props;
       margin: 0 1rem;
     }
     .description {
-      -webkit-line-clamp: 6;
       overflow: hidden;
+
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
     }
   }
 </style>
