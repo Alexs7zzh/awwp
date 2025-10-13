@@ -1,30 +1,40 @@
 ---
 import { marked } from "marked";
 import type { CollectionEntry } from "astro:content";
-import L from "./LocalizedLink.astro";
 
 interface Props {
   id: string;
   work: CollectionEntry<"work">;
 }
+
 const { id, work } = Astro.props;
 ---
 
-<div class="text-info">
-  <h2 id={`work-${id}-title`} class="title">
+<div class="text-info" data-text-info>
+  <h2 id={`work-${id}-title`} class="title" data-ti-title>
     {work.data.title}
   </h2>
+
   <div
+    id={`description-${id}`}
     class="description"
+    data-ti-desc
     set:html={marked.parse(
       Astro.currentLocale == "en"
         ? work.data.description_en
         : work.data.description_jp,
     )}
   />
-  <L href={`/works/${id}/`} aria-labelledby={`work-${id}-title`}>
+
+  <a
+    is:raw
+    class="more"
+    data-ti-more
+    href={`/works/${id}/`}
+    aria-labelledby={`work-${id}-title`}
+  >
     View work →
-  </L>
+  </a>
 </div>
 
 <style>
@@ -39,10 +49,11 @@ const { id, work } = Astro.props;
     align-self: flex-start;
     height: calc(100vh - 2 * 2rem);
     box-sizing: border-box;
-    overflow: visible;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* important so flex children can shrink */
   }
+
   .title {
     display: inline-block;
     position: relative;
@@ -51,31 +62,45 @@ const { id, work } = Astro.props;
     text-transform: uppercase;
     letter-spacing: 3px;
     font-weight: 400;
-    margin-bottom: 1rem;
+    margin-bottom: 1rem; /* JS will account for this */
     color: var(--font-color-title);
   }
+
   .description {
+    /* Let it take the leftover space */
+    flex: 1 1 auto;
+    min-height: 0;
+
+    /* Multi-line ellipsis shell; JS will set the clamp */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    /* no -webkit-line-clamp here; set dynamically */
+
     line-height: 1.6;
     font-size: 0.8rem;
     color: var(--font-color-body);
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-    overflow-x: hidden;
     overflow-wrap: anywhere;
     word-break: break-word;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-gutter: auto;
+    margin: 0; /* avoid unexpected vertical margins */
   }
 
-  .description::-webkit-scrollbar-track,
-  .description::-webkit-scrollbar-corner {
-    background: transparent;
+  :global(.description p) {
+    margin-block: 0;
+  }
+  :global(.description p + p) {
+    margin-top: 0; /* prevent real margins from breaking clamping */
+  }
+  :global(.description p + p::before) {
+    content: "";
+    display: block;
+    /* JS sets --para-gap to a multiple of the measured line-height. Fallback 1rem. */
+    height: var(--para-gap, 1rem);
   }
 
-  a {
+  .more {
     align-self: flex-end;
-    margin-top: auto;
+    margin-top: auto; /* pushes to bottom */
     display: inline-block;
     position: relative;
     padding-top: 1rem;
@@ -87,7 +112,7 @@ const { id, work } = Astro.props;
     color: var(--font-color-title);
     text-decoration: none;
   }
-  a::after {
+  .more::after {
     content: "";
     position: absolute;
     left: 0;
@@ -97,20 +122,11 @@ const { id, work } = Astro.props;
     background: currentColor;
     transition: width 0.3s;
   }
-  a:hover::after {
+  .more:hover::after {
     width: 100%;
   }
 
-  @media (min-width: 768px) {
-    .description {
-      display: block;
-    }
-  }
-
   @media (max-width: 767px) {
-    a {
-      padding-top: 0.5rem;
-    }
     .text-info {
       position: static;
       top: auto;
@@ -118,10 +134,368 @@ const { id, work } = Astro.props;
       margin: 0 1rem;
     }
     .description {
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
+      /* On mobile we just clamp to 6 lines via CSS */
       -webkit-line-clamp: 6;
+    }
+    .more {
+      padding-top: 0.5rem;
     }
   }
 </style>
+
+<script>
+  // ---- Tunables ----
+  const EPS = 0.5; // small bias against rounding overshoot
+  const CLAMP_SAFETY = 1; // under-clamp by one to guarantee ellipsis
+  const MOBILE_LINES = 6; // fixed clamp on mobile to match CSS
+
+  const ROOT_SELECTOR = "[data-text-info]";
+  const TITLE_SELECTOR = "[data-ti-title]";
+  const DESC_SELECTOR = "[data-ti-desc]";
+  const MORE_SELECTOR = "[data-ti-more]";
+
+  // Mobile breakpoint via CSS var; falls back to 767px
+  function getMobileBpQuery(): string {
+    const v = getComputedStyle(document.documentElement)
+      .getPropertyValue("--ti-mobile-bp")
+      .trim();
+    return `(max-width: ${v || "767px"})`;
+  }
+  const mobileMQ = window.matchMedia(getMobileBpQuery());
+
+  type Inst = {
+    root: HTMLElement;
+    title: HTMLElement;
+    desc: HTMLElement;
+    more: HTMLElement;
+    ro?: ResizeObserver;
+    raf?: number;
+    measureEl?: HTMLElement; // per-instance measuring box
+    lastWidth?: number; // desc width (rounded) used for measures
+    lastFontKey?: string; // cache key for font metric changes
+    lastContentLen?: number; // cheap invalidation if content changes
+    paraGapPx?: number; // snapped paragraph gap in px (multiple of lineH)
+  };
+
+  const instances = new Map<HTMLElement, Inst>();
+  const active = new Set<Inst>();
+
+  // One hidden root for all measurements
+  const measureRoot = document.createElement("div");
+  measureRoot.style.cssText =
+    "position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:-9999px;width:0;height:0;";
+  document.body.appendChild(measureRoot);
+
+  const lineHeightCache = new WeakMap<Element, number>();
+
+  function fontKey(el: HTMLElement): string {
+    const cs = getComputedStyle(el);
+    return [
+      cs.fontFamily,
+      cs.fontSize,
+      cs.fontWeight,
+      cs.fontStyle,
+      cs.lineHeight,
+      cs.letterSpacing,
+      cs.wordSpacing,
+    ].join("|");
+  }
+
+  function measureLineHeight(el: HTMLElement, force = false): number {
+    if (!force) {
+      const cached = lineHeightCache.get(el);
+      if (cached) return cached;
+    }
+    const cs = getComputedStyle(el);
+    const probe = document.createElement("span");
+    probe.textContent = "M";
+    Object.assign(probe.style, {
+      position: "absolute",
+      visibility: "hidden",
+      pointerEvents: "none",
+      left: "-9999px",
+      top: "-9999px",
+      margin: "0",
+      padding: "0",
+      whiteSpace: "pre",
+      display: "inline-block",
+    } as CSSStyleDeclaration);
+
+    probe.style.fontFamily = cs.fontFamily;
+    probe.style.fontSize = cs.fontSize;
+    probe.style.fontWeight = cs.fontWeight;
+    probe.style.fontStyle = cs.fontStyle;
+    probe.style.letterSpacing = cs.letterSpacing;
+    probe.style.wordSpacing = cs.wordSpacing;
+    if (cs.lineHeight && cs.lineHeight !== "normal")
+      probe.style.lineHeight = cs.lineHeight;
+
+    document.body.appendChild(probe);
+    const h1 = probe.getBoundingClientRect().height;
+    probe.textContent = "M\nM";
+    const h2 = probe.getBoundingClientRect().height;
+    document.body.removeChild(probe);
+
+    let lh = h2 - h1;
+    if (!(lh > 0)) {
+      const parsed = parseFloat(cs.lineHeight);
+      lh = !Number.isNaN(parsed)
+        ? parsed
+        : Math.max(1, parseFloat(cs.fontSize) * 1.2);
+    }
+    lineHeightCache.set(el, lh);
+    return lh;
+  }
+
+  function ensureMeasureEl(inst: Inst): HTMLElement {
+    if (inst.measureEl) return inst.measureEl;
+    const cs = getComputedStyle(inst.desc);
+    const el = document.createElement("div");
+    // Match typography
+    el.style.fontFamily = cs.fontFamily;
+    el.style.fontSize = cs.fontSize;
+    el.style.fontWeight = cs.fontWeight;
+    el.style.fontStyle = cs.fontStyle;
+    el.style.lineHeight = cs.lineHeight;
+    el.style.letterSpacing = cs.letterSpacing;
+    el.style.wordSpacing = cs.wordSpacing;
+
+    // Natural block layout; we’ll inject <p> fragments into it to measure
+    el.style.position = "absolute";
+    el.style.left = "0";
+    el.style.top = "0";
+    el.style.margin = "0";
+    el.style.padding = "0";
+    el.style.boxSizing = "border-box";
+    el.style.display = "block";
+    el.style.overflow = "visible";
+
+    measureRoot.appendChild(el);
+    inst.measureEl = el;
+    return el;
+  }
+
+  // Compute the desired paragraph gap (px) from runtime CSS,
+  // then snap it to an integer multiple of lineH so clamping stays crisp.
+  function computeParaGapPx(inst: Inst, lineH: number): number {
+    // Try to read the author’s intended gap from the real DOM (p+p margin-top)
+    const sample = inst.desc.querySelector("p + p") as HTMLElement | null;
+    let raw = 0;
+    if (sample) {
+      raw = parseFloat(getComputedStyle(sample).marginTop || "0") || 0;
+    }
+    if (!raw) {
+      // Fallback: if no margin is defined, use 1rem from the computed font-size
+      const fs = parseFloat(getComputedStyle(inst.desc).fontSize) || 16;
+      raw = fs; // ≈ 1rem
+    }
+    const lines = Math.max(0, Math.round(raw / lineH));
+    const snapped = lines * lineH; // multiple of lineH
+    return snapped;
+  }
+
+  // Measure how many text "lines" each <p> needs at current width
+  function measureParagraphLines(inst: Inst, lineH: number): number[] {
+    const desc = inst.desc;
+    const m = ensureMeasureEl(inst);
+    const rect = desc.getBoundingClientRect();
+    const w = Math.round(rect.width);
+
+    if (inst.lastWidth !== w) {
+      m.style.width = w + "px";
+      inst.lastWidth = w;
+    }
+
+    // Rebuild measuring content only if text length changed (cheap, good-enough)
+    const len = desc.innerHTML.length;
+    if (len !== inst.lastContentLen) {
+      inst.lastContentLen = len;
+    }
+
+    // We’ll measure each <p>’s height independently
+    const ps = Array.from(desc.querySelectorAll("p"));
+    const lines: number[] = [];
+    for (const p of ps) {
+      const frag = document.createElement("div");
+      frag.style.margin = "0";
+      frag.style.padding = "0";
+      frag.style.display = "block";
+      frag.style.boxSizing = "border-box";
+      frag.innerHTML = p.innerHTML;
+      m.appendChild(frag);
+      const h = frag.getBoundingClientRect().height;
+      lines.push(Math.max(1, Math.ceil(h / lineH)));
+      m.removeChild(frag);
+    }
+    return lines.length
+      ? lines
+      : [Math.max(1, Math.ceil(desc.getBoundingClientRect().height / lineH))];
+  }
+
+  // Given a target line count L, compute the pixel height consumed by those lines + paragraph gaps
+  function heightForLines(
+    L: number,
+    paraLines: number[],
+    lineH: number,
+    gapPx: number,
+  ): { px: number; gaps: number } {
+    let remaining = L;
+    let used = 0;
+    let gaps = 0;
+    for (let i = 0; i < paraLines.length && remaining > 0; i++) {
+      if (i > 0) {
+        used += gapPx;
+        gaps++;
+      }
+      const take = Math.min(remaining, paraLines[i]);
+      used += take * lineH;
+      remaining -= take;
+    }
+    return { px: used, gaps };
+  }
+
+  function yPadBorder(el: HTMLElement): number {
+    const cs = getComputedStyle(el);
+    const pt = parseFloat(cs.paddingTop) || 0;
+    const pb = parseFloat(cs.paddingBottom) || 0;
+    const bt = parseFloat(cs.borderTopWidth) || 0;
+    const bb = parseFloat(cs.borderBottomWidth) || 0;
+    return pt + pb + bt + bb;
+  }
+
+  function applyClampBox(desc: HTMLElement, px: number) {
+    const H = Math.ceil(px);
+    desc.style.height = H + "px";
+    desc.style.maxHeight = H + "px";
+    desc.style.flex = "0 0 auto";
+  }
+  function clearClampBox(desc: HTMLElement) {
+    desc.style.removeProperty("height");
+    desc.style.removeProperty("max-height");
+    desc.style.removeProperty("flex");
+  }
+
+  function clampForInstance(inst: Inst, forceMeasure = false) {
+    const { root, title, desc, more } = inst;
+
+    // Bust line-height cache if font metrics changed
+    const key = fontKey(desc);
+    const fontChanged = key !== inst.lastFontKey;
+    inst.lastFontKey = key;
+    const lineH = measureLineHeight(desc, forceMeasure || fontChanged);
+
+    // Derive paragraph gap and expose to CSS as --para-gap (for the ::before spacer)
+    const gapPx = (inst.paraGapPx = computeParaGapPx(inst, lineH));
+    desc.style.setProperty("--para-gap", gapPx + "px");
+
+    if (mobileMQ.matches) {
+      (desc.style as any).webkitLineClamp = String(MOBILE_LINES);
+      const para = measureParagraphLines(inst, lineH);
+      const { px } = heightForLines(MOBILE_LINES, para, lineH, gapPx);
+      applyClampBox(desc, px + yPadBorder(desc));
+      return;
+    }
+
+    // Capacity (height-based)
+    const rootH = root.getBoundingClientRect().height;
+    const titleH = title.getBoundingClientRect().height;
+    const moreH = more.getBoundingClientRect().height;
+    const titleMB =
+      parseFloat(getComputedStyle(title).marginBottom || "0") || 0;
+    const available = Math.max(0, rootH - (titleH + titleMB + moreH) - EPS);
+
+    // Demand (width-based), per-paragraph
+    const para = measureParagraphLines(inst, lineH);
+    const totalLines = para.reduce((a, b) => a + b, 0);
+
+    // Find the largest L such that lines + gaps fit in available
+    // Start from theoretical max without gaps, then back off if needed
+    let L = Math.max(1, Math.floor(available / lineH));
+    // Quick check: if everything fits, no clamping
+    const all = heightForLines(totalLines, para, lineH, gapPx).px;
+    if (all <= available) {
+      desc.style.removeProperty("-webkit-line-clamp");
+      clearClampBox(desc);
+      return;
+    }
+    // Otherwise, refine L downward until it fits with gaps
+    while (L > 1 && heightForLines(L, para, lineH, gapPx).px > available) L--;
+
+    // Safety under-clamp
+    const clampLines = Math.max(1, L - CLAMP_SAFETY);
+    (desc.style as any).webkitLineClamp = String(clampLines);
+
+    // Snap the element box to the exact pixel height of those lines + gaps (+ padding/border)
+    const { px } = heightForLines(clampLines, para, lineH, gapPx);
+    applyClampBox(desc, px + yPadBorder(desc));
+  }
+
+  function schedule(inst: Inst, force = false) {
+    if (inst.raf) cancelAnimationFrame(inst.raf);
+    inst.raf = requestAnimationFrame(() => {
+      inst.raf = 0;
+      clampForInstance(inst, force);
+    });
+  }
+
+  function activate(inst: Inst) {
+    if (inst.ro) return;
+    const ro = new ResizeObserver(() => schedule(inst));
+    ro.observe(inst.root);
+    ro.observe(inst.title);
+    ro.observe(inst.more);
+    ro.observe(inst.desc);
+    inst.ro = ro;
+    active.add(inst);
+    schedule(inst, true);
+  }
+
+  function deactivate(inst: Inst) {
+    if (inst.ro) {
+      inst.ro.disconnect();
+      inst.ro = undefined;
+    }
+    if (inst.raf) {
+      cancelAnimationFrame(inst.raf);
+      inst.raf = 0;
+    }
+    active.delete(inst);
+  }
+
+  // Only run on visible (or near-visible) components
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        const root = e.target as HTMLElement;
+        const inst = instances.get(root);
+        if (!inst) continue;
+        if (e.isIntersecting) activate(inst);
+        else deactivate(inst);
+      }
+    },
+    { root: null, rootMargin: "200px", threshold: 0 },
+  );
+
+  // Re-run on breakpoint switch and after fonts settle
+  mobileMQ.addEventListener?.("change", () => {
+    active.forEach((inst) => schedule(inst, true));
+  });
+  const fontsObj: any = (document as any).fonts;
+  if (fontsObj?.ready) {
+    fontsObj.ready
+      .then(() => active.forEach((inst) => schedule(inst, true)))
+      .catch(() => {});
+  }
+
+  // Initialize
+  document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((root) => {
+    const inst: Inst = {
+      root,
+      title: root.querySelector<HTMLElement>(TITLE_SELECTOR)!,
+      desc: root.querySelector<HTMLElement>(DESC_SELECTOR)!,
+      more: root.querySelector<HTMLElement>(MORE_SELECTOR)!,
+    };
+    instances.set(root, inst);
+    io.observe(root);
+  });
+</script>
