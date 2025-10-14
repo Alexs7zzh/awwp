@@ -1,6 +1,7 @@
 ---
 import { marked } from "marked";
 import type { CollectionEntry } from "astro:content";
+import L from "./LocalizedLink.astro";
 
 interface Props {
   id: string;
@@ -16,7 +17,6 @@ const { id, work } = Astro.props;
   </h2>
 
   <div
-    id={`description-${id}`}
     class="description"
     data-ti-desc
     set:html={marked.parse(
@@ -26,15 +26,11 @@ const { id, work } = Astro.props;
     )}
   />
 
-  <a
-    is:raw
-    class="more"
-    data-ti-more
-    href={`/works/${id}/`}
-    aria-labelledby={`work-${id}-title`}
-  >
+  <L
+    class="more" data-ti-more
+    href={`/works/${id}/`} aria-labelledby={`work-${id}-title`}>
     View work →
-  </a>
+  </L>
 </div>
 
 <style>
