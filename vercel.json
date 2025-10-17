@@ -53,7 +53,7 @@
       ]
     },
     {
-      "source": "/:path*\\.(?:js|mjs|cjs|css|map|wasm|svg|png|jpg|jpeg|gif|webp|avif|ico|woff2|woff|ttf|eot)$",
+      "source": "/:path*\\.(js|mjs|cjs|css|map|wasm|svg|png|jpg|jpeg|gif|webp|avif|ico|woff2|woff|ttf|eot)$",
       "headers": [
         {
           "key": "Cache-Control",
