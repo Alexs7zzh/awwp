@@ -12,14 +12,17 @@ export function getStaticPaths() {
 const img = (id: string) => imageStore.requireImage(id);
 ---
 
-<BaseLayout>
-  <LongImage id="dragonrain" image={img("dragonrain:dragonrain_2")} />
-  <LongImage id="holiness" image={img("holiness:holiness_02")} />
+<BaseLayout>  
+  
   <LongImage
     id="dismantle"
     image={img("dismantle:dismantle_top")}
     mobile={[img("dismantle:dismantle_thumb"), img("dismantle:dismantle_02")]}
   />
+  <LongImage id="dragonrain" image={img("dragonrain:dragonrain_2")} />
+  <LongImage id="blockuniverse" image={img("blockuniverse_01")} />
+
+  <!--
   <MultiImage
     id="clair"
     images={[
@@ -30,8 +33,9 @@ const img = (id: string) => imageStore.requireImage(id);
     ]}
     positions={[0.5, 1, 0.1]}
   />
-  <LongImage id="dragonrain" image={img("dragonrain:dragonrain_top")} />
   <LongImage id="triplet" image={img("triplet:triplet_top")} />
+  -->
+
 </BaseLayout>
 
 <style>

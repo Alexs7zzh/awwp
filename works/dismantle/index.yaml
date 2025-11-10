@@ -12,6 +12,7 @@ description_en: |-
   But there is no sense of irregular feeling that people first felt, or feeling of awe. It was dismantled by scientific explanation. The lump of sensation with infinite possibilities people first sensed is scattered and can not be regained again. When we face unknown or irregular things, we fear them. However, once we feel "understood" by scientific explanation, they can be caught only as a scientific symbol.
 
   As a technical aspect, this work aims to realize CG animation in physical space. The wind blowing on the spot is physically animated using the shape of the fluid cloth and the simulation image projected on it. By acquiring the shape of the organza with cameras and analyzing its curved surface shape in a trihedral view, numerical analysis is performed, and a vector field is generated inversely. In this calculation process, data of the micro controller for the electric fan is also used. The vector field generated here is projected to a 4-layer cloth through an 8K projector, and a vector field with immersive feeling with volume is generated.
+
 description_jp: |-
   Dismantling Awe - 畏怖の解体
 
@@ -24,6 +25,7 @@ description_jp: |-
   しかし、最初に感じた形容し難い異形の感や畏怖の感覚はそこには残らない。それは科学的な説明によって解体されてしまった。最初に感じ取った無限の可能性をもった感覚の塊は霧散し、二度と取り戻すことはできない。我々は未知のものと向き合った時に、それを恐れる。しかし、科学的な説明によって一旦「解った」と感じてしまうと、以後はその現象を科学的な記号としてしか捉えられなってしまうのではかなろうか。
 
   技術的側面としては、本作では、物理空間でのCG的アニメーションの実現を目指している。その場に吹いている風を、流体的な布の形とそこに投影されるシミュレーション映像の二つを用いて物理的にアニメーションしているのだ。オーガンジーの形状をカメラで取得しつづけ、三面図的にその曲面形状を分析することで、その場の風の流れを数値解析し、ベクトル場を逆生成している。この計算過程には扇風機を制御するマイコンのデータも合わせて用いられる。ここで生成されたベクトル場は8Kプロジェクタを通して4階層の布にプロジェクションされ、ボリュームをもった没入間のある風のベクトル場が生成される。
+
 meta_en: |-
   ## CREDIT
 
@@ -54,3 +56,5 @@ meta_jp: |-
   - VENT, 大谷資料館, 2018
 videos:
   - https://player.vimeo.com/video/320690117
+pin:
+  - dismantle_01
