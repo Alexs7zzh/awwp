@@ -50,7 +50,7 @@ class ImageStore {
 
   private build() {
     const mods = import.meta.glob<{ default: ImageMetadata }>(
-      "/works/**/*.{png,jpg,jpeg,webp}",
+      ["/works/*/*.{png,jpg,jpeg,webp}", "!/works/_*/*.{png,jpg,jpeg,webp}"],
       { eager: true },
     );
 
