@@ -117,7 +117,6 @@ Pursuing a new kind of expression where art and science coexist, aiming to “ap
 - Keio University, Faculty of Environment and Information Studies, Professor, 2024 - present
 - Keio University, Faculty of Environment and Information Studies, Dean, 2019 - 2021
 
-
 ## BOOKS
 
 - Entrance Examination Issues for the Year 2050, Nihon Keizai Shimbun Publishing, 2022
@@ -128,4 +127,3 @@ Pursuing a new kind of expression where art and science coexist, aiming to “ap
 
 Request for works and interviews, please DM to the address below.
 https://www.instagram.com/akira.wakita/
-
