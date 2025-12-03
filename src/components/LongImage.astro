@@ -14,7 +14,7 @@ const work = await getEntry("work", id);
 if (!work) throw new Error(`No work found by id ${id}`);
 const alt = work.data.title;
 const isMobileArray = Array.isArray(mobile);
-const formats = ["avif", "webp"];
+const formats = ["webp"];
 const WIDTHS = [800, 1200, 1800];
 
 type BuiltSrcSet = {
