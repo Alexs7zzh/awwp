@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "predev": "bun install",
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "prebuild": "bun install",
     "build": "astro build",
     "preview": "astro preview",
