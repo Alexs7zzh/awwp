@@ -38,6 +38,7 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
           widthPercent,
           positions[index] ?? 0.5, // default – centred
         );
+        const vwSize = (0.7 * widthPercent).toFixed(1); // container is 70vw on desktop
         return (
           <Picture
             src={image}
@@ -45,6 +46,8 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
             class="artwork-image"
             loading="lazy"
             formats={["avif", "webp"]}
+            widths={[800, 1200, 1800]}
+            sizes={`(max-width: 767px) 100vw, ${vwSize}vw`}
             style={`width:${widthPercent}%; margin-left:${leftPercent}%`}
           />
         );

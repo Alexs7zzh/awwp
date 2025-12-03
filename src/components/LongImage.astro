@@ -14,24 +14,37 @@ const work = await getEntry("work", id);
 if (!work) throw new Error(`No work found by id ${id}`);
 const alt = work.data.title;
 const isMobileArray = Array.isArray(mobile);
-// Build desktop variants
 const formats = ["avif", "webp"];
-const desktopVariants = await Promise.all(
-  formats.map((format) => getImage({ src: image, format })),
-);
-const desktopFallback = await getImage({ src: image, format: "png" });
-// Build mobile variants if single
-let mobileVariants = null;
-let mobileFallback = null;
-if (!isMobileArray && mobile) {
-  mobileVariants = await Promise.all(
-    formats.map((format) => getImage({ src: mobile as ImageMetadata, format })),
+const WIDTHS = [800, 1200, 1800];
+
+type BuiltSrcSet = {
+  type: string;
+  srcset: string;
+};
+
+async function buildSources(src: ImageMetadata) {
+  const variants: BuiltSrcSet[] = await Promise.all(
+    formats.map(async (format) => {
+      const imgs = await Promise.all(
+        WIDTHS.map((width) => getImage({ src, format, width })),
+      );
+      const srcset = imgs.map((img) => `${img.src} ${img.width}w`).join(", ");
+      return { type: `image/${format}`, srcset };
+    }),
   );
-  mobileFallback = await getImage({
-    src: mobile as ImageMetadata,
+
+  const fallback = await getImage({
+    src,
     format: "png",
+    width: WIDTHS[1],
   });
+
+  return { variants, fallback };
 }
+
+const desktop = await buildSources(image);
+const mobileSingle =
+  !isMobileArray && mobile ? await buildSources(mobile as ImageMetadata) : null;
 ---
 
 <article
@@ -41,32 +54,28 @@ if (!isMobileArray && mobile) {
   {
     !isMobileArray ? (
       <picture class="artwork-image">
-        {mobile && mobileVariants && (
+        {mobile && mobileSingle && (
           <>
-            {mobileVariants.map((img) => (
+            {mobileSingle?.variants.map((img) => (
               <source
-                srcset={
-                  img.srcSet.values.length ? img.srcSet.attribute : img.src
-                }
-                type={`image/${img.options.format}`}
+                srcset={img.srcset}
+                type={img.type}
                 media="(max-width: 767px)"
                 sizes="100vw"
               />
             ))}
           </>
         )}
-        {desktopVariants.map((img) => (
+        {desktop.variants.map((img) => (
           <source
-            srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
-            type={`image/${img.options.format}`}
+            srcset={img.srcset}
+            type={img.type}
             media={mobile ? "(min-width: 768px)" : undefined}
             sizes="70vw"
           />
         ))}
         <img
-          src={
-            mobile && mobileFallback ? mobileFallback.src : desktopFallback.src
-          }
+          src={mobileSingle?.fallback.src ?? desktop.fallback.src}
           alt={alt}
           loading="lazy"
           decoding="async"
@@ -75,15 +84,11 @@ if (!isMobileArray && mobile) {
     ) : (
       <>
         <picture class="artwork-image desktop-only">
-          {desktopVariants.map((img) => (
-            <source
-              srcset={img.srcSet.values.length ? img.srcSet.attribute : img.src}
-              type={`image/${img.options.format}`}
-              sizes="70vw"
-            />
+          {desktop.variants.map((img) => (
+            <source srcset={img.srcset} type={img.type} sizes="70vw" />
           ))}
           <img
-            src={desktopFallback.src}
+            src={desktop.fallback.src}
             alt={alt}
             loading="lazy"
             decoding="async"
@@ -97,6 +102,8 @@ if (!isMobileArray && mobile) {
               alt={`${alt} - part ${index + 1}`}
               loading="lazy"
               class="artwork-image"
+              widths={WIDTHS}
+              sizes="100vw"
             />
           ))}
         </div>
