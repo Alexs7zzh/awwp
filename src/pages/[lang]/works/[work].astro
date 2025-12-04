@@ -4,7 +4,7 @@ import VideoEmbed from "@components/Video.astro";
 import { marked } from "marked";
 import { getCollection } from "astro:content";
 import { imageStore } from "@lib/imageStore";
-import { Picture } from "astro:assets";
+import { Picture, getImage } from "astro:assets";
 import { LOCALES } from "@lib/i18n";
 
 export async function getStaticPaths() {
@@ -67,6 +67,15 @@ const remainingPinned = pinnedImages.slice(1);
 const firstParagraph = description.split(/\n\s*\n/)[0].trim();
 const firstImage =
   firstPinned ?? (unpinnedImages.length > 0 ? unpinnedImages[0] : null);
+
+const ogImage =
+  firstImage != null
+    ? await getImage({
+        src: firstImage,
+        format: "jpeg",
+        width: 1200,
+      })
+    : null;
 ---
 
 <BaseLayout
@@ -75,9 +84,9 @@ const firstImage =
 >
   <Fragment slot="meta">
     {
-      firstImage != null && (
+      ogImage != null && (
         <>
-          <meta property="og:image" content={firstImage.src} />
+          <meta property="og:image" content={ogImage.src} />
           <meta name="twitter:card" content="summary_large_image" />
         </>
       )
@@ -110,21 +119,19 @@ const firstImage =
       firstPinned && (
         <div class="work-grid pinned hero">
           {(() => {
-            const src = firstPinned?.src ?? "";
             const alt = `${work.data.title} — image 1`;
             return (
-              <a href={src} aria-label={`Open image 1 for ${work.data.title}`}>
-                <Picture
-                  src={firstPinned}
-                  alt={alt}
-                  formats={["webp"]}
-                  widths={[800, 1200, 1800]}
-                  sizes="(min-width: 1220px) 1200px, 100vw"
-                  class="list-image"
-                  loading="lazy"
-                  fetchpriority="auto"
-                />
-              </a>
+              <Picture
+                src={firstPinned}
+                alt={alt}
+                formats={["webp"]}
+                fallbackFormat="jpeg"
+                widths={[800, 1200, 1800]}
+                sizes="(min-width: 1220px) 1200px, 100vw"
+                class="list-image"
+                loading="lazy"
+                fetchpriority="auto"
+              />
             );
           })()}
         </div>
@@ -157,24 +164,19 @@ const firstImage =
       remainingPinned.length > 0 && (
         <div class="work-grid pinned">
           {remainingPinned.map((img, i) => {
-            const src = img?.src ?? "";
             const alt = `${work.data.title} — image ${i + 2}`;
             return (
-              <a
-                href={src}
-                aria-label={`Open image ${i + 2} for ${work.data.title}`}
-              >
-                <Picture
-                  src={img}
-                  alt={alt}
-                  formats={["webp"]}
-                  widths={[800, 1200, 1800]}
-                  sizes="(min-width: 1220px) 1200px, 100vw"
-                  class="list-image"
-                  loading="lazy"
-                  fetchpriority="auto"
-                />
-              </a>
+              <Picture
+                src={img}
+                alt={alt}
+                formats={["webp"]}
+                fallbackFormat="jpeg"
+                widths={[800, 1200, 1800]}
+                sizes="(min-width: 1220px) 1200px, 100vw"
+                class="list-image"
+                loading="lazy"
+                fetchpriority="auto"
+              />
             );
           })}
         </div>
@@ -186,24 +188,19 @@ const firstImage =
       unpinnedImages.length > 0 && (
         <div class="work-grid">
           {unpinnedImages.map((img, i) => {
-            const src = img?.src ?? "";
             const alt = `${work.data.title} — image ${i + 1}`;
             return (
-              <a
-                href={src}
-                aria-label={`Open image ${i + 1} for ${work.data.title}`}
-              >
-                <Picture
-                  src={img}
-                  alt={alt}
-                  formats={["webp"]}
-                  widths={[800, 1200, 1800]}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  class="list-image"
-                  loading="lazy"
-                  fetchpriority="auto"
-                />
-              </a>
+              <Picture
+                src={img}
+                alt={alt}
+                formats={["webp"]}
+                fallbackFormat="jpeg"
+                widths={[800, 1200, 1800]}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                class="list-image"
+                loading="lazy"
+                fetchpriority="auto"
+              />
             );
           })}
         </div>

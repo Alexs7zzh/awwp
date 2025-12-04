@@ -46,6 +46,7 @@ function calculateLeftOffset(widthPercent: number, position: number): number {
             class="artwork-image"
             loading="lazy"
             formats={["webp"]}
+            fallbackFormat="jpeg"
             widths={[800, 1200, 1800]}
             sizes={`(max-width: 767px) 100vw, ${vwSize}vw`}
             style={`width:${widthPercent}%; margin-left:${leftPercent}%`}

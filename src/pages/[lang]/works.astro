@@ -42,6 +42,7 @@ const worksWithImages = sortedWorks.map((work) => ({
               src={img}
               alt={work.workId}
               formats={["webp"]}
+              fallbackFormat="jpeg"
               widths={[800, 1200]}
               sizes="(max-width: 767px) 50vw, (max-width: 1199px) 33vw, 25vw"
               loading="lazy"

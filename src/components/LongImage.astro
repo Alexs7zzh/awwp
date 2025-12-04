@@ -15,12 +15,19 @@ if (!work) throw new Error(`No work found by id ${id}`);
 const alt = work.data.title;
 const isMobileArray = Array.isArray(mobile);
 const formats = ["webp"];
+const fallbackFormat = "jpeg";
+const specialFormatsFallback = ["gif", "svg", "jpg", "jpeg"];
 const WIDTHS = [800, 1200, 1800];
 
 type BuiltSrcSet = {
   type: string;
   srcset: string;
 };
+
+const pickFallbackFormat = (src: ImageMetadata) =>
+  src.format && specialFormatsFallback.includes(src.format)
+    ? src.format
+    : fallbackFormat;
 
 async function buildSources(src: ImageMetadata) {
   const variants: BuiltSrcSet[] = await Promise.all(
@@ -35,7 +42,7 @@ async function buildSources(src: ImageMetadata) {
 
   const fallback = await getImage({
     src,
-    format: "png",
+    format: pickFallbackFormat(src),
     width: WIDTHS[1],
   });
 
