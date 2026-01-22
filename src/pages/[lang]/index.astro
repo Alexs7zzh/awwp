@@ -71,9 +71,19 @@ const img = (id: string) => imageStore.requireImage(id);
 
     const thresholds: number[] = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
 
+    function getViewportMetrics() {
+      const vv = window.visualViewport;
+      const height = vv?.height || window.innerHeight || 1;
+      const top = vv?.offsetTop || 0;
+      return {
+        top,
+        height,
+        mid: top + height / 2,
+      };
+    }
+
     function pickWinner() {
-      const vh = window.innerHeight || 1;
-      const mid = vh / 2;
+      const { mid } = getViewportMetrics();
 
       let best: HTMLElement | null = null;
       let bestDist = Infinity;
@@ -117,18 +127,20 @@ const img = (id: string) => imageStore.requireImage(id);
         const vh = entries[0]?.rootBounds?.height || window.innerHeight || 1;
 
         for (const e of entries) {
-          const coverage = Math.max(
-            0,
-            Math.min(1, e.intersectionRect.height / vh),
-          );
-          const center =
-            (e.intersectionRect.top + e.intersectionRect.bottom) / 2;
-          state.set(e.target as HTMLElement, {
-            coverage,
-            visible: e.isIntersecting,
-            center,
-          });
-        }
+        const { top: viewTop, height: viewHeight } = getViewportMetrics();
+        const viewBottom = viewTop + viewHeight;
+        const visibleTop = Math.max(e.intersectionRect.top, viewTop);
+        const visibleBottom = Math.min(e.intersectionRect.bottom, viewBottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const coverage = Math.min(1, visibleHeight / viewHeight);
+        const center =
+          visibleHeight > 0 ? (visibleTop + visibleBottom) / 2 : Infinity;
+        state.set(e.target as HTMLElement, {
+          coverage,
+          visible: visibleHeight > 0,
+          center,
+        });
+      }
 
         pickWinner();
       },
