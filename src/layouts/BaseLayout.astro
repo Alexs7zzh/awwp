@@ -6,8 +6,13 @@ import { getAbsoluteLocaleUrl } from "astro:i18n";
 interface Props {
   title?: string;
   description?: string;
+  mainClass?: string;
 }
-const { title = "Akira Wakita", description = "" } = Astro.props as Props;
+const {
+  title = "Akira Wakita",
+  description = "",
+  mainClass,
+} = Astro.props as Props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
@@ -87,7 +92,7 @@ const currentOgLocale =
   </head>
   <body>
     <Header />
-    <main>
+    <main class={mainClass}>
       <slot />
     </main>
     <script>
@@ -273,6 +278,10 @@ const currentOgLocale =
   @media (max-width: 767px) {
     main {
       margin-top: 6rem;
+    }
+
+    main.main--flush-mobile {
+      margin-top: 0;
     }
   }
 </style>

@@ -12,7 +12,7 @@ export function getStaticPaths() {
 const img = (id: string) => imageStore.requireImage(id);
 ---
 
-<BaseLayout>
+<BaseLayout mainClass="main--flush-mobile">
   <!-- <LongImage
     id="dismantle"
     image={img("dismantle:dismantle_top")}
@@ -41,7 +41,6 @@ const img = (id: string) => imageStore.requireImage(id);
 
 <style>
   :global(.artwork-content) {
-    transition: opacity 120ms ease;
     will-change: opacity;
   }
   :global(.artwork-content.is-muted) {
@@ -70,15 +69,23 @@ const img = (id: string) => imageStore.requireImage(id);
     );
     let active: HTMLElement | null = null;
 
-    const EPS = 0.04;
     const thresholds: number[] = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
 
+    function getViewportMetrics() {
+      const vv = window.visualViewport;
+      const height = vv?.height || window.innerHeight || 1;
+      const top = vv?.offsetTop || 0;
+      return {
+        top,
+        height,
+        mid: top + height / 2,
+      };
+    }
+
     function pickWinner() {
-      const vh = window.innerHeight || 1;
-      const mid = vh / 2;
+      const { mid } = getViewportMetrics();
 
       let best: HTMLElement | null = null;
-      let bestCov = 0;
       let bestDist = Infinity;
 
       for (const el of arts) {
@@ -87,24 +94,27 @@ const img = (id: string) => imageStore.requireImage(id);
 
         const dist = Math.abs(s.center - mid);
 
-        if (
-          s.coverage > bestCov + 1e-6 ||
-          (Math.abs(s.coverage - bestCov) <= 1e-6 && dist < bestDist - 1) ||
-          (Math.abs(s.coverage - bestCov) <= 1e-6 &&
-            Math.abs(dist - bestDist) <= 1 &&
-            index.get(el)! < index.get(best!)!)
-        ) {
+        if (dist < bestDist - 1e-6) {
           best = el;
-          bestCov = s.coverage;
           bestDist = dist;
+          continue;
+        }
+
+        if (Math.abs(dist - bestDist) <= 1e-6) {
+          if (active && el === active) {
+            best = el;
+            bestDist = dist;
+            continue;
+          }
+          if (active && best === active) continue;
+          if (index.get(el)! < index.get(best!)!) {
+            best = el;
+            bestDist = dist;
+          }
         }
       }
 
       if (!best) return;
-      if (active && best !== active) {
-        const currCov = state.get(active)!.coverage;
-        if (bestCov < currCov + EPS) return;
-      }
 
       if (best !== active) {
         arts.forEach((a) => a.classList.toggle("is-muted", a !== best));
@@ -117,18 +127,20 @@ const img = (id: string) => imageStore.requireImage(id);
         const vh = entries[0]?.rootBounds?.height || window.innerHeight || 1;
 
         for (const e of entries) {
-          const coverage = Math.max(
-            0,
-            Math.min(1, e.intersectionRect.height / vh),
-          );
-          const center =
-            (e.boundingClientRect.top + e.boundingClientRect.bottom) / 2;
-          state.set(e.target as HTMLElement, {
-            coverage,
-            visible: e.isIntersecting,
-            center,
-          });
-        }
+        const { top: viewTop, height: viewHeight } = getViewportMetrics();
+        const viewBottom = viewTop + viewHeight;
+        const visibleTop = Math.max(e.intersectionRect.top, viewTop);
+        const visibleBottom = Math.min(e.intersectionRect.bottom, viewBottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const coverage = Math.min(1, visibleHeight / viewHeight);
+        const center =
+          visibleHeight > 0 ? (visibleTop + visibleBottom) / 2 : Infinity;
+        state.set(e.target as HTMLElement, {
+          coverage,
+          visible: visibleHeight > 0,
+          center,
+        });
+      }
 
         pickWinner();
       },
