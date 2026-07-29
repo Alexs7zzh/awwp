@@ -7,7 +7,9 @@ title: About
 
 ## PROFILE
 
-Pursuing a new kind of expression where art and science coexist, aiming to “approach the essence of existence through form.” His works have been exhibited at Kenninji Zen Temple, Ars Electronica Center, RedBull Music Festival, Mutek, WRO Art Center, SIGGRAPH, Kiyoharu Art Colony, Japan Media Arts Festival, Miraikan, Any Tokyo, Sapporo International Art Festival, etc. He is a professor at the Faculty of Environment and Information Studies, Keio University. Ph.D.(Media and Governance).
+After earning his Ph.D. for research on the application of three-dimensional CAD to medicine, he worked at a design firm before transitioning to academia. At the age of 40, a serious illness profoundly altered his perspective, leading him to devote his artistic practice to themes such as life, the interplay between reality and illusion, mortality, and time. Employing original software based on geometry and dynamics, he creates moving-image works and installations that traverse the boundaries between art and science, seeking to foster dialogue across disciplines.
+His major works include Lightning Forest / Energy Flow (2025, J-POWER Headquarters Entrance), Dragon Rain (2024, Kennin-ji Temple), and BLOCK UNIVERSE (2024, Kiyoharu Art Colony). 
+Professor, Faculty of Environment and Information Studies, Keio University. Ph.D. (Media and Governance).
 
 ## SOLO EXHIBITION
 
@@ -30,6 +32,7 @@ Pursuing a new kind of expression where art and science coexist, aiming to “ap
 
 ## EXHIBITIONS / FESTIVALS
 
+- "Visualization of the World’s Vessel Routes in the 18th Century", Spiral, Spiral - Evolving Human Narratives, The Museum of Narratives, 2026
 - "Dragon Cloud", Zen Night Walk Kamakura, Kenchoji Temple, Kamakura, 2025
 - "Lightning Forest", J-POWER (Power Development Corporation) Head Office Entrance, 2025
 - "Energy Flow", J-POWER (Power Development Corporation) Head Office Entrance, 2025
